@@ -1,0 +1,5 @@
+[user]
+	email = jsnouff@gmail.com
+	name = Jason Snouffer
+[alias]
+	pushchanges = !git add --all && git commit --amend --no-edit && git push -f && git status
