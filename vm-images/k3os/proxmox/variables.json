@@ -1,0 +1,19 @@
+{
+  "proxmox_config": {
+    "api_url": "https://pve1man.jsnouff.net/api2/json",
+    "username": "terraform@pam",
+    "target_node": "pve1",
+    "bridge_interface": "vmbr0",
+    "storage_pool": "local-lvm"
+  },
+  "iso_config": {
+    "iso_url": "https://github.com/rancher/k3os/releases/download/v0.22.2-k3s2r0/k3os-amd64.iso",
+    "iso_checksum": "eae289cf81bdd68f23154b42c751ca571604625a1cfdbc239141c78287dd587c",
+    "iso_storage_pool": "local"
+  },
+
+  "version_tag": "1.0.0",
+  "clone_vm": "vmSrvUbuntu22tmpl",
+  "ssh_username": "ubuntu",
+  "ssh_password": "packer"
+}

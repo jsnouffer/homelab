@@ -47,3 +47,4 @@ source $ZSH/oh-my-zsh.sh
 alias srcme="source ~/.zshrc"
 alias tf="terraform"
 alias tg="terragrunt"
+alias h="history"
