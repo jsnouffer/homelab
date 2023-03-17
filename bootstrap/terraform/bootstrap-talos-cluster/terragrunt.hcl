@@ -14,8 +14,7 @@ inputs = {
   vm_iso           = "local:iso/talos-amd64-v1.3.2.iso"
 
   network_config = {
-    dhcp_ip_cidr     = "192.168.50.0/24"
-    domain_name      = "jsnouff.net"
+    domain_name  = "jsnouff.net"
   }
 
   cp_config = {
@@ -25,6 +24,7 @@ inputs = {
     boot_partition_size  = "32G"
     extra_partition_size = "128G"
     ip                   = ["192.168.5.1"]
+    mac                  = ["EE:38:05:81:54:65"]
   }
 
   worker_config = {
@@ -34,6 +34,7 @@ inputs = {
     boot_partition_size  = "32G"
     extra_partition_size = "128G"
     ip                   = ["192.168.5.2", "192.168.5.3"]
+    mac                  = ["A6:35:CB:F1:EB:5D", "2A:C4:57:62:08:69"]
   }
 
 }

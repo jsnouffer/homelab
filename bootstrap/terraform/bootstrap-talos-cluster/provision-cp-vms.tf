@@ -18,6 +18,7 @@ resource "proxmox_vm_qemu" "cp_vm" {
     bridge    = var.proxmox_config.bridge_interface
     firewall  = true
     link_down = false
+    macaddr   = var.cp_config.mac[count.index]
   }
 
   disk {
@@ -35,12 +36,5 @@ resource "proxmox_vm_qemu" "cp_vm" {
 
 resource "time_sleep" "wait_for_cp_vm" {
   depends_on      = [proxmox_vm_qemu.cp_vm]
-  create_duration = "15s"
-}
-
-data "external" "cp_vm_nmap" {
-  count = length(var.cp_config.ip)
-
-  program = ["./get-ip-addr-from-mac-addr.sh", var.network_config.dhcp_ip_cidr, proxmox_vm_qemu.cp_vm[count.index].network[0].macaddr]
-  depends_on = [time_sleep.wait_for_cp_vm]
+  create_duration = "60s"
 }

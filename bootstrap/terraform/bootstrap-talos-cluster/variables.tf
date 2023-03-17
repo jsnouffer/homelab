@@ -27,8 +27,7 @@ variable "cluster_endpoint" {
 
 variable "network_config" {
   type = object({
-    dhcp_ip_cidr = string
-    domain_name  = string
+    domain_name = string
   })
 }
 
@@ -40,6 +39,7 @@ variable "cp_config" {
     boot_partition_size  = string
     extra_partition_size = string
     ip                   = list(string)
+    mac                  = list(string)
   })
 }
 
@@ -51,5 +51,6 @@ variable "worker_config" {
     boot_partition_size  = string
     extra_partition_size = string
     ip                   = list(string)
+    mac                  = list(string)
   })
 }
