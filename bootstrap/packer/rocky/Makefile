@@ -9,7 +9,7 @@ help: ## This help.
 init: ## packer init steps
 	packer init .
 	packer fmt .
-	packer validate .
+	packer validate -var-file=variables.json .
 
 build: ## packer build
 	packer build -var-file=variables.json .

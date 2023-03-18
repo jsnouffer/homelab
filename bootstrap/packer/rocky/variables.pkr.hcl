@@ -15,6 +15,7 @@ variable "proxmox_api_password" {
 
 variable "iso_config" {
   type = object({
+    iso_file         = string
     iso_url          = string
     iso_checksum     = string
     iso_storage_pool = string
