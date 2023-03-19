@@ -42,7 +42,6 @@ resource "proxmox_vm_qemu" "cp_vms" {
     bridge    = var.proxmox_config.bridge_interface
     firewall  = true
     link_down = false
-    macaddr   = var.cp_config.mac[count.index]
   }
 
   disk {
@@ -50,6 +49,10 @@ resource "proxmox_vm_qemu" "cp_vms" {
     storage = var.proxmox_config.storage_pool
     size    = var.cp_config.extra_partition_size
   }
+
+  cloudinit_cdrom_storage = "local-lvm"
+  sshkeys                 = var.ssh_key
+  ipconfig0               = "ip=${var.cp_config.ip[count.index]}/16,gw=${var.gateway}"
 }
 
 resource "proxmox_vm_qemu" "worker_vms" {
@@ -74,7 +77,6 @@ resource "proxmox_vm_qemu" "worker_vms" {
     bridge    = var.proxmox_config.bridge_interface
     firewall  = true
     link_down = false
-    macaddr   = var.worker_config.mac[count.index]
   }
 
   disk {
@@ -82,4 +84,8 @@ resource "proxmox_vm_qemu" "worker_vms" {
     storage = var.proxmox_config.storage_pool
     size    = var.worker_config.extra_partition_size
   }
+
+  cloudinit_cdrom_storage = "local-lvm"
+  sshkeys                 = var.ssh_key
+  ipconfig0               = "ip=${var.worker_config.ip[count.index]}/16,gw=${var.gateway}"
 }

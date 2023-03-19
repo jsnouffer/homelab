@@ -3,6 +3,11 @@ variable "api_password" {
   sensitive = true
 }
 
+variable "ssh_key" {
+  type      = string
+  sensitive = true
+}
+
 variable "proxmox_config" {
   type = object({
     api_url          = string
@@ -21,6 +26,10 @@ variable "cluster_name" {
   type = string
 }
 
+variable "gateway" {
+  type = string
+}
+
 variable "cp_config" {
   type = object({
     startup              = string
@@ -28,7 +37,6 @@ variable "cp_config" {
     memory               = number
     extra_partition_size = string
     ip                   = list(string)
-    mac                  = list(string)
   })
 }
 
@@ -39,6 +47,5 @@ variable "worker_config" {
     memory               = number
     extra_partition_size = string
     ip                   = list(string)
-    mac                  = list(string)
   })
 }
