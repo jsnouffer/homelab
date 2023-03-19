@@ -1,4 +1,4 @@
-variable "api_token_secret" {
+variable "api_password" {
   type      = string
   sensitive = true
 }
@@ -6,14 +6,14 @@ variable "api_token_secret" {
 variable "proxmox_config" {
   type = object({
     api_url          = string
-    api_token_id     = string
+    api_user         = string
     target_node      = string
     bridge_interface = string
     storage_pool     = string
   })
 }
 
-variable "vm_iso" {
+variable "vm_template_name" {
   type = string
 }
 
@@ -21,22 +21,11 @@ variable "cluster_name" {
   type = string
 }
 
-variable "cluster_endpoint" {
-  type = string
-}
-
-variable "network_config" {
-  type = object({
-    domain_name = string
-  })
-}
-
 variable "cp_config" {
   type = object({
     startup              = string
     cores                = number
     memory               = number
-    boot_partition_size  = string
     extra_partition_size = string
     ip                   = list(string)
     mac                  = list(string)
@@ -48,7 +37,6 @@ variable "worker_config" {
     startup              = string
     cores                = number
     memory               = number
-    boot_partition_size  = string
     extra_partition_size = string
     ip                   = list(string)
     mac                  = list(string)

@@ -12,7 +12,20 @@
     "iso_checksum": "cdc5fca4bd1d5c8eb836acf1edcd4bb3326d36447a491b8419bb51c3e4434a5b7e6c871de37ba8104a99531fe70443a7ec890b41cb6f4021886e34ce9e14ee6d",
     "iso_storage_pool": "local"
   },
-
-  "ssh_username": "ubuntu",
-  "ssh_password": "packer"
+  "boot_disk_config": {
+    "disk_size": "32G",
+    "storage_pool": "local-lvm",
+    "type": "scsi",
+    "scsi_controller": "virtio-scsi-single"
+  },
+  "os": "l26",
+  "cpu_type": "Nehalem",
+  "cores": 4,
+  "memory": 16384,
+  "network_config": {
+    "bridge": "vmbr0",
+    "model": "virtio"
+  },
+  "ssh_username": "root",
+  "ssh_password": "Packer"
 }
