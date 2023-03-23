@@ -60,6 +60,8 @@ build {
   sources = ["source.proxmox-iso.rocky9-iso"]
   provisioner "shell" {
     inline = [
+      "yum install -y epel-release", # extra packages repo
+      "yum install -y bind-utils net-tools htop cifs-utils nfs-utils",
       "yum install -y cloud-init qemu-guest-agent cloud-utils-growpart gdisk",
       "systemctl enable qemu-guest-agent",
       "shred -u /etc/ssh/*_key /etc/ssh/*_key.pub",

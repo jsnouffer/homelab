@@ -18,6 +18,7 @@ inputs = {
     startup              = "order=2,up=30"
     cores                = 4
     memory               = 16384
+    boot_partition_size  = "32G"
     extra_partition_size = "128G"
     ip                   = ["192.168.5.1"]
   }
@@ -26,6 +27,7 @@ inputs = {
     startup              = "order=3"
     cores                = 4
     memory               = 16384
+    boot_partition_size  = "32G"
     extra_partition_size = "128G"
     ip                   = ["192.168.5.2", "192.168.5.3"]
   }

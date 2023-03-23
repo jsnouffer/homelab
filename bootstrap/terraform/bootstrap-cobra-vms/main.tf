@@ -47,6 +47,12 @@ resource "proxmox_vm_qemu" "cp_vms" {
   disk {
     type    = "scsi"
     storage = var.proxmox_config.storage_pool
+    size    = var.cp_config.boot_partition_size
+  }
+
+  disk {
+    type    = "scsi"
+    storage = var.proxmox_config.storage_pool
     size    = var.cp_config.extra_partition_size
   }
 
@@ -77,6 +83,12 @@ resource "proxmox_vm_qemu" "worker_vms" {
     bridge    = var.proxmox_config.bridge_interface
     firewall  = true
     link_down = false
+  }
+
+  disk {
+    type    = "scsi"
+    storage = var.proxmox_config.storage_pool
+    size    = var.worker_config.boot_partition_size
   }
 
   disk {

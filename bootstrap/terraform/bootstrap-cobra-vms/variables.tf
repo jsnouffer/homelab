@@ -35,6 +35,7 @@ variable "cp_config" {
     startup              = string
     cores                = number
     memory               = number
+    boot_partition_size  = string
     extra_partition_size = string
     ip                   = list(string)
   })
@@ -45,6 +46,7 @@ variable "worker_config" {
     startup              = string
     cores                = number
     memory               = number
+    boot_partition_size  = string
     extra_partition_size = string
     ip                   = list(string)
   })
