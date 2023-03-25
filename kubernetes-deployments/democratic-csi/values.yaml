@@ -3,24 +3,28 @@ democratic-csi:
     name: org.democratic-csi.nfs
 
   storageClasses:
-    - name: freenas-nfs-csi
+    - name: truenas-nfs-csi
+      defaultClass: true
+      reclaimPolicy: Delete
+      volumeBindingMode: Immediate
+      allowVolumeExpansion: true
+      parameters:
+        fsType: nfs
+      mountOptions:
+      - noatime
+      - nfsvers=4
+    - name: truenas-nfs-csi-retain
       defaultClass: false
       reclaimPolicy: Retain
       volumeBindingMode: Immediate
       allowVolumeExpansion: true
       parameters:
         fsType: nfs
-
       mountOptions:
       - noatime
       - nfsvers=4
-      secrets:
-        provisioner-secret:
-        controller-publish-secret:
-        node-stage-secret:
-        node-publish-secret:
-        controller-expand-secret:
 
   driver:
+    existingConfigSecret: democratic-csi-driver-config
     config:
       driver: freenas-nfs

@@ -49,3 +49,8 @@ alias tf="terraform"
 alias tg="terragrunt"
 alias h="history"
 alias k="kubectl"
+
+export PATH=$PATH:/home/jason/.local/bin
+
+[[ $commands[kubectl] ]] && source <(kubectl completion zsh)
+source <(helm completion zsh)
