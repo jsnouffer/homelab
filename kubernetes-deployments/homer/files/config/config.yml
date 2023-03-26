@@ -1,0 +1,91 @@
+# Homepage configuration
+# See https://fontawesome.com/v5/search for icons options
+
+title: Homelab Dashboard
+subtitle: Jason's
+documentTitle: Homelab Dashboard
+# logo: none
+icon: fas fa-biohazard
+
+header: true
+footer: <p>Jason's Homelab Dashboard</p>
+
+# Optional theme customization
+theme: default
+colors:
+  light:
+    highlight-primary: "#3367d6"
+    highlight-secondary: "#4285f4"
+    highlight-hover: "#5a95f5"
+    background: "#f5f5f5"
+    card-background: "#ffffff"
+    text: "#363636"
+    text-header: "#ffffff"
+    text-title: "#303030"
+    text-subtitle: "#424242"
+    card-shadow: rgba(0, 0, 0, 0.1)
+    link: "#3273dc"
+    link-hover: "#363636"
+  dark:
+    highlight-primary: "#3367d6"
+    highlight-secondary: "#4285f4"
+    highlight-hover: "#5a95f5"
+    background: "#131313"
+    card-background: "#2b2b2b"
+    text: "#eaeaea"
+    text-header: "#ffffff"
+    text-title: "#fafafa"
+    text-subtitle: "#f5f5f5"
+    card-shadow: rgba(0, 0, 0, 0.4)
+    link: "#3273dc"
+    link-hover: "#ffdd57"
+
+links:
+  - name: "Home"
+    icon: "fas fa-home"
+    url: "#config"
+  - name: "Cobra"
+    icon: "fas fa-cubes"
+    url: "#cobra-cluster"
+
+# Services
+# First level array represent a group.
+# Leave only a "items" key if not using group (group name, icon & tagstyle are optional, section separation will not be displayed).
+services:
+  - name: "Servers"
+    icon: "fas fa-server"
+    items:
+      - name: Proxmox PVE-1
+        subtitle: Dell Poweredge R710
+        logo: https://nas.jsnouff.net:9000/icons/proxmox.png
+        url: https://pve1.jsnouff.local/
+      - name: iDRAC 6
+        subtitle: Dell Poweredge R710
+        logo: https://nas.jsnouff.net:9000/icons/dell.jpg
+        url: https://idrac.jsnouff.net
+  - name: "Network"
+    icon: "fas fa-box-archive"
+    items:
+      - name: Fios Quantum Gateway Router
+        subtitle: 192.168.1.1
+        logo: https://nas.jsnouff.net:9000/icons/fios.png
+        url: https://192.168.1.1/#/main
+      - name: Fios MoCA Adapter
+        subtitle: 192.168.1.2
+        logo: https://nas.jsnouff.net:9000/icons/fios.png
+        url: http://192.168.1.2/home.html
+  - name: "Storage"
+    icon: "fas fa-box-archive"
+    items:
+      - name: TrueNas
+        subtitle: pve - pve1 - vm100
+        logo: https://nas.jsnouff.net:9000/icons/truenas.png
+        url: https://nas.jsnouff.net/
+      - name: MinIO
+        subtitle: hosted on TrueNas
+        logo: https://nas.jsnouff.net:9000/icons/minio.png
+        url: https://nas.jsnouff.net:9001/
+      - name: D-Link DNS-321
+        subtitle: legacy Samba server
+        logo: https://nas.jsnouff.net:9000/icons/dlink.png
+        url: http://dlink.jsnouff.net

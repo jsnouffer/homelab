@@ -1,0 +1,16 @@
+services:
+  - name: "Applications"
+    icon: "fas fa-cloud"
+    items:
+      - name: "Cobra app"
+        logo: "assets/tools/sample.png"
+        subtitle: "Bookmark example"
+        tag: "app"
+        keywords: "self hosted reddit"
+        url: "https://www.reddit.com/r/selfhosted/"
+        target: "_blank" # optional html a tag target attribute
+      - name: "Another one"
+        logo: "assets/tools/sample2.png"
+        subtitle: "Another application"
+        tag: "app"
+        url: "#"

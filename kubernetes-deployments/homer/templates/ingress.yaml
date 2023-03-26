@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: homer
+spec:
+  rules:
+  - host: homer.jsnouff.net
+    http:
+      paths:
+      - backend:
+          service:
+            name: homer
+            port:
+              number: 8080
+        path: /
+        pathType: Prefix

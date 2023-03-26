@@ -1,0 +1,7 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: homer-config
+data:
+{{ (.Files.Glob "files/config/*").AsConfig | indent 2 }}
