@@ -5,10 +5,10 @@ help: ## This help.
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 install: ## install chart
-	helm install sealed-secrets . -n kube-system
+	helm install external-secrets . -n external-secrets --create-namespace
 
 upgrade: ## upgrade release
-	helm upgrade sealed-secrets . -n kube-system
+	helm upgrade external-secrets . -n external-secrets
 
 uninstall: ## uninstall chart
-	helm uninstall -n kube-system sealed-secrets
+	helm uninstall -n external-secrets external-secrets

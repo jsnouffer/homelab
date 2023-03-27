@@ -89,3 +89,12 @@ services:
         subtitle: legacy Samba server
         logo: https://nas.jsnouff.net:9000/icons/dlink.png
         url: http://dlink.jsnouff.net
+  - name: "Cloud Services"
+    icon: "fas fa-cloud"
+    items:
+      - name: Doppler Workspace
+        logo: https://nas.jsnouff.net:9000/icons/doppler.png
+        url: https://dashboard.doppler.com/workplace/b161fb27ad70bce89a63/projects
+      - name: Cloudflare
+        logo: https://nas.jsnouff.net:9000/icons/cloudflare.jpg
+        url: https://dash.cloudflare.com/

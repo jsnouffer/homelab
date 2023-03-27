@@ -12,8 +12,3 @@ upgrade: ## upgrade release
 
 uninstall: ## uninstall chart
 	helm uninstall -n democratic-csi democratic-csi
-
-seal: ## seal config secret
-	ansible-vault decrypt --vault-password-file ~/.vault-password \
-		templates/driver-config.vault.yaml --output - |\
-		kubeseal --scope cluster-wide -o yaml > templates/sealed-driver-config-secret.yaml
