@@ -1,0 +1,7 @@
+external-dns:
+  provider: cloudflare
+  cloudflare:
+    secretName: cloudflare-api-token
+    proxied: false
+  extraArgs:
+    cloudflare-dns-records-per-page: "5000"
