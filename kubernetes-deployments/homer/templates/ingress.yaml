@@ -2,6 +2,11 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: homer
+  annotations:
+    cert-manager.io/cluster-issuer: lets-encrypt-production
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+    kubernetes.io/ingress.class: contour
+    kubernetes.io/tls-acme: "true"
 spec:
   rules:
   - host: homer.jsnouff.net
@@ -14,3 +19,7 @@ spec:
               number: 8080
         path: /
         pathType: Prefix
+  tls:
+    - hosts:
+        - homer.jsnouff.net
+      secretName: tls-secret

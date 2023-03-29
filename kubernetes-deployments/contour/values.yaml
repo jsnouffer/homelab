@@ -1,0 +1,4 @@
+contour:
+  configInline:
+    network:
+      admin-port: 9001

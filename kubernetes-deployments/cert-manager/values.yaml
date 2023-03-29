@@ -1,0 +1,11 @@
+cert-manager:
+  installCRDs: true
+  enableCertificateOwnerRef: true
+  prometheus:
+    enabled: false
+
+letsencrypt:
+  email: jsnouff@gmail.com
+  server:
+    staging: https://acme-staging-v02.api.letsencrypt.org/directory
+    production: https://acme-v02.api.letsencrypt.org/directory
