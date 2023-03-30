@@ -1,0 +1,26 @@
+argo-cd:
+  configs:
+    params:
+      server.insecure: "true"
+    secret:
+      createSecret: false
+  server:
+    ingress:
+      enabled: true
+      annotations:
+        cert-manager.io/cluster-issuer: lets-encrypt-production
+        ingress.kubernetes.io/force-ssl-redirect: "true"
+        kubernetes.io/ingress.class: contour
+        kubernetes.io/tls-acme: "true"
+      hosts:
+        - argocd.jsnouff.net
+      tls:
+        - secretName: tls-secret
+          hosts:
+            - argocd.jsnouff.net
+  applicationSet:
+    enabled: false
+  notifications:
+    enabled: false
+  dex:
+    enabled: false

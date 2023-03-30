@@ -1,0 +1,13 @@
+apiVersion: v2
+name: contour
+home: https://github.com/argoproj/argo-helm
+icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
+sources:
+  - https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd
+  - https://github.com/argoproj/argo-cd
+version: v2.6.7
+dependencies:
+  - name: argo-cd
+    version: 5.27.3
+    repository: https://argoproj.github.io/argo-helm
+    condition: argo-cd.enabled
