@@ -1,0 +1,16 @@
+kubeapps:
+  dashboard:
+    replicaCount: 1
+  frontend:
+    replicaCount: 1
+  kubeappsapis:
+    replicaCount: 1
+  ingress:
+    enabled: true
+    hostname: kubeapps.jsnouff.net
+    annotations:
+      cert-manager.io/cluster-issuer: lets-encrypt-production
+      ingress.kubernetes.io/force-ssl-redirect: "true"
+      kubernetes.io/ingress.class: contour
+      kubernetes.io/tls-acme: "true"
+    tls: true

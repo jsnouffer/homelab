@@ -16,8 +16,8 @@ inputs = {
 
   cp_config = {
     startup              = "order=2,up=30"
-    cores                = 4
-    memory               = 16384
+    cores                = 2
+    memory               = 12288
     boot_partition_size  = "32G"
     extra_partition_size = "128G"
     ip                   = ["192.168.5.1"]
@@ -26,7 +26,7 @@ inputs = {
   worker_config = {
     startup              = "order=3"
     cores                = 4
-    memory               = 16384
+    memory               = 24576
     boot_partition_size  = "32G"
     extra_partition_size = "128G"
     ip                   = ["192.168.5.2", "192.168.5.3"]

@@ -64,6 +64,8 @@ build {
       "yum install -y bind-utils net-tools htop cifs-utils nfs-utils",
       "yum install -y cloud-init qemu-guest-agent cloud-utils-growpart gdisk",
       "systemctl enable qemu-guest-agent",
+      "python -m ensurepip --upgrade",
+      "python -m pip install oauthlib==3.2.0", # needed for Ansible kubernetes module
       "shred -u /etc/ssh/*_key /etc/ssh/*_key.pub",
       "rm -f /root/*ks",
       "passwd -d root",

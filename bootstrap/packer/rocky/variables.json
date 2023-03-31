@@ -20,7 +20,7 @@
   },
   "os": "l26",
   "cpu_type": "Nehalem",
-  "cores": 4,
+  "cores": 2,
   "memory": 16384,
   "network_config": {
     "bridge": "vmbr0",

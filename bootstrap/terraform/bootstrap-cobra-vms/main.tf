@@ -36,6 +36,8 @@ resource "proxmox_vm_qemu" "cp_vms" {
   startup  = var.cp_config.startup
   cores    = var.cp_config.cores
   memory   = var.cp_config.memory
+  numa     = true
+  hotplug  = "network,disk,usb,cpu,memory"
 
   network {
     model     = "virtio"
@@ -77,6 +79,8 @@ resource "proxmox_vm_qemu" "worker_vms" {
   startup  = var.worker_config.startup
   cores    = var.worker_config.cores
   memory   = var.worker_config.memory
+  numa     = true
+  hotplug  = "network,disk,usb,cpu,memory"
 
   network {
     model     = "virtio"
