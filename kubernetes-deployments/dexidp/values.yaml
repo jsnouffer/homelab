@@ -1,0 +1,24 @@
+dex:
+  enabled: true
+  fullnameOverride: dexidp
+  config:
+    issuer: https://dexidp.jsnouff.net/
+    storage:
+      type: memory
+    enablePasswordDB: true
+  ingress:
+    enabled: true
+    annotations:
+      cert-manager.io/cluster-issuer: lets-encrypt-production
+      ingress.kubernetes.io/force-ssl-redirect: "true"
+      kubernetes.io/ingress.class: contour
+      kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: dexidp.jsnouff.net
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls:
+      - secretName: tls-secret
+        hosts:
+          - dexidp.jsnouff.net

@@ -76,3 +76,6 @@ sections:
       - title: Argo CD
         icon: https://nas.jsnouff.net:9000/icons/argocd.png
         url: https://argocd.jsnouff.net/
+      - title: Kubeapps
+        icon: https://nas.jsnouff.net:9000/icons/kubeapps.png
+        url: https://kubeapps.jsnouff.net/

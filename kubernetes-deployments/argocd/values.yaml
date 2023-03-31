@@ -60,7 +60,7 @@ argocd-apps:
         annotations:
           argocd.argoproj.io/manifest-generate-paths: .
       spec:
-        project: default
+        project: applications
         source:
           repoURL: git@github.com:jsnouffer/homelab.git
           targetRevision: HEAD
