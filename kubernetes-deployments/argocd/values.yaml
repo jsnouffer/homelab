@@ -19,8 +19,63 @@ argo-cd:
           hosts:
             - argocd.jsnouff.net
   applicationSet:
-    enabled: false
+    enabled: true
   notifications:
     enabled: false
   dex:
     enabled: false
+
+argocd-apps:
+  projects:
+    - name: applications
+      description: Generic project for applications
+      finalizers:
+      - resources-finalizer.argocd.argoproj.io
+      sourceRepos:
+      - '*'
+      destinations:
+      - namespace: '*'
+        server: '*'
+      clusterResourceWhitelist:
+      - group: '*'
+        kind: '*'
+      namespaceResourceWhitelist:
+      - group: '*'
+        kind: '*'
+  applicationsets:
+  - name: applications
+    goTemplate: true
+    generators:
+    - git:
+        repoURL: git@github.com:jsnouffer/homelab.git
+        revision: HEAD
+        directories:
+        - path: kubernetes-deployments/*
+    template:
+      metadata:
+        name: '{{ base .path.path }}'
+        labels: {}
+        annotations:
+          argocd.argoproj.io/manifest-generate-paths: .
+      spec:
+        project: default
+        source:
+          repoURL: git@github.com:jsnouffer/homelab.git
+          targetRevision: HEAD
+          path: '{{ .path.path }}'
+        destination:
+          server: https://kubernetes.default.svc
+          namespace: '{{ base .path.path }}'
+        revisionHistoryLimit: 5
+        syncPolicy:
+          syncOptions:
+          - ApplyOutOfSyncOnly=true
+          - CreateNamespace=true
+          - RespectIgnoreDifferences=true
+          - PruneLast=true
+          automated:
+            prune: false
+            selfHeal: true
+        ignoreDifferences: []
+    syncPolicy:
+      preserveResourcesOnDeletion: true
