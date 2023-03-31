@@ -1,0 +1,78 @@
+appConfig:
+  theme: nord
+  enableErrorReporting: true
+  layout: auto
+  iconSize: medium
+  language: en
+pageInfo:
+  title: Homelab
+  description: Dashboard
+  # navLinks:
+  #   - title: GitHub
+  #     path: https://github.com/Lissy93/dashy
+  #   - title: Documentation
+  #     path: https://dashy.to/docs
+  footerText: ''
+# pages:
+# - name: Getting Started
+#   path: 'https://snippet.host/tvcw/raw'
+# - name: Homelab
+#   path: 'https://snippet.host/tetp/raw'
+# - name: Browser Startpage
+#   path: 'https://snippet.host/zcom/raw'
+sections:
+  - name: Server Management
+    icon: fas fa-server
+    # displayData:
+      # sortBy: default
+      # cols: 2
+      # itemCountX: 6
+    items:
+      - title: Proxmox PVE1
+        description: Dell Poweredge R710
+        icon: https://nas.jsnouff.net:9000/icons/proxmox.png
+        url: https://pve1.jsnouff.local/
+      - title: iDRAC 6
+        description: Dell Poweredge R710
+        icon: https://nas.jsnouff.net:9000/icons/dell.jpg
+        url: https://idrac.jsnouff.net
+  - name: Networking
+    icon: fas fa-network-wired
+    items:
+      - title: Verizon Router
+        description: Fios Quantum Gateway Router
+        icon: https://nas.jsnouff.net:9000/icons/fios.png
+        url: https://192.168.1.1/#/main
+      - title: Fios MoCA Adapter
+        icon: https://nas.jsnouff.net:9000/icons/fios.png
+        url: http://192.168.1.2/home.html
+  - name: Storage
+    icon: fas fa-hdd
+    items:
+      - title: TrueNas
+        description: pve - pve1 - vm100
+        icon: https://nas.jsnouff.net:9000/icons/truenas.png
+        url: https://nas.jsnouff.net/
+      - title: MinIO
+        description: hosted on TrueNas
+        icon: https://nas.jsnouff.net:9000/icons/minio.png
+        url: https://nas.jsnouff.net:9001/
+      - title: D-Link
+        description: D-Link DNS-321 (legacy Samba server)
+        icon: https://nas.jsnouff.net:9000/icons/dlink.png
+        url: http://dlink.jsnouff.net
+  - name: Cloud Services
+    icon: fas fa-cloud
+    items:
+      - title: Doppler
+        icon: https://nas.jsnouff.net:9000/icons/doppler.png
+        url: https://dashboard.doppler.com/workplace/b161fb27ad70bce89a63/projects
+      - title: Cloudflare
+        icon: https://nas.jsnouff.net:9000/icons/cloudflare.jpg
+        url: https://dash.cloudflare.com/
+  - name: Cobra Cluster
+    icon: fas fa-snake
+    items:
+      - title: Argo CD
+        icon: https://nas.jsnouff.net:9000/icons/argocd.png
+        url: https://argocd.jsnouff.net/

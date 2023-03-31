@@ -1,7 +1,0 @@
-services:
-  - name: "Services"
-    icon: "fas fa-cloud"
-    items:
-      - name: "Argo CD"
-        logo: https://nas.jsnouff.net:9000/icons/doppler.png
-        url: https://argocd.jsnouff.net/
