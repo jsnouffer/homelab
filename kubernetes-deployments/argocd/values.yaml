@@ -1,4 +1,5 @@
 argo-cd:
+  enabled: true
   configs:
     params:
       server.insecure: "true"
@@ -26,6 +27,7 @@ argo-cd:
     enabled: false
 
 argocd-apps:
+  enabled: true
   projects:
     - name: applications
       description: Generic project for applications

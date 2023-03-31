@@ -1,0 +1,15 @@
+external-secrets:
+  enabled: true
+  initialInstall: false
+  secret-stores:
+    - name: doppler-secret-store
+      kind: ClusterSecretStore
+      spec:
+        provider:
+          doppler:
+            auth:
+              secretRef:
+                dopplerToken:
+                  name: doppler-cobra-es-token
+                  namespace: "{{ $.Release.Namespace }}"
+                  key: token

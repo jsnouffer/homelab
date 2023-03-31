@@ -14,4 +14,4 @@ dependencies:
   - name: argocd-apps
     version: 0.0.9
     repository: https://argoproj.github.io/argo-helm
-    condition: argo-cd.enabled
+    condition: argocd-apps.enabled

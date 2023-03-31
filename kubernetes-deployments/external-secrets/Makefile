@@ -7,8 +7,11 @@ help: ## This help.
 install: ## install chart
 	helm install external-secrets . -n external-secrets --create-namespace
 
+install-init: ## install chart
+	helm install external-secrets . -n external-secrets --create-namespace --set external-secrets.initialInstall=true
+
 upgrade: ## upgrade release
-	helm upgrade external-secrets . -n external-secrets
+	helm upgrade external-secrets . -n external-secrets --set external-secrets.initialInstall=false
 
 uninstall: ## uninstall chart
 	helm uninstall -n external-secrets external-secrets
