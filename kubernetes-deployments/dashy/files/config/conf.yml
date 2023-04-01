@@ -88,3 +88,6 @@ sections:
       - title: Ombi
         icon: https://nas.jsnouff.net:9000/icons/ombi.png
         url: https://ombi.jsnouff.net/
+      - title: Radarr
+        icon: https://nas.jsnouff.net:9000/icons/radarr.png
+        url: https://radarr.jsnouff.net/
