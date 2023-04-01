@@ -70,7 +70,7 @@ sections:
       - title: Cloudflare
         icon: https://nas.jsnouff.net:9000/icons/cloudflare.jpg
         url: https://dash.cloudflare.com/
-  - name: Cobra Cluster
+  - name: Cobra Infrastucture
     icon: fas fa-snake
     items:
       - title: Argo CD
@@ -79,3 +79,12 @@ sections:
       - title: Kubeapps
         icon: https://nas.jsnouff.net:9000/icons/kubeapps.png
         url: https://kubeapps.jsnouff.net/
+  - name: Cobra Media
+    icon: fas fa-camera-movie
+    items:
+      - title: Plex
+        icon: https://nas.jsnouff.net:9000/icons/plex.png
+        url: https://plex.jsnouff.net/
+      - title: Ombi
+        icon: https://nas.jsnouff.net:9000/icons/ombi.png
+        url: https://ombi.jsnouff.net/

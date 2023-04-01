@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: plex
+  name: ombi
   annotations:
     cert-manager.io/cluster-issuer: lets-encrypt-production
     ingress.kubernetes.io/force-ssl-redirect: "true"
@@ -9,17 +9,17 @@ metadata:
     kubernetes.io/tls-acme: "true"
 spec:
   rules:
-  - host: plex.jsnouff.net
+  - host: ombi.jsnouff.net
     http:
       paths:
       - backend:
           service:
-            name: plex
+            name: ombi
             port:
               number: 80
         path: /
         pathType: Prefix
   tls:
     - hosts:
-        - plex.jsnouff.net
+        - ombi.jsnouff.net
       secretName: tls-secret
