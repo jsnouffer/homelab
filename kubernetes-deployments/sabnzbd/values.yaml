@@ -1,0 +1,6 @@
+sabnzbd:
+  enable: true
+  ingress:
+    host: sabnzbd.jsnouff.net
+  config:
+    serverPort: 8080

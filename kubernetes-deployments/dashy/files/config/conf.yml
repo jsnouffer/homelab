@@ -64,12 +64,15 @@ sections:
   - name: Cloud Services
     icon: fas fa-cloud
     items:
-      - title: Doppler
-        icon: https://nas.jsnouff.net:9000/icons/doppler.png
-        url: https://dashboard.doppler.com/workplace/b161fb27ad70bce89a63/projects
+      - title: Backblaze
+        icon: https://nas.jsnouff.net:9000/icons/backblaze.png
+        url: https://secure.backblaze.com/b2_buckets.htm
       - title: Cloudflare
         icon: https://nas.jsnouff.net:9000/icons/cloudflare.jpg
         url: https://dash.cloudflare.com/
+      - title: Doppler
+        icon: https://nas.jsnouff.net:9000/icons/doppler.png
+        url: https://dashboard.doppler.com/workplace/b161fb27ad70bce89a63/projects
   - name: Cobra Infrastucture
     icon: fas fa-snake
     items:
@@ -91,3 +94,6 @@ sections:
       - title: Radarr
         icon: https://nas.jsnouff.net:9000/icons/radarr.png
         url: https://radarr.jsnouff.net/
+      - title: SABnzbd
+        icon: https://nas.jsnouff.net:9000/icons/sabnzbd.png
+        url: https://sabnzbd.jsnouff.net/

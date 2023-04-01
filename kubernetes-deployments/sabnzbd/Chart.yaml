@@ -1,0 +1,4 @@
+apiVersion: v2
+name: sabnzbd
+version: 1.0.0
+appVersion: 3.7.2-ls99
