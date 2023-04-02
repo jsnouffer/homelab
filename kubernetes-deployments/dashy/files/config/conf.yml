@@ -73,6 +73,9 @@ sections:
       - title: Doppler
         icon: https://nas.jsnouff.net:9000/icons/doppler.png
         url: https://dashboard.doppler.com/workplace/b161fb27ad70bce89a63/projects
+      - title: NordVPN
+        icon: https://nas.jsnouff.net:9000/icons/nordvpn.png
+        url: https://my.nordaccount.com/dashboard/
   - name: Cobra Infrastucture
     icon: fas fa-snake
     items:
@@ -91,6 +94,9 @@ sections:
       - title: Ombi
         icon: https://nas.jsnouff.net:9000/icons/ombi.png
         url: https://ombi.jsnouff.net/
+      - title: qBittorrent
+        icon: https://nas.jsnouff.net:9000/icons/qbittorrent.png
+        url: https://qbittorrent.jsnouff.net/
       - title: Radarr
         icon: https://nas.jsnouff.net:9000/icons/radarr.png
         url: https://radarr.jsnouff.net/

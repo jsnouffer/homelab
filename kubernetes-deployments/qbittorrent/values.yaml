@@ -1,0 +1,6 @@
+qbittorrent:
+  enable: true
+  ingress:
+    host: qbittorrent.jsnouff.net
+  config:
+    serverPort: 8080

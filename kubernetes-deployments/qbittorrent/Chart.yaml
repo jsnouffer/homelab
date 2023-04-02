@@ -1,0 +1,4 @@
+apiVersion: v2
+name: qbittorrent
+version: 1.0.0
+appVersion: 4.5.2
