@@ -18,7 +18,9 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: CONNECT
-              value: United_States
+              value: P2P
+            - name: KILLSWITCH
+              value: "on"
             - name: TECHNOLOGY
               value: NordLynx
             - name: TOKEN

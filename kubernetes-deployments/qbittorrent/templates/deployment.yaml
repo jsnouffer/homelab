@@ -12,6 +12,10 @@ spec:
       labels:
         app.kubernetes.io/name: qbittorrent
     spec:
+      securityContext:
+        sysctls:
+        - name: net.ipv6.conf.all.disable_ipv6
+          value: "1"
       containers:
         - name: qbittorrent
           image: linuxserver/qbittorrent:{{ $.Chart.AppVersion }}
@@ -48,13 +52,39 @@ spec:
             tcpSocket:
               port: {{ $.Values.qbittorrent.config.serverPort }}
             timeoutSeconds: 1
-          # securityContext:
-          #   runAsGroup: 1000
-          #   runAsNonRoot: true
-          #   runAsUser: 1000
           volumeMounts:
             - name: pv
               mountPath: /config
+        - name: nordvpn
+          image: bubuntux/nordvpn:latest
+          imagePullPolicy: IfNotPresent
+          # command:
+          #   - bash
+          #   - "-c"
+          # args:
+          #   - |
+          #     nord_migrate
+          #     # sleep infinity
+          #     # set -x && \
+          #     # nordvpn login --token $TOKEN && \
+          #     # nordvpn set killswitch on && \
+          #     # nordvpn connect P2P && \
+          #     # nordvpn status
+          env:
+            - name: CONNECT
+              value: P2P
+            - name: KILLSWITCH
+              value: "on"
+            - name: TECHNOLOGY
+              value: NordLynx
+            - name: TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: nordvpn-credentials
+                  key: token
+          securityContext:
+            capabilities:
+              add: ["ALL"]
       volumes:
         - name: pv
           persistentVolumeClaim:
