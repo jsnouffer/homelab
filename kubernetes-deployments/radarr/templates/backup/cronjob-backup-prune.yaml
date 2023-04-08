@@ -1,0 +1,25 @@
+{{- with .Values.backups }}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: restic-prune
+spec:
+  concurrencyPolicy: Forbid
+  schedule: "0 0 * * 0"  # At 00:00 on Sunday
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: restic
+            image: restic/restic:latest
+            args:
+              - forget
+              - --keep-last=10
+              - --keep-weekly=4
+              - --keep-monthly=12
+              - --prune
+            env: {{ toYaml .env | nindent 14 }}
+          restartPolicy: OnFailure
+{{- end }}

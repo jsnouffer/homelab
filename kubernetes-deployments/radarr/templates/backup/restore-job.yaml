@@ -1,0 +1,30 @@
+{{- with .Values.backups }}
+{{- if .restore }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: restic-restore
+spec:
+  template:
+    spec:
+      containers:
+      - image: restic/restic:latest
+        imagePullPolicy: IfNotPresent
+        name: restic
+        args:
+        - restore
+        - latest
+        - --target
+        - /data
+        env: {{ toYaml .env | nindent 10 }}
+        volumeMounts:
+        - mountPath: /data
+          name: backupdata
+      restartPolicy: OnFailure
+      volumes:
+      - name: backupdata
+        persistentVolumeClaim:
+          claimName: {{ $.Values.pvcName }}
+{{- end }}
+{{- end }}
