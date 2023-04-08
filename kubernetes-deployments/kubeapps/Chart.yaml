@@ -1,8 +1,0 @@
-apiVersion: v2
-name: kubeapps
-version: 1.0.0
-dependencies:
-  - name: kubeapps
-    version: 12.2.8
-    repository: https://charts.bitnami.com/bitnami
-    condition: kubeapps.enabled
