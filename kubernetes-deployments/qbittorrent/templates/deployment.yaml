@@ -14,7 +14,7 @@ spec:
     spec:
       securityContext:
         sysctls:
-        - name: net.ipv6.conf.all.disable_ipv6
+        - name: net.ipv4.conf.all.src_valid_mark
           value: "1"
       containers:
         - name: qbittorrent
@@ -55,37 +55,30 @@ spec:
           volumeMounts:
             - name: pv
               mountPath: /config
-        - name: nordvpn
-          image: bubuntux/nordvpn:latest
+        - name: wireguard
+          image: linuxserver/wireguard:1.0.20210914
           imagePullPolicy: IfNotPresent
-          # command:
-          #   - bash
-          #   - "-c"
-          # args:
-          #   - |
-          #     nord_migrate
-          #     # sleep infinity
-          #     # set -x && \
-          #     # nordvpn login --token $TOKEN && \
-          #     # nordvpn set killswitch on && \
-          #     # nordvpn connect P2P && \
-          #     # nordvpn status
+          volumeMounts:
+            - name: wireguard-config
+              mountPath: /config/wg0.conf
+              subPath: wg0.conf
           env:
-            - name: CONNECT
-              value: P2P
-            - name: KILLSWITCH
-              value: "on"
-            - name: TECHNOLOGY
-              value: NordLynx
-            - name: TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: nordvpn-credentials
-                  key: token
+            - name: TZ
+              value: America/New_York
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
           securityContext:
             capabilities:
-              add: ["ALL"]
+              add:
+                - NET_ADMIN
+                - SYS_MODULE
       volumes:
         - name: pv
           persistentVolumeClaim:
             claimName: qbittorrent-pvc
+        - name: wireguard-config
+          secret:
+            defaultMode: 0600
+            secretName: nordvpn-wireguard-config
