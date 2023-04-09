@@ -26,34 +26,19 @@ spec:
             - name: PGID
               value: "1000"
             - name: PLEX_CLAIM
-              value: claim-tNaozRX3JBZjZU4dZ-ti
+              valueFrom:
+                secretKeyRef:
+                  name: plex-token
+                  key: token
           ports:
             - name: http
               containerPort: 32400
               protocol: TCP
-          # livenessProbe:
-          #   failureThreshold: 3
-          #   periodSeconds: 10
-          #   successThreshold: 1
-          #   tcpSocket:
-          #     port: 80
-          #   timeoutSeconds: 1
-          # readinessProbe:
-          #   failureThreshold: 3
-          #   periodSeconds: 10
-          #   successThreshold: 1
-          #   tcpSocket:
-          #     port: 80
-          #   timeoutSeconds: 1
-          # startupProbe:
-          #   failureThreshold: 30
-          #   periodSeconds: 5
-          #   successThreshold: 1
-          #   tcpSocket:
-          #     port: 80
-          #   timeoutSeconds: 1
-          # securityContext:
-          #   runAsGroup: 1000
-          #   runAsNonRoot: true
-          #   runAsUser: 1000
-
+          volumeMounts:
+            - name: plex-nfs
+              mountPath: /movies
+              subPath: downloads/complete
+      volumes:
+        - name: plex-nfs
+          persistentVolumeClaim:
+            claimName: plex-nfs

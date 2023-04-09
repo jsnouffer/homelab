@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: plex-nfs
+spec:
+  storageClassName: nfs-plex
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 250Gi
