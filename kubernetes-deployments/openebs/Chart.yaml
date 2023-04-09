@@ -1,0 +1,8 @@
+apiVersion: v2
+name: openebs
+version: 3.4.0
+dependencies:
+  - name: cstor
+    version: 3.4.0
+    repository: https://openebs.github.io/cstor-operators
+    condition: cstor.enabled

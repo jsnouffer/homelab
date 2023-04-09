@@ -1,0 +1,23 @@
+---
+apiVersion: cstor.openebs.io/v1
+kind: CStorPoolCluster
+metadata:
+  name: cstor-storage
+  namespace: openebs
+spec:
+  pools:
+    - nodeSelector:
+        topology.cstor.openebs.io/nodeName: cobra-w1
+      dataRaidGroups:
+      - blockDevices:
+          - blockDeviceName: blockdevice-3f6332d0ecd0c0fbf13b15f843b87648
+      poolConfig:
+        dataRaidGroupType: "stripe"
+
+    - nodeSelector:
+        topology.cstor.openebs.io/nodeName: cobra-w2
+      dataRaidGroups:
+        - blockDevices:
+            - blockDeviceName: blockdevice-4ba0dcc7f3ec5c8978b3656ddb399ca1
+      poolConfig:
+        dataRaidGroupType: "stripe"

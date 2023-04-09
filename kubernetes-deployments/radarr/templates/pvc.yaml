@@ -4,8 +4,9 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ $.Values.pvcName }}
 spec:
+  storageClassName: cstor-csi
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi

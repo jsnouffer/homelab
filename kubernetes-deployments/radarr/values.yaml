@@ -1,7 +1,7 @@
 pvcName: radarr-pvc
 
 backups:
-  restore: false
+  restore: true
   env:
     - name: RESTIC_REPOSITORY
       value: "b2:jsnouff-radarr"
