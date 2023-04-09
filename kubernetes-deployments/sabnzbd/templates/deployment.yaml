@@ -14,6 +14,20 @@ spec:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/config-secret.yaml") . | sha256sum }}
     spec:
+      initContainers:
+        - name: copy-configs
+          image: busybox:latest
+          command:
+            - sh
+            - -c
+            - |
+              cp /cm/sabnzbd.ini /pv
+          volumeMounts:
+            - name: config
+              mountPath: /cm/sabnzbd.ini
+              subPath: sabnzbd.ini
+            - name: pv-config
+              mountPath: /pv
       containers:
         - name: sabnzbd
           image: linuxserver/sabnzbd:{{ $.Chart.AppVersion }}
@@ -50,15 +64,19 @@ spec:
             tcpSocket:
               port: {{ $.Values.sabnzbd.config.serverPort }}
             timeoutSeconds: 1
-          # securityContext:
-          #   runAsGroup: 1000
-          #   runAsNonRoot: true
-          #   runAsUser: 1000
           volumeMounts:
-            - name: config
-              mountPath: /config/sabnzbd.ini
-              subPath: sabnzbd.ini
+            - name: pv-config
+              mountPath: /config
+            - name: plex-nfs
+              mountPath: /downloads
+              subPath: downloads
       volumes:
         - name: config
           secret:
             secretName: sabnzbd-config-secret
+        - name: pv-config
+          persistentVolumeClaim:
+            claimName: {{ $.Values.sabnzbd.pvcName }}
+        - name: plex-nfs
+          persistentVolumeClaim:
+            claimName: plex-nfs

@@ -29,13 +29,4 @@ spec:
           - |
             restic init || echo "skipped"
         env: {{ toYaml .env | nindent 10 }}
-        volumeMounts:
-        - mountPath: /data
-          name: backupdata
-          readOnly: true
-        workingDir: /data
-      volumes:
-      - name: backupdata
-        persistentVolumeClaim:
-          claimName: {{ $.Values.pvcName }}
 {{- end }}

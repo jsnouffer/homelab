@@ -76,6 +76,9 @@ sections:
       - title: NordVPN
         icon: https://nas.jsnouff.net:9000/icons/nordvpn.png
         url: https://my.nordaccount.com/dashboard/
+      - title: Tweaknews
+        icon: https://nas.jsnouff.net:9000/icons/tweaknews.png
+        url: https://www.tweaknews.eu/en/member
   - name: Cobra Infrastucture
     icon: fas fa-snake
     items:

@@ -49,9 +49,15 @@ spec:
               port: 7878
             timeoutSeconds: 1
           volumeMounts:
-            - name: pv
+            - name: pv-config
               mountPath: /config
+            - name: plex-nfs
+              mountPath: /downloads
+              subPath: downloads
       volumes:
-        - name: pv
+        - name: pv-config
           persistentVolumeClaim:
             claimName: {{ $.Values.pvcName }}
+        - name: plex-nfs
+          persistentVolumeClaim:
+            claimName: plex-nfs
