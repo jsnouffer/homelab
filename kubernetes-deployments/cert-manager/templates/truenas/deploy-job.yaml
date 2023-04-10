@@ -1,0 +1,45 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: freenas-cert-job
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  backoffLimit: 1
+  selector:
+    matchLabels:
+      job-name: freenas-cert-job
+  suspend: false
+  template:
+    metadata:
+      labels:
+        job-name: freenas-cert-job
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: deploy-cert
+          image: elixircloud/foca
+          command: ["/script/deploy_freenas.py"]
+          args:
+            - -c
+            - /config/deploy_config
+          volumeMounts:
+            - name: deploy-freenas-script
+              mountPath: /script
+            - name: freenas-cert-deploy-config
+              mountPath: /config
+            - name: truenas-tls-secret
+              mountPath: /cert
+      volumes:
+        - name: deploy-freenas-script
+          configMap:
+            name: deploy-freenas-script
+            defaultMode: 0777
+        - name: freenas-cert-deploy-config
+          secret:
+            secretName: freenas-cert-deploy-config
+        - name: truenas-tls-secret
+          secret:
+            secretName: truenas-tls-secret

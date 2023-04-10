@@ -1,16 +1,17 @@
+---
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: nas-cert
+  name: truenas-le-certificate
 spec:
   dnsNames:
-  - nas.jsnouff.net
+    - {{ .Values.truenas.hostname }}
   issuerRef:
     group: cert-manager.io
     kind: ClusterIssuer
     name: lets-encrypt-production
-  secretName: nas-tls-secret
+  secretName: truenas-tls-secret
   usages:
-  - digital signature
-  - key encipherment
+    - digital signature
+    - key encipherment
 
