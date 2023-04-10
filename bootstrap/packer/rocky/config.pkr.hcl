@@ -63,7 +63,9 @@ build {
       "yum install -y epel-release", # extra packages repo
       "yum install -y bind-utils net-tools htop cifs-utils nfs-utils",
       "yum install -y cloud-init qemu-guest-agent cloud-utils-growpart gdisk",
+      "yum install -y iscsi-initiator-utils", # needed for OpenEBS
       "systemctl enable qemu-guest-agent",
+      "systemctl enable iscsid", # needed for OpenEBS
       "python -m ensurepip --upgrade",
       "python -m pip install oauthlib==3.2.0", # needed for Ansible kubernetes module
       "shred -u /etc/ssh/*_key /etc/ssh/*_key.pub",
