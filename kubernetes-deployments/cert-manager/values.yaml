@@ -3,6 +3,30 @@ cert-manager:
   enableCertificateOwnerRef: true
   prometheus:
     enabled: false
+  resources:
+    limits:
+      cpu: 50m
+      memory: 96Mi
+    requests:
+      cpu: 5m
+      memory: 48Mi
+  webhook:
+    resources:
+      limits:
+        cpu: 100m
+        memory: 32Mi
+      requests:
+        cpu: 5m
+        memory: 16Mi
+  cainjector:
+    resources:
+      limits:
+        cpu: 50m
+        memory: 128Mi
+      requests:
+        cpu: 5m
+        memory: 90Mi
+
 
 letsencrypt:
   email: jsnouff@gmail.com

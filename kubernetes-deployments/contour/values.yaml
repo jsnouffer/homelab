@@ -2,3 +2,28 @@ contour:
   configInline:
     network:
       admin-port: 9001
+  contour:
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 5m
+        memory: 48Mi
+  envoy:
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 5m
+        memory: 48Mi
+    shutdownManager:
+      enabled: true
+      resources:
+        limits:
+          cpu: 25m
+          memory: 48Mi
+        requests:
+          cpu: 5m
+          memory: 16Mi

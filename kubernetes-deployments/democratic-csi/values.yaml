@@ -28,3 +28,63 @@ democratic-csi:
     existingConfigSecret: democratic-csi-driver-config
     config:
       driver: freenas-nfs
+
+  controller:
+    externalProvisioner:
+      resources:
+        limits:
+          cpu: 25m
+          memory: 32Mi
+        requests:
+          cpu: 5m
+          memory: 16Mi
+    externalResizer:
+      resources:
+        limits:
+          cpu: 25m
+          memory: 48Mi
+        requests:
+          cpu: 5m
+          memory: 24Mi
+    externalSnapshotter:
+      resources:
+        limits:
+          cpu: 25m
+          memory: 32Mi
+        requests:
+          cpu: 5m
+          memory: 16Mi
+    driver:
+      resources:
+        limits:
+          cpu: 50m
+          memory: 128Mi
+        requests:
+          cpu: 15m
+          memory: 64Mi
+  node:
+    driver:
+      resources:
+        limits:
+          cpu: 50m
+          memory: 128Mi
+        requests:
+          cpu: 5m
+          memory: 64Mi
+    driverRegistrar:
+      resources:
+        limits:
+          cpu: 50m
+          memory: 32Mi
+        requests:
+          cpu: 5m
+          memory: 16Mi
+
+  csiProxy:
+    resources:
+      limits:
+        cpu: 25m
+        memory: 32Mi
+      requests:
+        cpu: 5m
+        memory: 12Mi

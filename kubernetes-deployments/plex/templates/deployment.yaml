@@ -38,6 +38,10 @@ spec:
             - name: plex-nfs
               mountPath: /movies
               subPath: downloads/complete
+          resources:
+            requests:
+              memory: 1000Mi
+              cpu: 500m
       volumes:
         - name: plex-nfs
           persistentVolumeClaim:

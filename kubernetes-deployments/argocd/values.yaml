@@ -6,6 +6,13 @@ argo-cd:
     secret:
       createSecret: false
   server:
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 5m
+        memory: 48Mi
     ingress:
       enabled: true
       annotations:
@@ -19,8 +26,40 @@ argo-cd:
         - secretName: tls-secret
           hosts:
             - argocd.jsnouff.net
+  controller:
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 1024Mi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+  repoServer:
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 50m
+        memory: 64Mi
   applicationSet:
     enabled: true
+    resources:
+      limits:
+        cpu: 250m
+        memory: 128Mi
+      requests:
+        cpu: 50m
+        memory: 48Mi
+  redis:
+    enabled: true
+    resources:
+      limits:
+        cpu: 200m
+        memory: 128Mi
+      requests:
+        cpu: 5m
+        memory: 24Mi
   notifications:
     enabled: false
   dex:
