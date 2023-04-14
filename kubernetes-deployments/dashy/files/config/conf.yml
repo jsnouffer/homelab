@@ -30,45 +30,49 @@ sections:
     items:
       - title: Proxmox PVE1
         description: Dell Poweredge R710
-        icon: https://nas.jsnouff.net:9000/icons/proxmox.png
+        icon: hl-proxmox
         url: https://pve1.jsnouff.local/
       - title: iDRAC 6
         description: Dell Poweredge R710
-        icon: https://nas.jsnouff.net:9000/icons/dell.jpg
+        icon: hl-idrac
         url: https://idrac.jsnouff.net
   - name: Networking
     icon: fas fa-network-wired
     items:
       - title: Verizon Router
         description: Fios Quantum Gateway Router
-        icon: https://nas.jsnouff.net:9000/icons/fios.png
+        icon: hl-verizon
         url: https://192.168.1.1/#/main
       - title: Fios MoCA Adapter
-        icon: https://nas.jsnouff.net:9000/icons/fios.png
+        icon: hl-verizon
         url: http://192.168.1.2/home.html
+      - title: Pi-hole
+        description: Pi-hole hosted on TrueNas Scale
+        icon: hl-pihole
+        url: http://nas.jsnouff.net:20720/admin/index.php
   - name: Storage
     icon: fas fa-hdd
     items:
       - title: TrueNas
         description: pve - pve1 - vm100
-        icon: https://nas.jsnouff.net:9000/icons/truenas.png
+        icon: hl-truenas
         url: https://nas.jsnouff.net/
       - title: MinIO
         description: hosted on TrueNas
-        icon: https://nas.jsnouff.net:9000/icons/minio.png
+        icon: hl-minio
         url: https://nas.jsnouff.net:9001/
-      - title: D-Link
-        description: D-Link DNS-321 (legacy Samba server)
-        icon: https://nas.jsnouff.net:9000/icons/dlink.png
-        url: http://dlink.jsnouff.net
+      # - title: D-Link
+      #   description: D-Link DNS-321 (legacy Samba server)
+      #   icon: https://nas.jsnouff.net:9000/icons/dlink.png
+      #   url: http://dlink.jsnouff.net
   - name: Cloud Services
     icon: fas fa-cloud
     items:
       - title: Backblaze
-        icon: https://nas.jsnouff.net:9000/icons/backblaze.png
+        icon: hl-backblaze
         url: https://secure.backblaze.com/b2_buckets.htm
       - title: Cloudflare
-        icon: https://nas.jsnouff.net:9000/icons/cloudflare.jpg
+        icon: hl-cloudflare
         url: https://dash.cloudflare.com/
       - title: Doppler
         icon: https://nas.jsnouff.net:9000/icons/doppler.png
@@ -77,7 +81,7 @@ sections:
         icon: https://nas.jsnouff.net:9000/icons/nordvpn.png
         url: https://my.nordaccount.com/dashboard/
       - title: Plex Token
-        icon: https://nas.jsnouff.net:9000/icons/plex.png
+        icon: hl-plex-new
         url: https://www.plex.tv/claim/
       - title: Tweaknews
         icon: https://nas.jsnouff.net:9000/icons/tweaknews.png
@@ -86,26 +90,26 @@ sections:
     icon: fas fa-snake
     items:
       - title: Argo CD
-        icon: https://nas.jsnouff.net:9000/icons/argocd.png
+        icon: hl-argocd
         url: https://argocd.jsnouff.net/
-      - title: Kubeapps
-        icon: https://nas.jsnouff.net:9000/icons/kubeapps.png
-        url: https://kubeapps.jsnouff.net/
+      # - title: Kubeapps
+      #   icon: https://nas.jsnouff.net:9000/icons/kubeapps.png
+      #   url: https://kubeapps.jsnouff.net/
   - name: Cobra Media
     icon: fas fa-camera-movie
     items:
       - title: Plex
-        icon: https://nas.jsnouff.net:9000/icons/plex.png
+        icon: hl-plex-new
         url: https://plex.jsnouff.net/
       - title: Ombi
-        icon: https://nas.jsnouff.net:9000/icons/ombi.png
+        icon: hl-ombi
         url: https://ombi.jsnouff.net/
       - title: qBittorrent
-        icon: https://nas.jsnouff.net:9000/icons/qbittorrent.png
+        icon: hl-qbittorrent
         url: https://qbittorrent.jsnouff.net/
       - title: Radarr
-        icon: https://nas.jsnouff.net:9000/icons/radarr.png
+        icon: hl-radarr
         url: https://radarr.jsnouff.net/
       - title: SABnzbd
-        icon: https://nas.jsnouff.net:9000/icons/sabnzbd.png
+        icon: hl-sabnzbd-text
         url: https://sabnzbd.jsnouff.net/
