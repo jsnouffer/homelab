@@ -1,0 +1,21 @@
+portainer:
+  fullnameOverride: portainer
+  ingress:
+    enabled: true
+    annotations:
+      cert-manager.io/cluster-issuer: lets-encrypt-production
+      ingress.kubernetes.io/force-ssl-redirect: "true"
+      kubernetes.io/ingress.class: contour
+      kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: portainer.jsnouff.net
+        paths:
+          - path: "/"
+    tls:
+      - secretName: tls-secret
+        hosts:
+          - portainer.jsnouff.net
+  persistence:
+    enabled: true
+    size: "10Gi"
+    storageClass: cstor-csi

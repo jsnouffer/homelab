@@ -92,9 +92,9 @@ sections:
       - title: Argo CD
         icon: hl-argocd
         url: https://argocd.jsnouff.net/
-      # - title: Kubeapps
-      #   icon: https://nas.jsnouff.net:9000/icons/kubeapps.png
-      #   url: https://kubeapps.jsnouff.net/
+      - title: Portainer
+        icon: hl-portainer
+        url: https://portainer.jsnouff.net/
   - name: Cobra Media
     icon: fas fa-camera-movie
     items:
