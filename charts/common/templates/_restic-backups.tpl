@@ -15,10 +15,10 @@ spec:
   data:
     - secretKey: keyID
       remoteRef:
-        key: BACKBLAZE_RADARR_KEY_ID
+        key: BACKBLAZE_MASTER_KEY_ID
     - secretKey: applicationKey
       remoteRef:
-        key: BACKBLAZE_RADARR_APPLICATION_KEY
+        key: BACKBLAZE_MASTER_APPLICATION_KEY
     - secretKey: resticKey
       remoteRef:
         key: RESTIC_ENCRYPTION_KEY

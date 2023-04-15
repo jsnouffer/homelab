@@ -35,14 +35,22 @@ spec:
               containerPort: 32400
               protocol: TCP
           volumeMounts:
+            - name: pv-config
+              mountPath: /config
             - name: plex-nfs
               mountPath: /movies
-              subPath: downloads/complete
+              subPath: downloads/complete/movies
+            - name: plex-nfs
+              mountPath: /tv
+              subPath: downloads/complete/tv
           resources:
             requests:
               memory: 1000Mi
               cpu: 500m
       volumes:
+        - name: pv-config
+          persistentVolumeClaim:
+            claimName: {{ $.Values.pvcName }}
         - name: plex-nfs
           persistentVolumeClaim:
             claimName: plex-nfs
