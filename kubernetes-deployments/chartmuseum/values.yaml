@@ -1,0 +1,26 @@
+chartmuseum:
+  enabled: true
+  env:
+    open:
+      DEBUG: true
+      DISABLE_API: false
+      ALLOW_OVERWRITE: true
+      STORAGE: amazon
+      STORAGE_AMAZON_BUCKET: chartmuseum
+      STORAGE_AMAZON_ENDPOINT: https://nas.jsnouff.net:9000
+    existingSecret: chartmuseum-secret
+    existingSecretMappings:
+      AWS_ACCESS_KEY_ID: minio-access-key
+      AWS_SECRET_ACCESS_KEY: minio-secret-access-key
+  ingress:
+    enabled: true
+    annotations:
+      cert-manager.io/cluster-issuer: lets-encrypt-production
+      ingress.kubernetes.io/force-ssl-redirect: "true"
+      kubernetes.io/ingress.class: contour
+      kubernetes.io/tls-acme: "true"
+    hosts:
+      - name: chartmuseum.jsnouff.net
+        path: /
+        tls: true
+        tlsSecret: tls-secret
