@@ -2,3 +2,8 @@ apiVersion: v2
 name: radarr
 version: 1.0.0
 appVersion: 4.3.2
+dependencies:
+  - name: common
+    version: 0.0.1
+    repository: https://chartmuseum.jsnouff.net
+    condition: radarr.enabled

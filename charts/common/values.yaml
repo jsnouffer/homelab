@@ -1,0 +1,16 @@
+resticBackups:
+  enabled: false
+  image: restic/restic:latest
+  init:
+    enabled: true
+  restore:
+    enabled: false
+  prune:
+    enabled: true
+    schedule: "0 0 * * 0" # At 00:00 on Sunday
+    keepLast: 10
+    keepWeekly: 4
+    keepMonthly: 12
+  cron:
+    enabled: true
+    schedule: "0 */12 * * *" # Every 12 hours
