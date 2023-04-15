@@ -81,7 +81,7 @@ sections:
         icon: https://nas.jsnouff.net:9000/icons/nordvpn.png
         url: https://my.nordaccount.com/dashboard/
       - title: Plex Token
-        icon: hl-plex-new
+        icon: hl-plex
         url: https://www.plex.tv/claim/
       - title: Tweaknews
         icon: https://nas.jsnouff.net:9000/icons/tweaknews.png
@@ -92,6 +92,9 @@ sections:
       - title: Argo CD
         icon: hl-argocd
         url: https://argocd.jsnouff.net/
+      - title: ChartMuseum
+        icon: https://github.com/helm/chartmuseum/raw/main/logo.png
+        url: https://chartmuseum-ui.jsnouff.net/charts
       - title: Portainer
         icon: hl-portainer
         url: https://portainer.jsnouff.net/
@@ -99,7 +102,7 @@ sections:
     icon: fas fa-camera-movie
     items:
       - title: Plex
-        icon: hl-plex-new
+        icon: hl-plex
         url: https://plex.jsnouff.net/
       - title: Ombi
         icon: hl-ombi
@@ -111,5 +114,5 @@ sections:
         icon: hl-radarr
         url: https://radarr.jsnouff.net/
       - title: SABnzbd
-        icon: hl-sabnzbd-text
+        icon: hl-sabnzbd
         url: https://sabnzbd.jsnouff.net/

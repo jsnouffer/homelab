@@ -1,5 +1,6 @@
 chartmuseum:
   enabled: true
+  fullnameOverride: chartmuseum
   env:
     open:
       DEBUG: true
@@ -24,3 +25,16 @@ chartmuseum:
         path: /
         tls: true
         tlsSecret: tls-secret
+  deployment:
+    sidecarContainers:
+      chartmuseum-gui:
+        image: moreillon/chartmuseum-gui:latest
+        ports:
+          - name: webui
+            containerPort: 3000
+            protocol: TCP
+        env:
+          - name: PUBLIC_CHARTMUSEUM_URL
+            value: https://chartmuseum.jsnouff.net
+          - name: PATH_BASE
+            value: "/"

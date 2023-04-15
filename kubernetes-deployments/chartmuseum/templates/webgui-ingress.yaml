@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: chartmuseum-webgui
+  annotations:
+    cert-manager.io/cluster-issuer: lets-encrypt-production
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+    kubernetes.io/ingress.class: contour
+    kubernetes.io/tls-acme: "true"
+spec:
+  rules:
+  - host: chartmuseum-ui.jsnouff.net
+    http:
+      paths:
+      - backend:
+          service:
+            name: chartmuseum-webgui
+            port:
+              number: 3000
+        path: "/"
+        pathType: Prefix
+  tls:
+    - hosts:
+        - chartmuseum-ui.jsnouff.net
+      secretName: webgui-tls-secret
