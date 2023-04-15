@@ -23,3 +23,13 @@ backups:
           name: backblaze-credentials
           key: applicationKey
           optional: false
+  affinity:
+    podAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: app.kubernetes.io/name
+            operator: In
+            values:
+            - radarr
+        topologyKey: kubernetes.io/hostname

@@ -11,6 +11,7 @@ spec:
     spec:
       template:
         spec:
+          affinity: {{ toYaml .affinity | nindent 12 }}
           containers:
           - name: restic
             image: restic/restic:latest
