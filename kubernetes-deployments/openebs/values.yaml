@@ -1,0 +1,26 @@
+cstor:
+  enabled: true
+  cspcOperator:
+    resources:
+      limits:
+        cpu: 50m
+        memory: 32Mi
+      requests:
+        cpu: 5m
+        memory: 16Mi
+  cvcOperator:
+    resources:
+      limits:
+        cpu: 50m
+        memory: 32Mi
+      requests:
+        cpu: 5m
+        memory: 16Mi
+  admissionServer:
+    resources:
+      limits:
+        cpu: 50m
+        memory: 24Mi
+      requests:
+        cpu: 5m
+        memory: 12Mi

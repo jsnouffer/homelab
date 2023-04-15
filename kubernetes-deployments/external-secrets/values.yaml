@@ -1,6 +1,29 @@
 external-secrets:
   enabled: true
   initialInstall: false
+  resources:
+    limits:
+      cpu: 50m
+      memory: 64Mi
+    requests:
+      cpu: 5m
+      memory: 32Mi
+  webhook:
+    resources:
+      limits:
+        cpu: 50m
+        memory: 48Mi
+      requests:
+        cpu: 5m
+        memory: 24Mi
+  certController:
+    resources:
+      limits:
+        cpu: 50m
+        memory: 96Mi
+      requests:
+        cpu: 5m
+        memory: 48Mi
   secret-stores:
     - name: doppler-secret-store
       kind: ClusterSecretStore

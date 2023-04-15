@@ -5,3 +5,10 @@ external-dns:
     proxied: false
   extraArgs:
     cloudflare-dns-records-per-page: "5000"
+  resources:
+    limits:
+      cpu: 50m
+      memory: 48Mi
+    requests:
+      cpu: 5m
+      memory: 24Mi
