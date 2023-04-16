@@ -25,8 +25,8 @@ inputs = {
 
   worker_config = {
     startup              = "order=3"
-    cores                = 4
-    memory               = 24576
+    cores                = 6
+    memory               = 32768
     boot_partition_size  = "32G"
     extra_partition_size = "128G"
     ip                   = ["192.168.5.2", "192.168.5.3"]

@@ -45,8 +45,10 @@ spec:
               subPath: downloads/complete/tv
           resources:
             requests:
-              memory: 1000Mi
-              cpu: 500m
+              memory: 8000Mi
+              cpu: 4000m
+            limits:
+              cpu: 4000m
       volumes:
         - name: pv-config
           persistentVolumeClaim:
