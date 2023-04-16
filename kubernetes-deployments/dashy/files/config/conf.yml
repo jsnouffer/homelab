@@ -116,3 +116,6 @@ sections:
       - title: SABnzbd
         icon: hl-sabnzbd
         url: https://sabnzbd.jsnouff.net/
+      - title: Sonarr
+        icon: hl-sonarr
+        url: https://sonarr.jsnouff.net/
