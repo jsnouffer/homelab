@@ -29,6 +29,8 @@ kind: CronJob
 metadata:
   name: restic-prune
 spec:
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
   concurrencyPolicy: Forbid
   schedule: {{ .prune.schedule | quote }}
   jobTemplate:
@@ -54,6 +56,8 @@ kind: CronJob
 metadata:
   name: restic-backup
 spec:
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
   concurrencyPolicy: Forbid
   schedule: {{ .cron.schedule | quote }}
   jobTemplate:
