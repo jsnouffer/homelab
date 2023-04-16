@@ -24,6 +24,10 @@ democratic-csi:
       - noatime
       - nfsvers=4
 
+  volumeSnapshotClasses:
+    - name: truenas-nfs-csi
+    - name: truenas-nfs-csi-retain
+
   driver:
     existingConfigSecret: democratic-csi-driver-config
     config:
@@ -34,10 +38,10 @@ democratic-csi:
       resources:
         limits:
           cpu: 25m
-          memory: 32Mi
+          memory: 64Mi
         requests:
           cpu: 5m
-          memory: 16Mi
+          memory: 24Mi
     externalResizer:
       resources:
         limits:
@@ -50,7 +54,7 @@ democratic-csi:
       resources:
         limits:
           cpu: 25m
-          memory: 32Mi
+          memory: 64Mi
         requests:
           cpu: 5m
           memory: 16Mi
@@ -58,7 +62,7 @@ democratic-csi:
       resources:
         limits:
           cpu: 50m
-          memory: 128Mi
+          memory: 192Mi
         requests:
           cpu: 15m
           memory: 64Mi
