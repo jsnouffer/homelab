@@ -38,3 +38,17 @@ chartmuseum:
             value: https://chartmuseum.jsnouff.net
           - name: PATH_BASE
             value: "/"
+        resources:
+          limits:
+            cpu: 50m
+            memory: 64Mi
+          requests:
+            cpu: 5m
+            memory: 32Mi
+  resources:
+    limits:
+      cpu: 50m
+      memory: 64Mi
+    requests:
+      cpu: 5m
+      memory: 32Mi

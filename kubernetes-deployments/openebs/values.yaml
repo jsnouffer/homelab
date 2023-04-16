@@ -4,18 +4,18 @@ cstor:
     resources:
       limits:
         cpu: 50m
-        memory: 32Mi
+        memory: 64Mi
       requests:
         cpu: 5m
-        memory: 16Mi
+        memory: 24Mi
   cvcOperator:
     resources:
       limits:
         cpu: 50m
-        memory: 32Mi
+        memory: 64Mi
       requests:
         cpu: 5m
-        memory: 16Mi
+        memory: 24Mi
   admissionServer:
     resources:
       limits:
