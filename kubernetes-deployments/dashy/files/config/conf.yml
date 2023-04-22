@@ -80,6 +80,9 @@ sections:
       - title: NordVPN
         icon: https://nas.jsnouff.net:9000/icons/nordvpn.png
         url: https://my.nordaccount.com/dashboard/
+      - title: NZBgeek
+        icon: https://nzbgeek.info/favicon.ico
+        url: https://nzbgeek.info/
       - title: Plex Token
         icon: hl-plex
         url: https://www.plex.tv/claim/
@@ -107,6 +110,9 @@ sections:
       - title: Ombi
         icon: hl-ombi
         url: https://ombi.jsnouff.net/
+      - title: Prowlarr
+        icon: hl-prowlarr
+        url: https://prowlarr.jsnouff.net/
       - title: qBittorrent
         icon: hl-qbittorrent
         url: https://qbittorrent.jsnouff.net/
