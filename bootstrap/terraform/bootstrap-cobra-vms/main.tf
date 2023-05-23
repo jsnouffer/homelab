@@ -20,10 +20,10 @@ resource "proxmox_virtual_environment_pool" "cluster_pool" {
   comment  = "Managed by Terraform"
 }
 
-resource "proxmox_vm_qemu" "cp_vms" {
+resource "proxmox_vm_qemu" "vms" {
   provider    = proxmox-telmate
-  count       = length(var.cp_config.ip)
-  name        = "${var.cluster_name}-cp${count.index + 1}"
+  for_each    = var.node_configs
+  name        = each.key
   pool        = proxmox_virtual_environment_pool.cluster_pool.id
   target_node = var.proxmox_config.target_node
 
@@ -33,11 +33,11 @@ resource "proxmox_vm_qemu" "cp_vms" {
   onboot   = true
   oncreate = true
   agent    = 1
-  startup  = var.cp_config.startup
-  cores    = var.cp_config.cores
-  memory   = var.cp_config.memory
+  startup  = each.value.startup
+  cores    = each.value.cores
+  memory   = each.value.memory
   numa     = true
-  hotplug  = "network,disk,usb,cpu,memory"
+  hotplug  = "network,disk,usb"
 
   network {
     model     = "virtio"
@@ -46,62 +46,16 @@ resource "proxmox_vm_qemu" "cp_vms" {
     link_down = false
   }
 
-  disk {
-    type    = "scsi"
-    storage = var.proxmox_config.storage_pool
-    size    = var.cp_config.boot_partition_size
-  }
-
-  disk {
-    type    = "scsi"
-    storage = var.proxmox_config.storage_pool
-    size    = var.cp_config.extra_partition_size
+  dynamic "disk" {
+    for_each = each.value.disks
+    content {
+      type    = disk.value["type"]
+      storage = var.proxmox_config.storage_pool
+      size    = disk.value["size"]
+    }
   }
 
   cloudinit_cdrom_storage = "local-lvm"
   sshkeys                 = var.ssh_key
-  ipconfig0               = "ip=${var.cp_config.ip[count.index]}/16,gw=${var.gateway}"
-}
-
-resource "proxmox_vm_qemu" "worker_vms" {
-  provider    = proxmox-telmate
-  count       = length(var.worker_config.ip)
-  name        = "${var.cluster_name}-w${count.index + 1}"
-  pool        = proxmox_virtual_environment_pool.cluster_pool.id
-  target_node = var.proxmox_config.target_node
-
-  clone      = var.vm_template_name
-  full_clone = true
-
-  onboot   = true
-  oncreate = true
-  agent    = 1
-  startup  = var.worker_config.startup
-  cores    = var.worker_config.cores
-  memory   = var.worker_config.memory
-  numa     = true
-  hotplug  = "network,disk,usb,cpu,memory"
-
-  network {
-    model     = "virtio"
-    bridge    = var.proxmox_config.bridge_interface
-    firewall  = true
-    link_down = false
-  }
-
-  disk {
-    type    = "scsi"
-    storage = var.proxmox_config.storage_pool
-    size    = var.worker_config.boot_partition_size
-  }
-
-  disk {
-    type    = "scsi"
-    storage = var.proxmox_config.storage_pool
-    size    = var.worker_config.extra_partition_size
-  }
-
-  cloudinit_cdrom_storage = "local-lvm"
-  sshkeys                 = var.ssh_key
-  ipconfig0               = "ip=${var.worker_config.ip[count.index]}/16,gw=${var.gateway}"
+  ipconfig0               = "ip=${each.value.ip}/16,gw=${var.gateway}"
 }

@@ -30,24 +30,15 @@ variable "gateway" {
   type = string
 }
 
-variable "cp_config" {
-  type = object({
+variable "node_configs" {
+  type = map(object({
     startup              = string
     cores                = number
     memory               = number
-    boot_partition_size  = string
-    extra_partition_size = string
-    ip                   = list(string)
-  })
-}
-
-variable "worker_config" {
-  type = object({
-    startup              = string
-    cores                = number
-    memory               = number
-    boot_partition_size  = string
-    extra_partition_size = string
-    ip                   = list(string)
-  })
+    ip                   = string
+    disks = list(object({
+      type = string
+      size = string
+    }))
+  }))
 }
