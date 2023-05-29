@@ -40,5 +40,6 @@ variable "node_configs" {
       type = string
       size = string
     }))
+    usb = list(string)
   }))
 }

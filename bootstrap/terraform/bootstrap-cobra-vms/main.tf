@@ -55,6 +55,14 @@ resource "proxmox_vm_qemu" "vms" {
     }
   }
 
+  dynamic "usb" {
+    for_each = each.value.usb
+    content {
+      host = usb.value
+      usb3 = false
+    }
+  }
+
   cloudinit_cdrom_storage = "local-lvm"
   sshkeys                 = var.ssh_key
   ipconfig0               = "ip=${each.value.ip}/16,gw=${var.gateway}"

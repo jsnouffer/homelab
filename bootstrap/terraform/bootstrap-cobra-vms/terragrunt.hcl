@@ -4,7 +4,7 @@ inputs = {
 
   proxmox_config = {
     api_url          = "https://pve1man.jsnouff.net"
-    api_user         = "terraform@pam"
+    api_user         = "root@pam"
     target_node      = "pve1"
     bridge_interface = "vmbr0"
     storage_pool     = "local-lvm"
@@ -15,10 +15,10 @@ inputs = {
   gateway          = "192.168.1.1"
 
   node_configs = {
-    "cobra-cp1" = {
+    "cobra-cp" = {
       startup = "order=2,up=30"
-      cores   = 2
-      memory  = 12288
+      cores   = 1
+      memory  = 8192
       ip      = "192.168.5.1"
 
       disks = [
@@ -31,11 +31,13 @@ inputs = {
           size = "128G"
         }
       ]
+
+      usb = []
     },
-    "cobra-w1" = {
+    "cobra-worker" = {
       startup = "order=3"
-      cores   = 6
-      memory  = 32768
+      cores   = 4
+      memory  = 24576
       ip      = "192.168.5.2"
 
       disks = [
@@ -48,11 +50,13 @@ inputs = {
           size = "128G"
         }
       ]
+
+      usb = []
     },
-    "cobra-w2" = {
+    "cobra-plex" = {
       startup = "order=3"
-      cores   = 6
-      memory  = 32768
+      cores   = 12
+      memory  = 65536
       ip      = "192.168.5.3"
 
       disks = [
@@ -65,6 +69,8 @@ inputs = {
           size = "128G"
         }
       ]
+
+      usb = ["174c:55aa"]
     }
   }
 
