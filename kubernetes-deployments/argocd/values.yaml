@@ -114,9 +114,9 @@ argocd-apps:
           - CreateNamespace=true
           - RespectIgnoreDifferences=true
           - PruneLast=true
-          automated:
-            prune: false
-            selfHeal: true
+          # automated:
+          #   prune: false
+          #   selfHeal: true
         ignoreDifferences: []
     syncPolicy:
       preserveResourcesOnDeletion: true
