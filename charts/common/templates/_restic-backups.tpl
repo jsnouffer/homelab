@@ -64,7 +64,12 @@ spec:
     spec:
       template:
         spec:
-          affinity: {{ toYaml .affinity | nindent 12 }}
+          {{- with .affinity }}
+          affinity: {{ toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .tolerations }}
+          tolerations: {{ toYaml . | nindent 12 }}
+          {{- end }}
           containers:
           - name: restic
             image: {{ .image }}
@@ -126,7 +131,12 @@ metadata:
 spec:
   template:
     spec:
-      affinity: {{ toYaml .affinity | nindent 12 }}
+      {{- with .affinity }}
+      affinity: {{ toYaml . | nindent 12 }}
+      {{- end }}
+      {{- with .tolerations }}
+      tolerations: {{ toYaml . | nindent 12 }}
+      {{- end }}
       containers:
       - image: {{ .image }}
         imagePullPolicy: IfNotPresent

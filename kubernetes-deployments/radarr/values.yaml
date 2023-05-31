@@ -5,7 +5,8 @@ pvcName: radarr-pvc
 common:
   resticBackups:
     enabled: true
-    restore: false
+    restore:
+      enabled: false
     pvcName: radarr-pvc
     env:
       - name: RESTIC_REPOSITORY
@@ -38,3 +39,7 @@ common:
               values:
               - radarr
           topologyKey: kubernetes.io/hostname
+    tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/plex
+        operator: Exists

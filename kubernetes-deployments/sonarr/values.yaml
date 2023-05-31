@@ -5,7 +5,8 @@ pvcName: sonarr-pvc
 common:
   resticBackups:
     enabled: true
-    restore: false
+    restore:
+      enabled: false
     pvcName: sonarr-pvc
     env:
       - name: RESTIC_REPOSITORY
@@ -38,3 +39,7 @@ common:
               values:
               - sonarr
           topologyKey: kubernetes.io/hostname
+    tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/plex
+        operator: Exists

@@ -5,7 +5,8 @@ pvcName: prowlarr-pvc
 common:
   resticBackups:
     enabled: true
-    restore: false
+    restore:
+      enabled: false
     pvcName: prowlarr-pvc
     env:
       - name: RESTIC_REPOSITORY

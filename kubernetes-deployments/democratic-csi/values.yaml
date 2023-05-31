@@ -67,6 +67,10 @@ democratic-csi:
           cpu: 15m
           memory: 64Mi
   node:
+    tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/plex
+        operator: Exists
     driver:
       resources:
         limits:

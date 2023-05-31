@@ -4,6 +4,6 @@ version: 1.0.0
 appVersion: 4.3.2
 dependencies:
   - name: common
-    version: "^0"
+    version: "0.0.4"
     repository: https://chartmuseum.jsnouff.net
     condition: radarr.enabled

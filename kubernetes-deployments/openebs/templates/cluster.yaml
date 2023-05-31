@@ -5,19 +5,23 @@ metadata:
   name: cstor-storage
   namespace: openebs
 spec:
+  tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/plex
+      operator: Exists
   pools:
     - nodeSelector:
-        topology.cstor.openebs.io/nodeName: cobra-w1
+        topology.cstor.openebs.io/nodeName: cobra-worker
       dataRaidGroups:
       - blockDevices:
-          - blockDeviceName: blockdevice-3f6332d0ecd0c0fbf13b15f843b87648
+          - blockDeviceName: blockdevice-e957294c41e01bf215583b94dc55cfa7
       poolConfig:
         dataRaidGroupType: "stripe"
 
     - nodeSelector:
-        topology.cstor.openebs.io/nodeName: cobra-w2
+        topology.cstor.openebs.io/nodeName: cobra-plex
       dataRaidGroups:
         - blockDevices:
-            - blockDeviceName: blockdevice-4ba0dcc7f3ec5c8978b3656ddb399ca1
+            - blockDeviceName: blockdevice-4e62da9d883303a8bc1b0babebe079fc
       poolConfig:
         dataRaidGroupType: "stripe"
