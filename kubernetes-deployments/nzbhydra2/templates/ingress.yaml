@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nzbhydra2
+  annotations:
+    cert-manager.io/cluster-issuer: lets-encrypt-production
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+    kubernetes.io/ingress.class: contour
+    kubernetes.io/tls-acme: "true"
+spec:
+  rules:
+  - host: nzbhydra2.jsnouff.net
+    http:
+      paths:
+      - backend:
+          service:
+            name: nzbhydra2
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+  tls:
+    - hosts:
+        - nzbhydra2.jsnouff.net
+      secretName: tls-secret

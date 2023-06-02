@@ -100,6 +100,9 @@ sections:
   - name: Cobra Media
     icon: fas fa-camera-movie
     items:
+      - title: NZBHydra2
+        icon: hl-nzbhydra2
+        url: https://nzbhydra2.jsnouff.net/
       - title: Plex
         icon: hl-plex
         url: https://plex.jsnouff.net/

@@ -1,0 +1,41 @@
+nzbhydra2:
+  enabled: true
+pvcName: nzbhydra2-pvc
+
+common:
+  resticBackups:
+    enabled: true
+    restore:
+      enabled: false
+    pvcName: nzbhydra2-pvc
+    env:
+      - name: RESTIC_REPOSITORY
+        value: "b2:jsnouff-nzbhydra2"
+      - name: RESTIC_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: backblaze-credentials
+            key: resticKey
+            optional: false
+      - name: B2_ACCOUNT_ID
+        valueFrom:
+          secretKeyRef:
+            name: backblaze-credentials
+            key: keyID
+            optional: false
+      - name: B2_ACCOUNT_KEY
+        valueFrom:
+          secretKeyRef:
+            name: backblaze-credentials
+            key: applicationKey
+            optional: false
+    affinity:
+      podAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+            - key: app.kubernetes.io/name
+              operator: In
+              values:
+              - nzbhydra2
+          topologyKey: kubernetes.io/hostname

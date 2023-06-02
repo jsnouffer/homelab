@@ -1,0 +1,9 @@
+apiVersion: v2
+name: nzbhydra2
+version: 1.0.0
+appVersion: 5.1.8
+dependencies:
+  - name: common
+    version: "0.0.4"
+    repository: https://chartmuseum.jsnouff.net
+    condition: nzbhydra2.enabled

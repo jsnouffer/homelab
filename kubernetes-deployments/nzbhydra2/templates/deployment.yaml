@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nzbhydra2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: nzbhydra2
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: nzbhydra2
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/config-secret.yaml") . | sha256sum }}
+    spec:
+      initContainers:
+        - name: copy-configs
+          image: busybox:latest
+          command:
+            - sh
+            - -c
+            - |
+              cp /cm/nzbhydra.yml /pv
+          volumeMounts:
+            - name: config
+              mountPath: /cm/nzbhydra.yml
+              subPath: nzbhydra.yml
+            - name: pv-config
+              mountPath: /pv
+      containers:
+        - name: nzbhydra2
+          image: linuxserver/nzbhydra2:{{ $.Chart.AppVersion }}
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: TZ
+              value: America/New_York
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+          ports:
+            - name: http
+              containerPort: 5076
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 3
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 5076
+            timeoutSeconds: 1
+          readinessProbe:
+            failureThreshold: 3
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 5076
+            timeoutSeconds: 1
+          startupProbe:
+            failureThreshold: 30
+            periodSeconds: 5
+            successThreshold: 1
+            tcpSocket:
+              port: 5076
+            timeoutSeconds: 1
+          volumeMounts:
+            - name: pv-config
+              mountPath: /config
+      volumes:
+        - name: config
+          secret:
+            secretName: nzbhydra2-config-secret
+        - name: pv-config
+          persistentVolumeClaim:
+            claimName: {{ $.Values.pvcName }}
