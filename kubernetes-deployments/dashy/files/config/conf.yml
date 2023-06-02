@@ -61,10 +61,6 @@ sections:
         description: hosted on TrueNas
         icon: hl-minio
         url: https://nas.jsnouff.net:9001/
-      # - title: D-Link
-      #   description: D-Link DNS-321 (legacy Samba server)
-      #   icon: https://nas.jsnouff.net:9000/icons/dlink.png
-      #   url: http://dlink.jsnouff.net
   - name: Cloud Services
     icon: fas fa-cloud
     items:
@@ -113,9 +109,6 @@ sections:
       - title: Prowlarr
         icon: hl-prowlarr
         url: https://prowlarr.jsnouff.net/
-      - title: qBittorrent
-        icon: hl-qbittorrent
-        url: https://qbittorrent.jsnouff.net/
       - title: Radarr
         icon: hl-radarr
         url: https://radarr.jsnouff.net/
