@@ -4,7 +4,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ $.Values.pvcName }}
 spec:
-  storageClassName: cstor-csi
+  storageClassName: ceph-block
   accessModes:
     - ReadWriteOnce
   resources:

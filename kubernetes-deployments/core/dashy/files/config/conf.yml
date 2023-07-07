@@ -91,6 +91,9 @@ sections:
       - title: Argo CD
         icon: hl-argocd
         url: https://argocd.jsnouff.net/
+      - title: Ceph
+        icon: hl-ceph
+        url: https://ceph.jsnouff.net/
       - title: ChartMuseum
         icon: https://github.com/helm/chartmuseum/raw/main/logo.png
         url: https://chartmuseum-ui.jsnouff.net/charts

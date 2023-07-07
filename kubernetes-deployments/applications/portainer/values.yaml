@@ -18,4 +18,4 @@ portainer:
   persistence:
     enabled: true
     size: "10Gi"
-    storageClass: cstor-csi
+    storageClass: ceph-block
