@@ -34,43 +34,43 @@ inputs = {
 
       usb = []
     },
-    "cobra-worker" = {
+    "cobra-w1" = {
       startup = "order=3"
-      cores   = 4
-      memory  = 24576
+      cores   = 6
+      memory  = 32768
       ip      = "192.168.5.2"
 
       disks = [
         {
           type = "scsi"
-          size = "32G"
+          size = "75G"
         },
         {
           type = "scsi"
-          size = "128G"
+          size = "500G"
         }
       ]
 
       usb = []
     },
-    "cobra-plex" = {
+    "cobra-w2" = {
       startup = "order=3"
-      cores   = 12
-      memory  = 65536
+      cores   = 6
+      memory  = 32768
       ip      = "192.168.5.3"
 
       disks = [
         {
           type = "scsi"
-          size = "32G"
+          size = "75G"
         },
         {
           type = "scsi"
-          size = "128G"
+          size = "500G"
         }
       ]
 
-      usb = ["174c:55aa"]
+      usb = []
     }
   }
 

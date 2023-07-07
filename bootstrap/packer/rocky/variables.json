@@ -1,15 +1,15 @@
 {
   "proxmox_config": {
     "api_url": "https://pve1man.jsnouff.net/api2/json",
-    "username": "terraform@pam",
+    "username": "root@pam",
     "target_node": "pve1",
     "bridge_interface": "vmbr0",
     "storage_pool": "local-lvm"
   },
   "iso_config": {
-    "iso_file": "local:iso/Rocky-9.1-x86_64-dvd.iso",
-    "iso_url": "https://download.rockylinux.org/pub/rocky/9/isos/x86_64/Rocky-9.1-x86_64-dvd.iso",
-    "iso_checksum": "cdc5fca4bd1d5c8eb836acf1edcd4bb3326d36447a491b8419bb51c3e4434a5b7e6c871de37ba8104a99531fe70443a7ec890b41cb6f4021886e34ce9e14ee6d",
+    "iso_file": "local:iso/Rocky-9.2-x86_64-dvd.iso",
+    "iso_url": "https://download.rockylinux.org/pub/rocky/9/isos/x86_64/Rocky-9.2-x86_64-dvd.iso",
+    "iso_checksum": "cd43bb2671472471b1fc0a7a30113dfc9a56831516c46f4dbd12fb43bb4286d2",
     "iso_storage_pool": "local"
   },
   "boot_disk_config": {
