@@ -1,0 +1,26 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bitwarden
+  annotations:
+    cert-manager.io/cluster-issuer: lets-encrypt-production
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+    kubernetes.io/ingress.class: contour
+    kubernetes.io/tls-acme: "true"
+spec:
+  rules:
+  - host: bitwarden.jsnouff.net
+    http:
+      paths:
+      - backend:
+          service:
+            name: bitwarden
+            port:
+              name: http
+        path: "/"
+        pathType: Prefix
+  tls:
+    - hosts:
+        - bitwarden.jsnouff.net
+      secretName: tls-secret

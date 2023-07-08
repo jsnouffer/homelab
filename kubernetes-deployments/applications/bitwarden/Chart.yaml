@@ -1,0 +1,4 @@
+apiVersion: v2
+name: bitwarden
+version: "1.0"
+

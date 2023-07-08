@@ -91,6 +91,9 @@ sections:
       - title: Argo CD
         icon: hl-argocd
         url: https://argocd.jsnouff.net/
+      - title: Bitwarden
+        icon: hl-bitwarden
+        url: https://bitwarden.jsnouff.net/
       - title: Ceph
         icon: hl-ceph
         url: https://ceph.jsnouff.net/
@@ -100,6 +103,9 @@ sections:
       - title: Portainer
         icon: hl-portainer
         url: https://portainer.jsnouff.net/
+      - title: Vaultwarden Admin
+        icon: hl-vaultwarden
+        url: https://bitwarden.jsnouff.net/admin
   - name: Cobra Media
     icon: fas fa-camera-movie
     items:
