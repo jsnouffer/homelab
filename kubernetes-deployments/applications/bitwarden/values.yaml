@@ -41,5 +41,5 @@ common:
             - key: app.kubernetes.io/name
               operator: In
               values:
-              - ombi
+              - bitwarden
           topologyKey: kubernetes.io/hostname

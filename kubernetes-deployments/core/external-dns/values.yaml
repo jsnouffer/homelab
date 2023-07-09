@@ -1,10 +1,13 @@
 external-dns:
   provider: cloudflare
-  cloudflare:
-    secretName: cloudflare-api-token
-    proxied: false
+  env:
+    - name: CF_API_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: cloudflare-api-token
+          key: cloudflare_api_token
   extraArgs:
-    cloudflare-dns-records-per-page: "5000"
+    - --cloudflare-dns-records-per-page=5000
   resources:
     limits:
       cpu: 50m

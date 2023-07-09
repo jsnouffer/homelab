@@ -1,24 +1,30 @@
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: IngressRoute
+apiVersion: networking.k8s.io/v1
+kind: Ingress
 metadata:
-  labels:
-    app.kubernetes.io/name: traefik
   name: traefik-dashboard
-  namespace: traefik
+  annotations:
+    cert-manager.io/cluster-issuer: lets-encrypt-production
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+    ingress.kubernetes.io/protocol: http
+    kubernetes.io/ingress.class: traefik
+    kubernetes.io/tls-acme: "true"
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
+    traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+    traefik.ingress.kubernetes.io/router.tls: "true"
 spec:
-  entryPoints:
-  - websecure
-  routes:
-  - kind: Rule
-    match: Host(`traefik.jsnouff.net`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
-    services:
-    - kind: TraefikService
-      name: api@internal
-    middlewares:
-    - name: default-security
-      namespace: traefik
-  # tls:
-  #   options:
-  #     name: default-tls
-  #     namespace: traefik
+  rules:
+  - host: traefik.jsnouff.net
+    http:
+      paths:
+      - backend:
+          service:
+            name: traefik-dashboard
+            port:
+              number: 9000
+        path: /
+        pathType: Prefix
+  tls:
+    - hosts:
+        - traefik.jsnouff.net
+      secretName: tls-secret

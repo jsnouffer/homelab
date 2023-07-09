@@ -64,6 +64,9 @@ sections:
   - name: Cloud Services
     icon: fas fa-cloud
     items:
+      - title: APC SmartConnect
+        icon: hl-apc
+        url: https://smartconnect.apc.com/dashboard
       - title: Backblaze
         icon: hl-backblaze
         url: https://secure.backblaze.com/b2_buckets.htm
@@ -103,6 +106,9 @@ sections:
       - title: Portainer
         icon: hl-portainer
         url: https://portainer.jsnouff.net/
+      - title: Traefik
+        icon: hl-traefik
+        url: https://traefik.jsnouff.net/dashboard
       - title: Vaultwarden Admin
         icon: hl-vaultwarden
         url: https://bitwarden.jsnouff.net/admin
