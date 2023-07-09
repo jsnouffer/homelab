@@ -1,0 +1,24 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: default-security
+spec:
+  chain:
+    middlewares:
+      - name: https-redirectscheme
+      - name: default-security-headers
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: default-security-external
+spec:
+  chain:
+    middlewares:
+      - name: https-redirectscheme
+      - name: default-rate-limit
+      - name: default-inflight-request-limit
+      - name: default-security-headers
+      - name: default-retry
+      - name: default-latency-check

@@ -1,0 +1,32 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: default-security-headers
+spec:
+  headers:
+    stsSeconds: 63072000
+    accessControlAllowMethods:
+      - GET
+      - POST
+      - PUT
+      - OPTIONS
+    accessControlMaxAge: 100
+    addVaryHeader: true
+    browserXssFilter: true
+    contentTypeNosniff: true
+    customFrameOptionsValue: SAMEORIGIN
+    forceSTSHeader: true
+    frameDeny: true
+    referrerPolicy: same-origin
+    sslRedirect: true
+    stsIncludeSubdomains: true
+    stsPreload: true
+    contentSecurityPolicy: |
+      default-src 'none'; form-action 'none'; frame-ancestors 'none'; base-uri 'none'
+    hostsProxyHeaders:
+      - "X-Forwarded-Host"
+    permissionsPolicy: "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+    customResponseHeaders:
+      X-Robots-Tag: "none,noarchive,nosnippet,notranslate,noimageindex," # disable search engines from indexing home server
+      server: "" # hide server info from visitors

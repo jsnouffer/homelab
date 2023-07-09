@@ -5,8 +5,13 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: lets-encrypt-production
     ingress.kubernetes.io/force-ssl-redirect: "true"
-    kubernetes.io/ingress.class: contour
+    ingress.kubernetes.io/protocol: http
+    kubernetes.io/ingress.class: traefik
     kubernetes.io/tls-acme: "true"
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security-external@kubernetescrd
+    traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+    traefik.ingress.kubernetes.io/router.tls: "true"
 spec:
   rules:
   - host: prowlarr.jsnouff.net

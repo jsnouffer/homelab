@@ -1,0 +1,9 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: default-retry
+spec:
+  retry:
+    attempts: 4
+    initialInterval: 100ms
