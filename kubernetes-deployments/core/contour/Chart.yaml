@@ -1,8 +1,0 @@
-apiVersion: v2
-name: contour
-version: 1.0.0
-dependencies:
-  - name: contour
-    version: 11.1.1
-    repository: https://charts.bitnami.com/bitnami
-    condition: contour.enabled
