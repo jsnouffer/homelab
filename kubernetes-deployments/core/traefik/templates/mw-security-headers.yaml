@@ -22,8 +22,6 @@ spec:
     sslRedirect: true
     stsIncludeSubdomains: true
     stsPreload: true
-    contentSecurityPolicy: |
-      default-src 'none'; form-action 'none'; frame-ancestors 'none'; base-uri 'none'
     hostsProxyHeaders:
       - "X-Forwarded-Host"
     permissionsPolicy: "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
