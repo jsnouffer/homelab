@@ -43,6 +43,7 @@ spec:
             args:
               - forget
               - --keep-last={{ .prune.keepLast }}
+              - --keep-daily={{ .prune.keepDaily }}
               - --keep-weekly={{ .prune.keepWeekly }}
               - --keep-monthly={{ .prune.keepMonthly }}
               - --prune
