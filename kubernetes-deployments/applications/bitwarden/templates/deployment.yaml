@@ -24,9 +24,9 @@ spec:
               protocol: TCP
           env:
             - name: INVITATIONS_ALLOWED
-              value: "true"
+              value: "false"
             - name: SIGNUPS_ALLOWED
-              value: "true"
+              value: "false"
             - name: SHOW_PASSWORD_HINT
               value: "false"
             - name: ADMIN_TOKEN
