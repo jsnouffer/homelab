@@ -36,6 +36,10 @@ sections:
         description: Dell Poweredge R710
         icon: hl-idrac
         url: https://idrac.jsnouff.net
+      - title: APCUPSD
+        description: APCUPSD UPS Network Monitor
+        icon: hl-apc
+        url: http://pve1.jsnouff.local:8080/cgi-bin/apcupsd/multimon.cgi
   - name: Networking
     icon: fas fa-network-wired
     items:
