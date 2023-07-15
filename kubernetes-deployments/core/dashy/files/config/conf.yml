@@ -107,6 +107,9 @@ sections:
       - title: ChartMuseum
         icon: https://github.com/helm/chartmuseum/raw/main/logo.png
         url: https://chartmuseum-ui.jsnouff.net/charts
+      - title: Immich
+        icon: hl-immich
+        url: https://immich.jsnouff.net/
       - title: Portainer
         icon: hl-portainer
         url: https://portainer.jsnouff.net/

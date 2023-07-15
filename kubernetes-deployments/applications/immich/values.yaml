@@ -1,0 +1,76 @@
+immich:
+  enabled: true
+
+  env:
+    DB_USERNAME: immich
+    DB_PASSWORD:
+      valueFrom:
+        secretKeyRef:
+          name: immich-db-credentials
+          key: password
+
+  immich:
+    persistence:
+      library:
+        existingClaim: immich-library
+  server:
+    global:
+      fullnameOverride: immich-server
+  microservices:
+    global:
+      fullnameOverride: immich-microservices
+  machine-learning:
+    global:
+      fullnameOverride: immich-machine-learning
+  web:
+    global:
+      fullnameOverride: immich-web
+  proxy:
+    global:
+      fullnameOverride: immich-proxy
+    # persistence:
+    #   library:
+    #     enabled: true
+
+    ingress:
+      main:
+        enabled: true
+        annotations:
+          cert-manager.io/cluster-issuer: lets-encrypt-production
+          ingress.kubernetes.io/force-ssl-redirect: "true"
+          ingress.kubernetes.io/protocol: http
+          kubernetes.io/ingress.class: traefik
+          kubernetes.io/tls-acme: "true"
+          traefik.ingress.kubernetes.io/router.entrypoints: websecure
+          traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
+          traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+          traefik.ingress.kubernetes.io/router.tls: "true"
+        hosts:
+          - host: immich.jsnouff.net
+            paths:
+              - path: "/"
+        tls:
+          - hosts:
+              - immich.jsnouff.net
+            secretName: tls-secret
+  postgresql:
+    enabled: true
+    global:
+      postgresql:
+        auth:
+          existingSecret: immich-db-credentials
+          secretKeys:
+            adminPasswordKey: password
+            userPasswordKey: password
+            replicationPasswordKey: password
+          username: immich
+          database: immich
+
+  redis:
+    enabled: true
+
+  typesense:
+    enabled: true
+    persistence:
+      tsdata:
+        enabled: true
