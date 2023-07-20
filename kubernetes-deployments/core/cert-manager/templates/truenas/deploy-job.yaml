@@ -37,7 +37,7 @@ spec:
       restartPolicy: Never
       containers:
         {{- range .Values.truenas }}
-        - name: deploy-cert
+        - name: deploy-{{ .name }}-cert
           image: elixircloud/foca
           command: ["/script/deploy_truenas.py"]
           args:
