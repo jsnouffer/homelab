@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: deploy-freenas-script
+  name: deploy-truenas-script
 data:
-  deploy_freenas.py: |
-{{ .Files.Get "files/deploy_freenas.py" | indent 4 }}
+  deploy_truenas.py: |
+{{ .Files.Get "files/deploy_truenas.py" | indent 4 }}

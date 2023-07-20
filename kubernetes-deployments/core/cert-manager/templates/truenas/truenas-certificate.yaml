@@ -1,17 +1,18 @@
+{{- range .Values.truenas }}
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: truenas-le-certificate
+  name: truenas-{{ .name }}-le-certificate
 spec:
   dnsNames:
-    - {{ .Values.truenas.hostname }}
+    - {{ .hostname }}
   issuerRef:
     group: cert-manager.io
     kind: ClusterIssuer
     name: lets-encrypt-production
-  secretName: truenas-tls-secret
+  secretName: truenas-{{ .name }}-tls-secret
   usages:
     - digital signature
     - key encipherment
-
+{{- end }}

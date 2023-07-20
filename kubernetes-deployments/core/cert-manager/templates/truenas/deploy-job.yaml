@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: freenas-cert-job
+  name: truenas-cert-job
   annotations:
     argocd.argoproj.io/hook: PostSync
     argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
@@ -10,36 +10,58 @@ spec:
   backoffLimit: 1
   selector:
     matchLabels:
-      job-name: freenas-cert-job
+      job-name: truenas-cert-job
   suspend: false
   template:
     metadata:
       labels:
-        job-name: freenas-cert-job
+        job-name: truenas-cert-job
+{{- include "truenas.cert.job" . }}
+
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: truenas-cert-job
+spec:
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  schedule: "0 0 1 * *"
+  jobTemplate:
+    spec:
+      template:
+{{- include "truenas.cert.job" . | indent 4 }}
+
+{{- define "truenas.cert.job" }}
     spec:
       restartPolicy: Never
       containers:
+        {{- range .Values.truenas }}
         - name: deploy-cert
           image: elixircloud/foca
-          command: ["/script/deploy_freenas.py"]
+          command: ["/script/deploy_truenas.py"]
           args:
             - -c
             - /config/deploy_config
           volumeMounts:
-            - name: deploy-freenas-script
+            - name: deploy-truenas-script
               mountPath: /script
-            - name: freenas-cert-deploy-config
+            - name: truenas-{{ .name }}-cert-deploy-config
               mountPath: /config
-            - name: truenas-tls-secret
+            - name: truenas-{{ .name }}-tls-secret
               mountPath: /cert
+        {{- end }}
       volumes:
-        - name: deploy-freenas-script
+        - name: deploy-truenas-script
           configMap:
-            name: deploy-freenas-script
+            name: deploy-truenas-script
             defaultMode: 0777
-        - name: freenas-cert-deploy-config
+        {{- range .Values.truenas }}
+        - name: truenas-{{ .name }}-cert-deploy-config
           secret:
-            secretName: freenas-cert-deploy-config
-        - name: truenas-tls-secret
+            secretName: truenas-{{ .name }}-cert-deploy-config
+        - name: truenas-{{ .name }}-tls-secret
           secret:
-            secretName: truenas-tls-secret
+            secretName: truenas-{{ .name }}-tls-secret
+        {{- end }}
+{{- end -}}

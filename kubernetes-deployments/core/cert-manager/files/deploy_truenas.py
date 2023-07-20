@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
 """
-Import and activate a SSL/TLS certificate into FreeNAS 11.1 or later
-Uses the FreeNAS/TrueNAS API to make the change, so everything's properly saved in the config
+Import and activate a SSL/TLS certificate into TrueNAS
+Uses the TrueNAS API to make the change, so everything's properly saved in the config
 database and captured in a backup.
 
 Requires paths to the cert (including the any intermediate CA certs) and private key,
-and username, password, and FQDN of your FreeNAS system.
+and username, password, and FQDN of your TrueNAS system.
 
 The config file contains your root password or API key, so it should only be readable by
 root.  Your private key should also only be readable by root, so this script must run
@@ -27,7 +27,7 @@ from datetime import datetime, timedelta
 from urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 
-parser = argparse.ArgumentParser(description='Import and activate a SSL/TLS certificate into FreeNAS.')
+parser = argparse.ArgumentParser(description='Import and activate a SSL/TLS certificate into TrueNAS.')
 parser.add_argument('-c', '--config', default=(os.path.join(os.path.dirname(os.path.realpath(__file__)),
     'deploy_config')), help='Path to config file, defaults to deploy_config.')
 args = parser.parse_args()
@@ -47,7 +47,7 @@ USER = "root"
 PASSWORD = deploy.get('password')
 
 DOMAIN_NAME = deploy.get('cert_fqdn',socket.gethostname())
-FREENAS_ADDRESS = deploy.get('connect_host','localhost')
+TRUENAS_ADDRESS = deploy.get('connect_host','localhost')
 VERIFY = deploy.getboolean('verify',fallback=False)
 PRIVATEKEY_PATH = deploy.get('privkey_path',"/root/.acme.sh/" + DOMAIN_NAME + "/" + DOMAIN_NAME + ".key")
 FULLCHAIN_PATH = deploy.get('fullchain_path',"/root/.acme.sh/" + DOMAIN_NAME + "/fullchain.cer")
@@ -87,7 +87,7 @@ with open(FULLCHAIN_PATH, 'r') as file:
   full_chain = file.read()
 
 # Construct BASE_URL
-BASE_URL = PROTOCOL + FREENAS_ADDRESS + ':' + PORT
+BASE_URL = PROTOCOL + TRUENAS_ADDRESS + ':' + PORT
 
 # Update or create certificate
 r = session.post(
@@ -230,7 +230,7 @@ if cert_id in cert_ids_expired:
 if cert_id in cert_ids_same_san:
   cert_ids_same_san.remove(cert_id)
 
-# Delete expired and old certificates with same SAN from freenas
+# Delete expired and old certificates with same SAN from truenas
 for cid in (cert_ids_same_san | cert_ids_expired):
   r = session.delete(
     BASE_URL + '/api/v2.0/certificate/id/' + str(cid),
@@ -335,7 +335,7 @@ if UI_CERTIFICATE_ENABLED:
   )
   if r.status_code == 200:
     print ("Reloading WebUI successful")
-    print ("deploy_freenas.py executed successfully")
+    print ("deploy_truenas.py executed successfully")
     sys.exit(0)
   elif r.status_code != 405:
     print ("Error reloading WebUI!")
@@ -353,4 +353,4 @@ if UI_CERTIFICATE_ENABLED:
       sys.exit(1)
     except requests.exceptions.ConnectionError:
       print ("Reloading WebUI successful")
-      print ("deploy_freenas.py executed successfully")
+      print ("deploy_truenas.py executed successfully")
