@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: radarr-nfs-downloads
+spec:
+  capacity:
+    storage: 3000Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: radarr-nfs-downloads
+  mountOptions:
+    - hard
+    - nfsvers=4.1
+  nfs:
+    path: /mnt/sandbox/plex/downloads
+    server: barenas.jsnouff.net

@@ -67,9 +67,10 @@ spec:
           volumeMounts:
             - name: pv-config
               mountPath: /config
-            - name: plex-data
+            - name: plex-downloads
               mountPath: /downloads
-              subPath: downloads
+            - name: plex-completed
+              mountPath: /completed
       volumes:
         - name: config
           secret:
@@ -77,13 +78,9 @@ spec:
         - name: pv-config
           persistentVolumeClaim:
             claimName: {{ $.Values.sabnzbd.pvcName }}
-        - name: plex-data
-          hostPath:
-            path: /mnt/plex
-            type: DirectoryOrCreate
-      nodeSelector:
-        node-role.kubernetes.io/plex: "true"
-      tolerations:
-        - effect: NoSchedule
-          key: node-role.kubernetes.io/plex
-          operator: Exists
+        - name: plex-downloads
+          persistentVolumeClaim:
+            claimName: sabnzbd-nfs-downloads
+        - name: plex-completed
+          persistentVolumeClaim:
+            claimName: sabnzbd-nfs-completed

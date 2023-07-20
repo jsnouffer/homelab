@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: radarr-nfs-completed
+spec:
+  storageClassName: radarr-nfs-completed
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 250Gi
