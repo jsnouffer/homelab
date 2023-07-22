@@ -57,12 +57,16 @@ sections:
   - name: Storage
     icon: fas fa-hdd
     items:
-      - title: TrueNas
+      - title: TrueNas (Bare)
+        description: bare-metal server
+        icon: hl-truenas
+        url: https://barenas.jsnouff.net/
+      - title: TrueNas (VM)
         description: pve - pve1 - vm100
         icon: hl-truenas
         url: https://nas.jsnouff.net/
       - title: MinIO
-        description: hosted on TrueNas
+        description: hosted on TrueNas VM
         icon: hl-minio
         url: https://nas.jsnouff.net:9001/
   - name: Cloud Services
@@ -92,42 +96,46 @@ sections:
       - title: Tweaknews
         icon: https://nas.jsnouff.net:9000/icons/tweaknews.png
         url: https://www.tweaknews.eu/en/member
-  - name: Cobra Infrastucture
-    icon: fas fa-snake
+  - name: Kubernetes Infrastucture
+    icon: si-kubernetes
     items:
       - title: Argo CD
         icon: hl-argocd
         url: https://argocd.jsnouff.net/
-      - title: Bitwarden
-        icon: hl-bitwarden
-        url: https://bitwarden.jsnouff.net/
       - title: Ceph
         icon: hl-ceph
         url: https://ceph.jsnouff.net/
       - title: ChartMuseum
         icon: https://github.com/helm/chartmuseum/raw/main/logo.png
         url: https://chartmuseum-ui.jsnouff.net/charts
+      - title: Traefik
+        icon: hl-traefik
+        url: https://traefik.jsnouff.net/dashboard
+  - name: Applications
+    icon: fas fa-laptop
+    items:
+      - title: Bitwarden
+        icon: hl-bitwarden
+        url: https://bitwarden.jsnouff.net/
       - title: Immich
         icon: hl-immich
         url: https://immich.jsnouff.net/
       - title: Portainer
         icon: hl-portainer
         url: https://portainer.jsnouff.net/
-      - title: Traefik
-        icon: hl-traefik
-        url: https://traefik.jsnouff.net/dashboard
       - title: Vaultwarden Admin
         icon: hl-vaultwarden
         url: https://bitwarden.jsnouff.net/admin
-  - name: Cobra Media
+  - name: Media
     icon: fas fa-camera-movie
     items:
       - title: NZBHydra2
         icon: hl-nzbhydra2
         url: https://nzbhydra2.jsnouff.net/
       - title: Plex
+        description: hosted on TrueNas Bare-metal server
         icon: hl-plex
-        url: https://plex.jsnouff.net/
+        url: http://barenas.jsnouff.net:32400/
       - title: Ombi
         icon: hl-ombi
         url: https://ombi.jsnouff.net/

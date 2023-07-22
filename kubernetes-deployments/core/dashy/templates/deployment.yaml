@@ -17,7 +17,7 @@ spec:
       containers:
         - name: dashy
           image: lissy93/dashy:{{ $.Chart.AppVersion }}
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 80
