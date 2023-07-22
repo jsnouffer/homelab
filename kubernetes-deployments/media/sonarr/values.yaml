@@ -6,7 +6,7 @@ common:
   resticBackups:
     enabled: true
     restore:
-      enabled: false
+      enabled: true
     pvcName: sonarr-pvc
     env:
       - name: RESTIC_REPOSITORY
@@ -31,15 +31,13 @@ common:
             optional: false
     affinity:
       podAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-        - labelSelector:
-            matchExpressions:
-            - key: app.kubernetes.io/name
-              operator: In
-              values:
-              - sonarr
-          topologyKey: kubernetes.io/hostname
-    tolerations:
-      - effect: NoSchedule
-        key: node-role.kubernetes.io/plex
-        operator: Exists
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                - sonarr
+            topologyKey: kubernetes.io/hostname

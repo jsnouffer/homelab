@@ -3,6 +3,6 @@ Main entrypoint for the common library chart. It will render all underlying temp
 */}}
 {{- define "common.all" -}}
   {{- if .Values.common.resticBackups.enabled }}
-  {{- include "common.restic.backups" . }}
+  {{- include "common.restic.all" $ }}
   {{- end }}
 {{- end -}}

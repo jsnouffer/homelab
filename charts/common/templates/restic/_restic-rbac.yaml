@@ -1,0 +1,38 @@
+{{- define "common.restic.rbac" }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: restic-backups
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: restic-backups-role
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: restic-backups-rb
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: restic-backups-role
+subjects:
+  - kind: ServiceAccount
+    name: restic-backups
+    namespace: {{ $.Release.Namespace }}
+{{- end }}

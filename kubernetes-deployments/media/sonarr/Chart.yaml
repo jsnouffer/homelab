@@ -4,6 +4,6 @@ version: 1.0.0
 appVersion: 3.0.10
 dependencies:
   - name: common
-    version: "0.0.4"
+    version: "0.0.9"
     repository: https://chartmuseum.jsnouff.net
     condition: sonarr.enabled

@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sonarr-nfs-downloads
+spec:
+  storageClassName: sonarr-nfs-downloads
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 250Gi

@@ -4,14 +4,14 @@ resticBackups:
   init:
     enabled: true
   restore:
-    enabled: false
+    enabled: true
+    version: latest
   prune:
     enabled: true
     schedule: "0 0 * * 0" # At 00:00 on Sunday
-    keepLast: 10
-    keepDaily: 5
+    keepDaily: 14
     keepWeekly: 4
-    keepMonthly: 12
+    keepMonthly: 6
   cron:
     enabled: true
     schedule: "0 */12 * * *" # Every 12 hours

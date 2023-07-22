@@ -6,7 +6,7 @@ common:
   resticBackups:
     enabled: true
     restore:
-      enabled: false
+      enabled: true
     pvcName: ombi-pvc
     env:
       - name: RESTIC_REPOSITORY
@@ -31,11 +31,13 @@ common:
             optional: false
     affinity:
       podAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-        - labelSelector:
-            matchExpressions:
-            - key: app.kubernetes.io/name
-              operator: In
-              values:
-              - ombi
-          topologyKey: kubernetes.io/hostname
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                - ombi
+            topologyKey: kubernetes.io/hostname
