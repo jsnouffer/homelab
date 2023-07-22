@@ -1,9 +1,0 @@
-apiVersion: v2
-name: plex
-version: 1.0.0
-appVersion: 1.31.3
-dependencies:
-  - name: common
-    version: "0.0.4"
-    repository: https://chartmuseum.jsnouff.net
-    condition: plex.enabled
