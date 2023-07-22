@@ -120,6 +120,9 @@ sections:
       - title: Immich
         icon: hl-immich
         url: https://immich.jsnouff.net/
+      - title: Nextcloud
+        icon: hl-nextcloud
+        url: https://nextcloud.jsnouff.net/
       - title: Portainer
         icon: hl-portainer
         url: https://portainer.jsnouff.net/
@@ -132,13 +135,13 @@ sections:
       - title: NZBHydra2
         icon: hl-nzbhydra2
         url: https://nzbhydra2.jsnouff.net/
+      - title: Ombi
+        icon: hl-ombi
+        url: https://ombi.jsnouff.net/
       - title: Plex
         description: hosted on TrueNas Bare-metal server
         icon: hl-plex
         url: http://barenas.jsnouff.net:32400/
-      - title: Ombi
-        icon: hl-ombi
-        url: https://ombi.jsnouff.net/
       - title: Prowlarr
         icon: hl-prowlarr
         url: https://prowlarr.jsnouff.net/
