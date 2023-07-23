@@ -18,8 +18,6 @@ nextcloud:
         value: us-east-005
       - name: OBJECTSTORE_S3_SSL
         value: "true"
-      # - name: OBJECTSTORE_S3_AUTOCREATE
-      #   value: "false"
       - name: OBJECTSTORE_S3_KEY
         valueFrom:
           secretKeyRef:
@@ -32,10 +30,30 @@ nextcloud:
             key: applicationKey
   persistence:
     enabled: true
-  startupProbe:
+  internalDatabase:
+    enabled: false
+  externalDatabase:
     enabled: true
-    initialDelaySeconds: 10
-    periodSeconds: 5
+    type: postgresql
+    host: nextcloud-postgresql:5432
+    existingSecret:
+      enabled: true
+      secretName: postgres-credentials
+      usernameKey: username
+      passwordKey: password
+  postgresql:
+    enabled: true
+    global:
+      postgresql:
+        auth:
+          existingSecret: postgres-credentials
+          secretKeys:
+            adminPasswordKey: postgres-password
+            userPasswordKey: password
+            replicationPasswordKey: replication-password
+    primary:
+      persistence:
+        enabled: true
   ingress:
     enabled: true
     annotations:
@@ -52,3 +70,7 @@ nextcloud:
       - hosts:
           - nextcloud.jsnouff.net
         secretName: tls-secret
+  startupProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 5
