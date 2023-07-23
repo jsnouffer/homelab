@@ -1,44 +1,50 @@
 {{- define "common.restic.backup" }}
+{{- $ctx := $.Values.common.resticBackups }}
+{{- range $name, $value := $ctx.targets }}
 ---
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: restic-backup
+  name: restic-backup-{{ $name }}
 spec:
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
   concurrencyPolicy: Forbid
-  schedule: {{ .cron.schedule | quote }}
+  schedule: {{ $ctx.cron.schedule | quote }}
   jobTemplate:
     spec:
       template:
         spec:
-          {{- with .affinity }}
+          {{- with $value.affinity }}
           affinity: {{ toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .tolerations }}
+          {{- with $value.tolerations }}
           tolerations: {{ toYaml . | nindent 12 }}
           {{- end }}
           initContainers:
           - name: restic-init
-            image: {{ .image }}
+            image: {{ $ctx.image }}
             imagePullPolicy: Always
             command:
               - sh
               - -c
               - |
                 restic init || echo "skipped"
-            env: {{ toYaml .env | nindent 14 }}
+            env: {{ toYaml $ctx.env | nindent 14 }}
+              - name: RESTIC_REPOSITORY
+                value: {{ $value.bucket | quote }}
           containers:
           - name: restic-backup
-            image: {{ .image }}
+            image: {{ $ctx.image }}
             workingDir: /data
             args:
               - backup
               - --host
               - kubernetes
               - .
-            env: {{ toYaml .env | nindent 14 }}
+            env: {{ toYaml $ctx.env | nindent 14 }}
+              - name: RESTIC_REPOSITORY
+                value: {{ $value.bucket | quote }}
             volumeMounts:
               - name: backupdata
                 mountPath: /data
@@ -46,6 +52,7 @@ spec:
           volumes:
             - name: backupdata
               persistentVolumeClaim:
-                claimName: {{ .pvcName }}
+                claimName: {{ $value.pvcName }}
           restartPolicy: OnFailure
+{{- end }}
 {{- end }}

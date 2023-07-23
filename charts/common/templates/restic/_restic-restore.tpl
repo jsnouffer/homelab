@@ -1,9 +1,11 @@
 {{- define "common.restic.restore" }}
+{{- $ctx := $.Values.common.resticBackups }}
+{{- range $name, $value := $ctx.targets }}
 ---
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: restic-restore
+  name: restic-restore-{{ $name }}
 spec:
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
@@ -14,22 +16,24 @@ spec:
     spec:
       template:
         spec:
-          {{- with .affinity }}
+          {{- with $value.affinity }}
           affinity: {{ toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .tolerations }}
+          {{- with $value.tolerations }}
           tolerations: {{ toYaml . | nindent 12 }}
           {{- end }}
           containers:
-          - image: {{ .image }}
+          - image: {{ $ctx.image }}
             imagePullPolicy: IfNotPresent
             name: restic
             args:
             - restore
-            - {{ default "latest" .restore.version }}
+            - {{ default "latest" $value.restoreVersion }}
             - --target
             - /data
-            env: {{ toYaml .env | nindent 14 }}
+            env: {{ toYaml $ctx.env | nindent 14 }}
+              - name: RESTIC_REPOSITORY
+                value: {{ $value.bucket | quote }}
             volumeMounts:
             - mountPath: /data
               name: backupdata
@@ -37,5 +41,6 @@ spec:
           volumes:
           - name: backupdata
             persistentVolumeClaim:
-              claimName: {{ .pvcName }}
+              claimName: {{ $value.pvcName }}
+{{- end }}
 {{- end }}

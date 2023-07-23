@@ -6,3 +6,7 @@ dependencies:
     version: 3.5.19
     repository: https://nextcloud.github.io/helm/
     condition: nextcloud.enabled
+  - name: common
+    version: "0.0.10"
+    repository: https://chartmuseum.jsnouff.net
+    condition: nextcloud.enabled

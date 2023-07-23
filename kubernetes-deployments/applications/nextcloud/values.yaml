@@ -54,6 +54,12 @@ nextcloud:
     primary:
       persistence:
         enabled: true
+  redis:
+    enabled: true
+    auth:
+      existingSecret: nextcloud-credentials
+      existingSecretPasswordKey: password
+    architecture: standalone
   ingress:
     enabled: true
     annotations:
@@ -74,3 +80,36 @@ nextcloud:
     enabled: true
     initialDelaySeconds: 10
     periodSeconds: 5
+
+common:
+  resticBackups:
+    enabled: true
+    targets:
+      nextcloud-data:
+        pvcName: nextcloud-nextcloud
+        bucket: "b2:jsnouff-nextcloud-backup"
+        restoreVersion: latest
+        affinity:
+          podAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - nextcloud
+              topologyKey: kubernetes.io/hostname
+      nextcloud-db:
+        pvcName: data-nextcloud-postgresql-0
+        bucket: "b2:jsnouff-nextcloud-db-backup"
+        restoreVersion: latest
+        affinity:
+          podAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: statefulset.kubernetes.io/pod-name
+                  operator: In
+                  values:
+                  - nextcloud-postgresql-0
+              topologyKey: kubernetes.io/hostname
