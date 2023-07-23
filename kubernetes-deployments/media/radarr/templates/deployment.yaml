@@ -55,6 +55,10 @@ spec:
               mountPath: /downloads
             - name: plex-completed
               mountPath: /completed
+          resources:
+            requests:
+              cpu: 5m
+              memory: 150Mi
       volumes:
         - name: pv-config
           persistentVolumeClaim:

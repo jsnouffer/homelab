@@ -29,3 +29,7 @@ spec:
                 secretKeyRef:
                   key: "token"
                   name: "cloudflare-tunnel-token"
+          resources:
+            requests:
+              cpu: 5m
+              memory: 40Mi

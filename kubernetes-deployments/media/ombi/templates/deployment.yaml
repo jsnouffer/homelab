@@ -53,6 +53,13 @@ spec:
           volumeMounts:
             - name: pv-config
               mountPath: /config
+          resources:
+            requests:
+              cpu: 10m
+              memory: 200Mi
+            limits:
+              cpu: 50m
+              memory: 500Mi
       volumes:
         - name: pv-config
           persistentVolumeClaim:

@@ -71,6 +71,10 @@ spec:
               mountPath: /downloads
             - name: plex-completed
               mountPath: /completed
+          resources:
+            requests:
+              cpu: 500m
+              memory: 300Mi
       volumes:
         - name: config
           secret:

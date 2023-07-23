@@ -29,6 +29,13 @@ common:
             name: backblaze-credentials
             key: applicationKey
             optional: false
+    resources:
+      requests:
+        cpu: 10m
+        memory: 450Mi
+      limits:
+        cpu: 50m
+        memory: 750Mi
     affinity:
       podAffinity:
         preferredDuringSchedulingIgnoredDuringExecution:
