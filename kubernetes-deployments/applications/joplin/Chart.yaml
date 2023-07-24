@@ -1,0 +1,13 @@
+apiVersion: v2
+name: joplin
+version: 1.0.0
+appVersion: 2.12.1-beta
+dependencies:
+  - name: postgresql
+    version: 12.6.8
+    repository: https://charts.bitnami.com/bitnami
+    condition: joplin.enabled
+  - name: common
+    version: "0.0.10"
+    repository: https://chartmuseum.jsnouff.net
+    condition: joplin.enabled

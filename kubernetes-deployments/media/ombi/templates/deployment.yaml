@@ -4,6 +4,8 @@ metadata:
   name: ombi
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app.kubernetes.io/name: ombi
@@ -55,11 +57,8 @@ spec:
               mountPath: /config
           resources:
             requests:
-              cpu: 10m
-              memory: 200Mi
-            limits:
               cpu: 50m
-              memory: 500Mi
+              memory: 200Mi
       volumes:
         - name: pv-config
           persistentVolumeClaim:
