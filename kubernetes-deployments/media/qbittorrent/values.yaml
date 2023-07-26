@@ -1,0 +1,25 @@
+qbittorrent:
+  enable: true
+  ingress:
+    host: qbittorrent.jsnouff.net
+  config:
+    serverPort: 8080
+
+common:
+  resticBackups:
+    enabled: true
+    targets:
+      nextcloud-data:
+        pvcName: qbittorrent-pvc
+        bucket: "b2:jsnouff-qbittorrent"
+        restoreVersion: latest
+        affinity:
+          podAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - qbittorrent
+              topologyKey: kubernetes.io/hostname

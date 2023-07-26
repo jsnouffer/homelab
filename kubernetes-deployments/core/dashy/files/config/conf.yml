@@ -145,6 +145,9 @@ sections:
       - title: Prowlarr
         icon: hl-prowlarr
         url: https://prowlarr.jsnouff.net/
+      - title: Qbittorrent
+        icon: hl-qbittorrent
+        url: https://qbittorrent.jsnouff.net/
       - title: Radarr
         icon: hl-radarr
         url: https://radarr.jsnouff.net/
