@@ -1,4 +1,4 @@
 apiVersion: v2
 name: sabnzbd
 version: 1.0.0
-appVersion: 4.0.1
+appVersion: 4.0.3
