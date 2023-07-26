@@ -4,6 +4,8 @@ metadata:
   name: qbittorrent
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app.kubernetes.io/name: qbittorrent
@@ -27,6 +29,8 @@ spec:
               value: "1000"
             - name: PGID
               value: "1000"
+            - name: WEBUI_PORT
+              value: "{{ $.Values.qbittorrent.config.serverPort }}"
           ports:
             - name: http
               containerPort: {{ $.Values.qbittorrent.config.serverPort }}
@@ -36,25 +40,27 @@ spec:
             periodSeconds: 10
             successThreshold: 1
             tcpSocket:
-              port: {{ $.Values.qbittorrent.config.serverPort }}
+              port: http
             timeoutSeconds: 1
           readinessProbe:
             failureThreshold: 3
             periodSeconds: 10
             successThreshold: 1
             tcpSocket:
-              port: {{ $.Values.qbittorrent.config.serverPort }}
+              port: http
             timeoutSeconds: 1
           startupProbe:
             failureThreshold: 30
             periodSeconds: 5
             successThreshold: 1
             tcpSocket:
-              port: {{ $.Values.qbittorrent.config.serverPort }}
+              port: http
             timeoutSeconds: 1
           volumeMounts:
             - name: pv
               mountPath: /config
+            - name: downloads
+              mountPath: /downloads
         - name: wireguard
           image: linuxserver/wireguard:1.0.20210914
           imagePullPolicy: IfNotPresent
@@ -82,3 +88,6 @@ spec:
           secret:
             defaultMode: 0600
             secretName: nordvpn-wireguard-config
+        - name: downloads
+          persistentVolumeClaim:
+            claimName: qbittorrent-nfs-downloads

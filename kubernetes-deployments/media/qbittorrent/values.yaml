@@ -9,7 +9,7 @@ common:
   resticBackups:
     enabled: true
     targets:
-      nextcloud-data:
+      qbittorrent:
         pvcName: qbittorrent-pvc
         bucket: "b2:jsnouff-qbittorrent"
         restoreVersion: latest
