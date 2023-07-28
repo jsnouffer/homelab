@@ -71,8 +71,6 @@ spec:
               mountPath: /config
             - name: plex-downloads
               mountPath: /downloads
-            - name: plex-completed
-              mountPath: /completed
           resources:
             requests:
               cpu: 500m
@@ -87,6 +85,3 @@ spec:
         - name: plex-downloads
           persistentVolumeClaim:
             claimName: sabnzbd-nfs-downloads
-        - name: plex-completed
-          persistentVolumeClaim:
-            claimName: sabnzbd-nfs-completed

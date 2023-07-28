@@ -14,5 +14,5 @@ spec:
     - hard
     - nfsvers=4.1
   nfs:
-    path: /mnt/sandbox/plex/data
+    path: /mnt/plex/media
     server: barenas.jsnouff.net
