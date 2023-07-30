@@ -6,3 +6,7 @@ dependencies:
     version: 0.1.2
     repository: https://immich-app.github.io/immich-charts
     condition: immich.enabled
+  - name: common
+    version: "0.0.10"
+    repository: https://chartmuseum.jsnouff.net
+    condition: immich.enabled

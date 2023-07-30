@@ -4,9 +4,9 @@ kind: PersistentVolumeClaim
 metadata:
   name: immich-library
 spec:
-  storageClassName: ceph-filesystem
+  storageClassName: immich-library
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 2Gi

@@ -1,6 +1,9 @@
 immich:
   enabled: true
 
+  image:
+    tag: v1.70.0
+
   env:
     DB_USERNAME: immich
     DB_PASSWORD:
@@ -19,18 +22,49 @@ immich:
   microservices:
     global:
       fullnameOverride: immich-microservices
+    persistence:
+      geodata-cache:
+        enabled: true
+        size: 1Gi
+        type: pvc
+        accessMode: ReadWriteOnce
+        storageClass: ceph-block
   machine-learning:
     global:
       fullnameOverride: immich-machine-learning
+    persistence:
+      cache:
+        enabled: true
+        size: 10Gi
+        type: pvc
+        accessMode: ReadWriteOnce
+        storageClass: ceph-block
+    probes:
+      startup:
+        enabled: true
+        custom: true
+        spec:
+          httpGet:
+            path: /ping
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 1
+          failureThreshold: 100
+    resources:
+      requests:
+        cpu: 25m
+        memory: 2000Mi
+      limits:
+        cpu: 1000m
+        memory: 4000Mi
+
   web:
     global:
       fullnameOverride: immich-web
   proxy:
     global:
       fullnameOverride: immich-proxy
-    # persistence:
-    #   library:
-    #     enabled: true
 
     ingress:
       main:
@@ -74,3 +108,40 @@ immich:
     persistence:
       tsdata:
         enabled: true
+
+common:
+  resticBackups:
+    enabled: true
+    targets:
+      immich-db:
+        pvcName: data-immich-postgresql-0
+        bucket: "b2:jsnouff-immich-db"
+        restoreVersion: latest
+        affinity:
+          podAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: statefulset.kubernetes.io/pod-name
+                    operator: In
+                    values:
+                    - immich-postgresql-0
+                topologyKey: kubernetes.io/hostname
+      immich-tsdata:
+        pvcName:  immich-typesense-tsdata
+        bucket: "b2:jsnouff-immich-tsdata"
+        restoreVersion: latest
+        affinity:
+          podAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - typesense
+                topologyKey: kubernetes.io/hostname
