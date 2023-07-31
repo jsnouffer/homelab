@@ -5,39 +5,20 @@ pvcName: radarr-pvc
 common:
   resticBackups:
     enabled: true
-    restore:
-      enabled: true
-    pvcName: radarr-pvc
-    env:
-      - name: RESTIC_REPOSITORY
-        value: "b2:jsnouff-radarr"
-      - name: RESTIC_PASSWORD
-        valueFrom:
-          secretKeyRef:
-            name: backblaze-credentials
-            key: resticKey
-            optional: false
-      - name: B2_ACCOUNT_ID
-        valueFrom:
-          secretKeyRef:
-            name: backblaze-credentials
-            key: keyID
-            optional: false
-      - name: B2_ACCOUNT_KEY
-        valueFrom:
-          secretKeyRef:
-            name: backblaze-credentials
-            key: applicationKey
-            optional: false
-    affinity:
-      podAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 100
-          podAffinityTerm:
-            labelSelector:
-              matchExpressions:
-              - key: app.kubernetes.io/name
-                operator: In
-                values:
-                - radarr
-            topologyKey: kubernetes.io/hostname
+    targets:
+      radarr:
+        pvcName: radarr-pvc
+        bucket: "b2:jsnouff-radarr"
+        restoreVersion: latest
+        affinity:
+          podAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - radarr
+                topologyKey: kubernetes.io/hostname

@@ -65,10 +65,6 @@ sections:
         description: pve - pve1 - vm100
         icon: hl-truenas
         url: https://nas.jsnouff.net/
-      - title: MinIO
-        description: hosted on TrueNas VM
-        icon: hl-minio
-        url: https://nas.jsnouff.net:9001/
   - name: Cloud Services
     icon: fas fa-cloud
     items:
@@ -82,10 +78,10 @@ sections:
         icon: hl-cloudflare
         url: https://dash.cloudflare.com/
       - title: Doppler
-        icon: https://nas.jsnouff.net:9000/icons/doppler.png
+        icon: https://f005.backblazeb2.com/file/jsnouff-icons/doppler.png
         url: https://dashboard.doppler.com/workplace/b161fb27ad70bce89a63/projects
       - title: NordVPN
-        icon: https://nas.jsnouff.net:9000/icons/nordvpn.png
+        icon: https://f005.backblazeb2.com/file/jsnouff-icons/nordvpn.png
         url: https://my.nordaccount.com/dashboard/
       - title: NZBgeek
         icon: https://nzbgeek.info/favicon.ico
@@ -94,7 +90,7 @@ sections:
         icon: hl-plex
         url: https://www.plex.tv/claim/
       - title: Tweaknews
-        icon: https://nas.jsnouff.net:9000/icons/tweaknews.png
+        icon: https://f005.backblazeb2.com/file/jsnouff-icons/tweaknews.png
         url: https://www.tweaknews.eu/en/member
   - name: Kubernetes Infrastucture
     icon: si-kubernetes

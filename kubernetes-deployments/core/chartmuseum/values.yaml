@@ -7,12 +7,12 @@ chartmuseum:
       DISABLE_API: false
       ALLOW_OVERWRITE: true
       STORAGE: amazon
-      STORAGE_AMAZON_BUCKET: chartmuseum
-      STORAGE_AMAZON_ENDPOINT: https://nas.jsnouff.net:9000
+      STORAGE_AMAZON_BUCKET: jsnouff-helmcharts
+      STORAGE_AMAZON_ENDPOINT: https://s3.us-east-005.backblazeb2.com
     existingSecret: chartmuseum-secret
     existingSecretMappings:
-      AWS_ACCESS_KEY_ID: minio-access-key
-      AWS_SECRET_ACCESS_KEY: minio-secret-access-key
+      AWS_ACCESS_KEY_ID: b2-key-id
+      AWS_SECRET_ACCESS_KEY: b2-application-key
   ingress:
     enabled: true
     annotations:
