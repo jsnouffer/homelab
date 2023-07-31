@@ -14,5 +14,5 @@ spec:
     - hard
     - nfsvers=4.1
   nfs:
-    path: /mnt/sandbox/plex/downloads
+    path: /mnt/ssd-noraid/downloads
     server: barenas.jsnouff.net
