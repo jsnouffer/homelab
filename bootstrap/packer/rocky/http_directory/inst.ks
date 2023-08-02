@@ -28,7 +28,7 @@ services --disabled="kdump" --enabled="sshd,rsyslog,chronyd"
 timezone Etc/UTC --isUtc
 # Disk partitioning information
 part / --fstype="xfs" --grow --size=6144
-part swap --fstype="swap" --size=512
+part swap --fstype="swap" --size=2048
 reboot
 
 
@@ -89,7 +89,7 @@ yum -C -y remove firewalld --setopt="clean_requirements_on_remove=1"
 
 # remove avahi and networkmanager
 echo "Removing avahi/zeroconf and NetworkManager"
-yum -C -y remove avahi\* 
+yum -C -y remove avahi\*
 
 echo -n "Getty fixes"
 # although we want console output going to the serial console, we don't
