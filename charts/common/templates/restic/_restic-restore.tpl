@@ -6,6 +6,8 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: restic-restore-{{ $name }}
+  labels:
+    restic-restore: {{ $name }}
 spec:
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1

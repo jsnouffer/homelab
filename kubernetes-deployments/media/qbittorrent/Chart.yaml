@@ -3,6 +3,6 @@ name: qbittorrent
 version: 1.0.0
 dependencies:
   - name: common
-    version: "0.0.10"
+    version: "0.0.11"
     repository: https://chartmuseum.jsnouff.net
     condition: qbittorrent.enabled
