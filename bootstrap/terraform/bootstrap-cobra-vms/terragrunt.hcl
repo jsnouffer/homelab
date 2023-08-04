@@ -37,7 +37,7 @@ inputs = {
     "cobra-w1" = {
       startup = "order=3"
       cores   = 6
-      memory  = 32768
+      memory  = 49152
       ip      = "192.168.5.2"
 
       disks = [
@@ -56,8 +56,27 @@ inputs = {
     "cobra-w2" = {
       startup = "order=3"
       cores   = 6
-      memory  = 32768
+      memory  = 49152
       ip      = "192.168.5.3"
+
+      disks = [
+        {
+          type = "scsi"
+          size = "75G"
+        },
+        {
+          type = "scsi"
+          size = "500G"
+        }
+      ]
+
+      usb = []
+    },
+    "cobra-w3" = {
+      startup = "order=3"
+      cores   = 6
+      memory  = 49152
+      ip      = "192.168.5.4"
 
       disks = [
         {
