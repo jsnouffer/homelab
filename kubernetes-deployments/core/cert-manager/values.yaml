@@ -35,10 +35,6 @@ letsencrypt:
     production: https://acme-v02.api.letsencrypt.org/directory
 
 truenas:
-  - name: pve
-    hostname: nas.jsnouff.net
-    apiKeyRemoteRef: TRUENAS_VM_API_KEY
-    s3Enabled: false
   - name: bare-metal
     hostname: barenas.jsnouff.net
     apiKeyRemoteRef: TRUENAS_BARE_API_KEY
