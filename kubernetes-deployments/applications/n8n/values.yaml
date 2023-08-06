@@ -1,0 +1,60 @@
+n8n:
+  enabled: true
+  fullnameOverride: n8n
+
+  image:
+    tag: 1.1.1
+
+  extraEnv:
+    N8N_HOST: n8n.jsnouff.net
+    N8N_EDITOR_BASE_URL: https://n8n.jsnouff.net
+
+  persistence:
+    enabled: true
+    type: dynamic
+
+  ingress:
+    enabled: true
+    annotations:
+      cert-manager.io/cluster-issuer: lets-encrypt-production
+      ingress.kubernetes.io/force-ssl-redirect: "true"
+      ingress.kubernetes.io/protocol: http
+      kubernetes.io/ingress.class: traefik
+      kubernetes.io/tls-acme: "true"
+      traefik.ingress.kubernetes.io/router.entrypoints: websecure
+      traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
+      traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+      traefik.ingress.kubernetes.io/router.tls: "true"
+    hosts:
+      - host: n8n.jsnouff.net
+        paths:
+          - "/"
+    tls:
+      - secretName: tls-secret
+        hosts:
+          - n8n.jsnouff.net
+
+  securityContext:
+    runAsUser: 0
+    runAsGroup: 0
+
+common:
+  resticBackups:
+    enabled: true
+    targets:
+      n8n:
+        pvcName: n8n
+        bucket: "b2:jsnouff-n8n"
+        restoreVersion: latest
+        affinity:
+          podAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - n8n
+                topologyKey: kubernetes.io/hostname

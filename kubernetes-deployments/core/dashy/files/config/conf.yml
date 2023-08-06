@@ -40,6 +40,9 @@ sections:
         description: APCUPSD UPS Network Monitor
         icon: hl-apc
         url: http://pve1.jsnouff.local:8080/cgi-bin/apcupsd/multimon.cgi
+      - title: Ubuntu VM
+        icon: hl-ubuntu
+        url: https://barenas.jsnouff.net/vm/display/18/vnc.html?path=vm%2Fdisplay%2F18%2F&autoconnect=1
   - name: Networking
     icon: fas fa-network-wired
     items:
@@ -50,45 +53,55 @@ sections:
       - title: Fios MoCA Adapter
         icon: hl-verizon
         url: http://192.168.1.2/home.html
+      - title: Cloudflare
+        icon: hl-cloudflare
+        url: https://dash.cloudflare.com/
+      - title: NordVPN
+        icon: https://f005.backblazeb2.com/file/jsnouff-icons/nordvpn.png
+        url: https://my.nordaccount.com/dashboard/
       - title: Pi-hole
-        description: Pi-hole hosted on TrueNas Scale
         icon: hl-pihole
-        url: http://nas.jsnouff.net:20720/admin/index.php
+        url: http://hped1.jsnouff.net/
+      - title: Traefik (hped1)
+        icon: hl-traefik
+        url: http://hped1.jsnouff.net:8080/
   - name: Storage
     icon: fas fa-hdd
     items:
-      - title: TrueNas (Bare)
+      - title: Backblaze
+        icon: hl-backblaze
+        url: https://secure.backblaze.com/b2_buckets.htm
+      - title: Bitwarden
+        icon: hl-bitwarden
+        url: https://bitwarden.jsnouff.net/
+      - title: Doppler
+        icon: https://f005.backblazeb2.com/file/jsnouff-icons/doppler.png
+        url: https://dashboard.doppler.com/workplace/b161fb27ad70bce89a63/projects
+      - title: TrueNas
         description: bare-metal server
         icon: hl-truenas
         url: https://barenas.jsnouff.net/
-      - title: TrueNas (VM)
-        description: pve - pve1 - vm100
-        icon: hl-truenas
-        url: https://nas.jsnouff.net/
+      - title: Vaultwarden Admin
+        icon: hl-vaultwarden
+        url: https://bitwarden.jsnouff.net/admin
   - name: Cloud Services
     icon: fas fa-cloud
     items:
       - title: APC SmartConnect
         icon: hl-apc
         url: https://smartconnect.apc.com/dashboard
-      - title: Backblaze
-        icon: hl-backblaze
-        url: https://secure.backblaze.com/b2_buckets.htm
-      - title: Cloudflare
-        icon: hl-cloudflare
-        url: https://dash.cloudflare.com/
-      - title: Doppler
-        icon: https://f005.backblazeb2.com/file/jsnouff-icons/doppler.png
-        url: https://dashboard.doppler.com/workplace/b161fb27ad70bce89a63/projects
-      - title: NordVPN
-        icon: https://f005.backblazeb2.com/file/jsnouff-icons/nordvpn.png
-        url: https://my.nordaccount.com/dashboard/
       - title: NZBgeek
         icon: https://nzbgeek.info/favicon.ico
         url: https://nzbgeek.info/
       - title: Plex Token
         icon: hl-plex
         url: https://www.plex.tv/claim/
+      - title: Slack
+        icon: hl-slack
+        url: https://app.slack.com/client/T05LKH8Q6MA
+      - title: Slack Apps
+        icon: hl-slack
+        url: https://api.slack.com/apps
       - title: Tweaknews
         icon: https://f005.backblazeb2.com/file/jsnouff-icons/tweaknews.png
         url: https://www.tweaknews.eu/en/member
@@ -110,21 +123,18 @@ sections:
   - name: Applications
     icon: fas fa-laptop
     items:
-      - title: Bitwarden
-        icon: hl-bitwarden
-        url: https://bitwarden.jsnouff.net/
       - title: Immich
         icon: hl-immich
         url: https://immich.jsnouff.net/
+      - title: n8n
+        icon: hl-n8n
+        url: https://n8n.jsnouff.net/
       - title: Nextcloud
         icon: hl-nextcloud
         url: https://nextcloud.jsnouff.net/
       - title: Portainer
         icon: hl-portainer
         url: https://portainer.jsnouff.net/
-      - title: Vaultwarden Admin
-        icon: hl-vaultwarden
-        url: https://bitwarden.jsnouff.net/admin
   - name: Media
     icon: fas fa-camera-movie
     items:
