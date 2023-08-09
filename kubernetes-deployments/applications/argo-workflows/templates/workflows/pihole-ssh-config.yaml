@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pihole-ssh-config
+data:
+  config: |
+    Host pihole
+        HostName hped1.jsnouff.net
+        User jason

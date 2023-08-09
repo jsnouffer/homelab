@@ -123,6 +123,9 @@ sections:
   - name: Applications
     icon: fas fa-laptop
     items:
+      - title: Argo Workflows
+        icon: hl-argocd
+        url: https://workflows.jsnouff.net/
       - title: Immich
         icon: hl-immich
         url: https://immich.jsnouff.net/

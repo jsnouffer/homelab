@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: backup-pihole
+spec:
+  entrypoint: dag
+  volumes:
+    - name: ssh-config
+      configMap:
+        name: pihole-ssh-config
+
+  templates:
+  - name: dag
+    dag:
+      target: copy-pihole-contents
+      tasks:
+      - name: copy-pihole-contents
+        template: copy-pihole-contents
+
+
+  - name: copy-pihole-contents
+    script:
+      image: atmoz/sftp:latest
+      command: [bash]
+      source: |
+        whoami
+        ls -lrt /root/.ssh
+        ssh pihole
+      volumeMounts:
+        - name: ssh-config
+          mountPath: /root/.ssh
