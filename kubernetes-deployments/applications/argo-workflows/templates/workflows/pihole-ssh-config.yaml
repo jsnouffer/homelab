@@ -7,3 +7,4 @@ data:
     Host pihole
         HostName hped1.jsnouff.net
         User jason
+        StrictHostKeyChecking no
