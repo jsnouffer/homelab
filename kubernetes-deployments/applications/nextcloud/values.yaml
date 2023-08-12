@@ -1,13 +1,27 @@
 nextcloud:
   enabled: true
   nextcloud:
-    host: nextcloud.jsnouff.net
+    host: &host nextcloud.jsnouff.net
     existingSecret:
       enabled: true
       secretName: nextcloud-credentials
       usernameKey: username
       passwordKey: password
     extraEnv:
+      - name: NEXTCLOUD_DOMAIN_NAME
+        value: *host
+      - name: OVERWRITEHOST
+        value: *host
+      - name: OVERWRITEHOST
+        value: *host
+      - name: TRUSTED_PROXIES
+        value: *host
+      - name: NEXTCLOUD_TRUSTED_DOMAINS
+        value: *host
+      - name: OVERWRITECLIURL
+        value: https://nextcloud.jsnouff.net
+      - name: OVERWRITEPROTOCOL
+        value: https
       - name: OBJECTSTORE_S3_BUCKET
         value: jsnouff-nextcloud-data
       - name: OBJECTSTORE_S3_HOST
@@ -28,6 +42,8 @@ nextcloud:
           secretKeyRef:
             name: backblaze-s3-credentials
             key: applicationKey
+  lifecycle:
+    postStartCommand: ["/bin/sh", "-c", "echo \"ServerName nextcloud.jsnouff.net\" | tee -a /etc/apache2/apache2.conf"]
   persistence:
     enabled: true
   internalDatabase:
@@ -85,15 +101,16 @@ nextcloud:
       traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
       traefik.ingress.kubernetes.io/router.tls: "true"
       traefik.ingress.kubernetes.io/custom-response-headers: "Access-Control-Allow-Origin:*||Access-Control-Allow-Methods:GET,POST,OPTIONS||Access-Control-Allow-Headers:DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range||Access-Control-Expose-Headers:Content-Length,Content-Range"
+      traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
     tls:
       - hosts:
-          - nextcloud.jsnouff.net
+          - *host
         secretName: tls-secret
   startupProbe:
     enabled: true
     initialDelaySeconds: 10
-    periodSeconds: 5
-
+    periodSeconds: 10
+    failureThreshold: 100
 common:
   resticBackups:
     enabled: true
@@ -104,25 +121,29 @@ common:
         restoreVersion: latest
         affinity:
           podAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                - key: app.kubernetes.io/name
-                  operator: In
-                  values:
-                  - nextcloud
-              topologyKey: kubernetes.io/hostname
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - nextcloud
+                topologyKey: kubernetes.io/hostname
       nextcloud-db:
         pvcName: data-nextcloud-postgresql-0
         bucket: "b2:jsnouff-nextcloud-db-backup"
         restoreVersion: latest
         affinity:
           podAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                - key: statefulset.kubernetes.io/pod-name
-                  operator: In
-                  values:
-                  - nextcloud-postgresql-0
-              topologyKey: kubernetes.io/hostname
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: statefulset.kubernetes.io/pod-name
+                    operator: In
+                    values:
+                    - nextcloud-postgresql-0
+                topologyKey: kubernetes.io/hostname

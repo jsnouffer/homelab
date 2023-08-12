@@ -1,9 +1,9 @@
 apiVersion: v2
 name: nextcloud
-version: 27.0.0
+version: 27.0.1
 dependencies:
   - name: nextcloud
-    version: 3.5.19
+    version: 3.5.21
     repository: https://nextcloud.github.io/helm/
     condition: nextcloud.enabled
   - name: common
