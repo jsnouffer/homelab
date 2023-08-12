@@ -77,6 +77,9 @@ sections:
       - title: Doppler
         icon: https://f005.backblazeb2.com/file/jsnouff-icons/doppler.png
         url: https://dashboard.doppler.com/workplace/b161fb27ad70bce89a63/projects
+      - title: Minio
+        icon: hl-minio
+        url: http://barenas.jsnouff.net:9002
       - title: TrueNas
         description: bare-metal server
         icon: hl-truenas
@@ -132,6 +135,9 @@ sections:
       - title: n8n
         icon: hl-n8n
         url: https://n8n.jsnouff.net/
+      - title: Netbox
+        icon: hl-netbox
+        url: https://netbox.jsnouff.net/
       - title: Nextcloud
         icon: hl-nextcloud
         url: https://nextcloud.jsnouff.net/

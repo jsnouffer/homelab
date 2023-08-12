@@ -31,9 +31,15 @@ spec:
                     --keep-monthly={{ $ctx.prune.keepMonthly }} \
                     --prune
                   restic snapshots --json > /snapshots/snapshots.json
-              env: {{ toYaml $ctx.env | nindent 16 }}
+              {{- if hasPrefix "b2" $value.bucket }}
+              env: {{ toYaml $ctx.env.b2 | nindent 16 }}
                 - name: RESTIC_REPOSITORY
                   value: {{ $value.bucket | quote }}
+              {{- else }}
+              env: {{ toYaml $ctx.env.s3 | nindent 16 }}
+                - name: RESTIC_REPOSITORY
+                  value: {{ printf "%s/%s" $ctx.minioUrl $value.bucket | quote }}
+              {{- end }}
               volumeMounts:
                 - name: snapshots
                   mountPath: /snapshots

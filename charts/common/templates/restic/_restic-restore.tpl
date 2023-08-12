@@ -33,9 +33,15 @@ spec:
             - {{ default "latest" $value.restoreVersion }}
             - --target
             - /data
-            env: {{ toYaml $ctx.env | nindent 14 }}
+            {{- if hasPrefix "b2" $value.bucket }}
+            env: {{ toYaml $ctx.env.b2 | nindent 14 }}
               - name: RESTIC_REPOSITORY
                 value: {{ $value.bucket | quote }}
+            {{- else }}
+            env: {{ toYaml $ctx.env.s3 | nindent 14 }}
+              - name: RESTIC_REPOSITORY
+                value: {{ printf "%s/%s" $ctx.minioUrl $value.bucket | quote }}
+            {{- end }}
             volumeMounts:
             - mountPath: /data
               name: backupdata

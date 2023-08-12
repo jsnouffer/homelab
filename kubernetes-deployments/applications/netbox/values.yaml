@@ -64,3 +64,40 @@ redis:
   auth:
     existingSecret: db-credentials
     existingSecretPasswordKey: password
+
+common:
+  resticBackups:
+    enabled: true
+    targets:
+      netbox-media:
+        pvcName: netbox-media
+        bucket: netbox-media-backup
+        restoreVersion: latest
+        affinity:
+          podAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - netbox
+                topologyKey: kubernetes.io/hostname
+      netbox-db:
+        pvcName: data-postgresql-0
+        bucket: netbox-db-backup
+        restoreVersion: latest
+        affinity:
+          podAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: statefulset.kubernetes.io/pod-name
+                    operator: In
+                    values:
+                    - postgresql-0
+                topologyKey: kubernetes.io/hostname

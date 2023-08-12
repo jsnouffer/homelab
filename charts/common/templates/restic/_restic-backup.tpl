@@ -32,9 +32,15 @@ spec:
               - -c
               - |
                 restic init || echo "skipped"
-            env: {{ toYaml $ctx.env | nindent 14 }}
+            {{- if hasPrefix "b2" $value.bucket }}
+            env: {{ toYaml $ctx.env.b2 | nindent 14 }}
               - name: RESTIC_REPOSITORY
                 value: {{ $value.bucket | quote }}
+            {{- else }}
+            env: {{ toYaml $ctx.env.s3 | nindent 14 }}
+              - name: RESTIC_REPOSITORY
+                value: {{ printf "%s/%s" $ctx.minioUrl $value.bucket | quote }}
+            {{- end }}
           containers:
           - name: restic-backup
             image: {{ $ctx.image }}
@@ -44,9 +50,15 @@ spec:
               - --host
               - kubernetes
               - .
-            env: {{ toYaml $ctx.env | nindent 14 }}
+            {{- if hasPrefix "b2" $value.bucket }}
+            env: {{ toYaml $ctx.env.b2 | nindent 14 }}
               - name: RESTIC_REPOSITORY
                 value: {{ $value.bucket | quote }}
+            {{- else }}
+            env: {{ toYaml $ctx.env.s3 | nindent 14 }}
+              - name: RESTIC_REPOSITORY
+                value: {{ printf "%s/%s" $ctx.minioUrl $value.bucket | quote }}
+            {{- end }}
             volumeMounts:
               - name: backupdata
                 mountPath: /data

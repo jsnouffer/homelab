@@ -6,24 +6,44 @@ resticBackups:
   restore:
     enabled: true
   env:
-    - name: RESTIC_PASSWORD
-      valueFrom:
-        secretKeyRef:
-          name: backblaze-credentials
-          key: resticKey
-          optional: false
-    - name: B2_ACCOUNT_ID
-      valueFrom:
-        secretKeyRef:
-          name: backblaze-credentials
-          key: keyID
-          optional: false
-    - name: B2_ACCOUNT_KEY
-      valueFrom:
-        secretKeyRef:
-          name: backblaze-credentials
-          key: applicationKey
-          optional: false
+    b2:
+      - name: RESTIC_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: restic-backup-credentials
+            key: resticKey
+            optional: false
+      - name: B2_ACCOUNT_ID
+        valueFrom:
+          secretKeyRef:
+            name: restic-backup-credentials
+            key: b2KeyID
+            optional: false
+      - name: B2_ACCOUNT_KEY
+        valueFrom:
+          secretKeyRef:
+            name: restic-backup-credentials
+            key: b2ApplicationKey
+            optional: false
+    s3:
+      - name: RESTIC_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: restic-backup-credentials
+            key: resticKey
+            optional: false
+      - name: AWS_ACCESS_KEY_ID
+        valueFrom:
+          secretKeyRef:
+            name: restic-backup-credentials
+            key: s3AccessKey
+            optional: false
+      - name: AWS_SECRET_ACCESS_KEY
+        valueFrom:
+          secretKeyRef:
+            name: restic-backup-credentials
+            key: s3SecretKey
+            optional: false
   prune:
     enabled: true
     schedule: "0 0 * * 0" # At 00:00 on Sunday
@@ -33,3 +53,4 @@ resticBackups:
   cron:
     enabled: true
     schedule: "0 */12 * * *" # Every 12 hours
+  minioUrl: s3:http://barenas.jsnouff.net:9000
