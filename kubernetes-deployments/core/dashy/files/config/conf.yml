@@ -40,6 +40,9 @@ sections:
         description: APCUPSD UPS Network Monitor
         icon: hl-apc
         url: http://pve1.jsnouff.local:8080/cgi-bin/apcupsd/multimon.cgi
+      - title: UPS NMC
+        icon: hl-apc
+        url: https://apc.jsnouff.local
       - title: Ubuntu VM
         icon: hl-ubuntu
         url: https://barenas.jsnouff.net/vm/display/18/vnc.html?path=vm%2Fdisplay%2F18%2F&autoconnect=1
@@ -132,6 +135,9 @@ sections:
       - title: Immich
         icon: hl-immich
         url: https://immich.jsnouff.net/
+      - title: Linkding
+        icon: hl-linkding
+        url: https://linkding.jsnouff.net/
       - title: n8n
         icon: hl-n8n
         url: https://n8n.jsnouff.net/

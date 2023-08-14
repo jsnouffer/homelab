@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: linkding
+  annotations:
+    cert-manager.io/cluster-issuer: lets-encrypt-production
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+    ingress.kubernetes.io/protocol: http
+    kubernetes.io/ingress.class: traefik
+    kubernetes.io/tls-acme: "true"
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security-external@kubernetescrd
+    traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+    traefik.ingress.kubernetes.io/router.tls: "true"
+spec:
+  rules:
+  - host: linkding.jsnouff.net
+    http:
+      paths:
+      - backend:
+          service:
+            name: linkding
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+  tls:
+    - hosts:
+        - linkding.jsnouff.net
+      secretName: tls-secret
