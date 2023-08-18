@@ -31,7 +31,7 @@ sections:
       - title: Proxmox PVE1
         description: Dell Poweredge R710
         icon: hl-proxmox
-        url: https://pve1.jsnouff.local/
+        url: https://pve1.jsnouff.net
       - title: iDRAC 6
         description: Dell Poweredge R710
         icon: hl-idrac
@@ -39,10 +39,10 @@ sections:
       - title: APCUPSD
         description: APCUPSD UPS Network Monitor
         icon: hl-apc
-        url: http://pve1.jsnouff.local:8080/cgi-bin/apcupsd/multimon.cgi
+        url: http://pve1.jsnouff.net:8080/cgi-bin/apcupsd/multimon.cgi
       - title: UPS NMC
         icon: hl-apc
-        url: https://apc.jsnouff.local
+        url: https://apc.jsnouff.net
       - title: Ubuntu VM
         icon: hl-ubuntu
         url: https://barenas.jsnouff.net/vm/display/18/vnc.html?path=vm%2Fdisplay%2F18%2F&autoconnect=1
@@ -62,9 +62,12 @@ sections:
       - title: NordVPN
         icon: https://f005.backblazeb2.com/file/jsnouff-icons/nordvpn.png
         url: https://my.nordaccount.com/dashboard/
-      - title: Pi-hole
+      - title: Pi-hole (1)
         icon: hl-pihole
         url: http://hped1.jsnouff.net/
+      - title: Pi-hole (2)
+        icon: hl-pihole
+        url: http://barenas.jsnouff.net:9089/admin/
       - title: Traefik (hped1)
         icon: hl-traefik
         url: http://hped1.jsnouff.net:8080/
