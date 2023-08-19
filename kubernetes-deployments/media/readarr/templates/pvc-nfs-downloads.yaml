@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: readarr-nfs-downloads
+spec:
+  storageClassName: readarr-nfs-downloads
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 250Gi

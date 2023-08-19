@@ -181,3 +181,9 @@ sections:
       - title: Sonarr
         icon: hl-sonarr
         url: https://sonarr.jsnouff.net/
+  - name: Audiobooks
+    icon: fas fa-file-audio
+    items:
+      - title: Readarr
+        icon: hl-readarr
+        url: https://readarr.jsnouff.net/
