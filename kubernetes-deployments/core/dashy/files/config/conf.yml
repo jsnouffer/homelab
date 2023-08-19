@@ -166,9 +166,6 @@ sections:
         description: hosted on TrueNas Bare-metal server
         icon: hl-plex
         url: http://barenas.jsnouff.net:32400/
-      - title: Prowlarr
-        icon: hl-prowlarr
-        url: https://prowlarr.jsnouff.net/
       - title: Qbittorrent
         icon: hl-qbittorrent
         url: https://qbittorrent.jsnouff.net/
