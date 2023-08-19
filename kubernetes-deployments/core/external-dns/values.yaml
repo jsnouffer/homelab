@@ -1,13 +1,15 @@
 external-dns:
-  provider: cloudflare
+  provider: pihole
+  policy: upsert-only
+  registry: noop
   env:
-    - name: CF_API_TOKEN
+    - name: EXTERNAL_DNS_PIHOLE_PASSWORD
       valueFrom:
         secretKeyRef:
-          name: cloudflare-api-token
-          key: cloudflare_api_token
+          name: pihole-password
+          key: pihole_password
   extraArgs:
-    - --cloudflare-dns-records-per-page=5000
+    - --pihole-server=http://hped1.jsnouff.net
   resources:
     limits:
       cpu: 50m
