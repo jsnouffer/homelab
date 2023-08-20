@@ -184,6 +184,9 @@ sections:
       - title: Audiobookshelf
         icon: hl-audiobookshelf
         url: https://audiobookshelf.jsnouff.net/
+      - title: Lazylibrarian
+        icon: hl-lazylibrarian
+        url: https://lazylibrarian.jsnouff.net/
       - title: Readarr
         icon: hl-readarr
         url: https://readarr.jsnouff.net/
