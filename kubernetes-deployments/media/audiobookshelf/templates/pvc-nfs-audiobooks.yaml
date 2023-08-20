@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: audiobookshelf-nfs-audiobooks
+spec:
+  storageClassName: audiobookshelf-nfs-audiobooks
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 250Gi

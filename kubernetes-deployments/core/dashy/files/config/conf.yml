@@ -181,6 +181,9 @@ sections:
   - name: Audiobooks
     icon: fas fa-file-audio
     items:
+      - title: Audiobookshelf
+        icon: hl-audiobookshelf
+        url: https://audiobookshelf.jsnouff.net/
       - title: Readarr
         icon: hl-readarr
         url: https://readarr.jsnouff.net/
