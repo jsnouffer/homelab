@@ -10,4 +10,4 @@ spec:
     targetPort: http
   selector:
     app.kubernetes.io/name: audiobookshelf
-  type: ClusterIP
+  type: LoadBalancer

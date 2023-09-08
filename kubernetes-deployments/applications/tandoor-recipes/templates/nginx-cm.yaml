@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: recipes-nginx-config
+data:
+  nginx-config: |-
+    events {
+      worker_connections 1024;
+    }
+    http {
+      include mime.types;
+      server {
+        listen 80;
+        server_name _;
+
+        client_max_body_size 16M;
+
+        location / {
+          proxy_set_header Host $http_host;
+          proxy_set_header X-Forwarded-Proto https;
+          proxy_hide_header 'Access-Control-Allow-Origin';
+          proxy_set_header Access-Control-Allow-Origin *;
+          add_header  Access-Control-Allow-Origin *;
+          proxy_pass http://127.0.0.1:8080;
+        }
+
+        # serve static files
+        location /static/ {
+          alias /static/;
+          proxy_set_header Host $http_host;
+          proxy_set_header X-Forwarded-Proto https;
+          proxy_hide_header 'Access-Control-Allow-Origin';
+          proxy_set_header Access-Control-Allow-Origin *;
+          add_header  Access-Control-Allow-Origin *;
+        }
+        # serve media files
+        location /media/ {
+          alias /media/;
+          proxy_set_header Host $http_host;
+          proxy_set_header X-Forwarded-Proto https;
+          proxy_hide_header 'Access-Control-Allow-Origin';
+          proxy_set_header Access-Control-Allow-Origin *;
+          add_header  Access-Control-Allow-Origin *;
+        }
+      }
+    }

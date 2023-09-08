@@ -1,0 +1,12 @@
+apiVersion: v2
+name: tandoor-recipes
+version: 1.0.0
+dependencies:
+  - name: postgresql
+    version: 12.11.1
+    repository: https://charts.bitnami.com/bitnami
+    condition: tandoor-recipes.enabled
+  - name: common
+    version: "0.1.1"
+    repository: https://chartmuseum.jsnouff.net
+    condition: tandoor-recipes.enabled

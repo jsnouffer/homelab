@@ -1,0 +1,174 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tandoor-recipes
+  labels:
+    app: tandoor-recipes
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: tandoor-recipes
+  template:
+    metadata:
+      labels:
+        app: tandoor-recipes
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/nginx-cm.yaml") . | sha256sum }}
+    spec:
+      restartPolicy: Always
+      initContainers:
+      - name: init-chmod-data
+        env:
+          - name: SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: tandoor-recipes-credentials
+                key: secret-key
+          - name: DB_ENGINE
+            value: django.db.backends.postgresql_psycopg2
+          - name: POSTGRES_HOST
+            value: postgresql
+          - name: POSTGRES_PORT
+            value: "5432"
+          - name: POSTGRES_USER
+            value: postgres
+          - name: POSTGRES_DB
+            value: recipes
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.postgresql.auth.existingSecret }}
+                key: {{ .Values.postgresql.auth.secretKeys.userPasswordKey }}
+        image: vabene1111/recipes
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: 250m
+            memory: 64Mi
+        command:
+        - sh
+        - -c
+        - |
+          set -e
+          source venv/bin/activate
+          echo "Updating database"
+          python manage.py migrate
+          python manage.py collectstatic_js_reverse
+          python manage.py collectstatic --noinput
+          echo "Setting media file attributes"
+          chown -R 65534:65534 /opt/recipes/mediafiles
+          find /opt/recipes/mediafiles -type d | xargs -r chmod 755
+          find /opt/recipes/mediafiles -type f | xargs -r chmod 644
+          echo "Done"
+        securityContext:
+          runAsUser: 0
+        volumeMounts:
+          - name: recipes-pvc
+            mountPath: /opt/recipes/mediafiles
+            subPath: media
+          - name: recipes-pvc
+            mountPath: /opt/recipes/staticfiles
+            subPath: static
+      containers:
+      - name: recipes-nginx
+        image: nginx:latest
+        ports:
+          - containerPort: 80
+            protocol: TCP
+            name: http
+        resources:
+          requests:
+            cpu: 250m
+            memory: 64Mi
+        volumeMounts:
+          - name: recipes-pvc
+            mountPath: /media
+            subPath: media
+          - name: recipes-pvc
+            mountPath: /static
+            subPath: static
+          - name: nginx-config
+            mountPath: /etc/nginx/nginx.conf
+            subPath: nginx-config
+            readOnly: true
+      - name: recipes
+        image: vabene1111/recipes
+        imagePullPolicy: IfNotPresent
+        command:
+          - /script/start-gunicorn.sh
+        ports:
+          - containerPort: 8080
+            protocol: TCP
+            name: gunicorn
+        livenessProbe:
+          failureThreshold: 3
+          periodSeconds: 10
+          successThreshold: 1
+          tcpSocket:
+            port: gunicorn
+          timeoutSeconds: 1
+        readinessProbe:
+          failureThreshold: 3
+          periodSeconds: 10
+          successThreshold: 1
+          tcpSocket:
+            port: gunicorn
+          timeoutSeconds: 1
+        env:
+          - name: DEBUG
+            value: "0"
+          - name: ALLOWED_HOSTS
+            value: '*'
+          - name: SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: tandoor-recipes-credentials
+                key: secret-key
+          - name: GUNICORN_MEDIA
+            value: "0"
+          - name: DB_ENGINE
+            value: django.db.backends.postgresql_psycopg2
+          - name: POSTGRES_HOST
+            value: postgresql
+          - name: POSTGRES_PORT
+            value: "5432"
+          - name: POSTGRES_USER
+            value: postgres
+          - name: POSTGRES_DB
+            value: recipes
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.postgresql.auth.existingSecret }}
+                key: {{ .Values.postgresql.auth.secretKeys.userPasswordKey }}
+          - name: CSRF_TRUSTED_ORIGINS
+            value: https://recipes.jsnouff.net,https://recipes.jsnouff.io
+        securityContext:
+          runAsUser: 0
+        resources:
+          requests:
+            cpu: 250m
+            memory: 64Mi
+        volumeMounts:
+          - name: recipes-pvc
+            mountPath: /opt/recipes/mediafiles
+            subPath: media
+          - name: recipes-pvc
+            mountPath: /opt/recipes/staticfiles
+            subPath: static
+          - name: gunicorn-config
+            mountPath: /script
+      volumes:
+        - name: recipes-pvc
+          persistentVolumeClaim:
+            claimName: recipes-pvc
+        - name: nginx-config
+          configMap:
+            name: recipes-nginx-config
+        - name: gunicorn-config
+          configMap:
+            name: gunicorn
+            defaultMode: 0777
