@@ -1,9 +1,0 @@
-apiVersion: v2
-name: lazylibrarian
-version: 1.0.0
-appVersion: ba667148-ls122
-dependencies:
-  - name: common
-    version: "0.0.11"
-    repository: https://chartmuseum.jsnouff.net
-    condition: lazylibrarian.enabled
