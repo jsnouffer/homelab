@@ -32,6 +32,9 @@ sections:
         description: Dell Poweredge R710
         icon: hl-proxmox
         url: https://pve1.jsnouff.net
+      - title: PiKVM
+        icon: hl-pikvm
+        url: https://pikvm.jsnouff.net
       - title: iDRAC 6
         description: Dell Poweredge R710
         icon: hl-idrac
