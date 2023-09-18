@@ -28,24 +28,27 @@ sections:
       # cols: 2
       # itemCountX: 6
     items:
-      - title: Proxmox PVE1
-        description: Dell Poweredge R710
-        icon: hl-proxmox
-        url: https://pve1.jsnouff.net
-      - title: PiKVM
-        icon: hl-pikvm
-        url: https://pikvm.jsnouff.net
-      - title: iDRAC 6
-        description: Dell Poweredge R710
-        icon: hl-idrac
-        url: https://idrac.jsnouff.net
       - title: APCUPSD
         description: APCUPSD UPS Network Monitor
         icon: hl-apc
         url: http://pve1.jsnouff.net:8080/cgi-bin/apcupsd/multimon.cgi
+      - title: iDRAC 6
+        description: Dell Poweredge R710
+        icon: hl-idrac
+        url: https://idrac.jsnouff.net
+      - title: PiKVM
+        icon: hl-pikvm
+        url: https://pikvm.jsnouff.net
+      - title: Proxmox PVE1
+        description: Dell Poweredge R710
+        icon: hl-proxmox
+        url: https://pve1.jsnouff.net
       - title: UPS NMC
         icon: hl-apc
         url: https://apc.jsnouff.net
+      - title: Uptime Kuma
+        icon: hl-uptime-kuma
+        url: http://uptime.jsnouff.net
       - title: Ubuntu VM
         icon: hl-ubuntu
         url: https://barenas.jsnouff.net/vm/display/18/vnc.html?path=vm%2Fdisplay%2F18%2F&autoconnect=1
