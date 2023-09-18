@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: lidarr-nfs-completed
+spec:
+  storageClassName: lidarr-nfs-completed
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 250Gi

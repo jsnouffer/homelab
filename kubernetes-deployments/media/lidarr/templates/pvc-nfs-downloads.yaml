@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: lidarr-nfs-downloads
+spec:
+  storageClassName: lidarr-nfs-downloads
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 250Gi

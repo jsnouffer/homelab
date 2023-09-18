@@ -165,6 +165,9 @@ sections:
   - name: Media
     icon: fas fa-camera-movie
     items:
+      - title: Lidarr
+        icon: hl-lidarr
+        url: https://lidarr.jsnouff.net/
       - title: NZBHydra2
         icon: hl-nzbhydra2
         url: https://nzbhydra2.jsnouff.net/
