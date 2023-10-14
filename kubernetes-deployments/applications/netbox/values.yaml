@@ -46,6 +46,19 @@ netbox:
     existingSecretName: db-credentials
     existingSecretKey: password
 
+  housekeeping:
+    affinity:
+      podAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                - netbox
+            topologyKey: kubernetes.io/hostname
 
 postgresql:
   fullnameOverride: postgresql
