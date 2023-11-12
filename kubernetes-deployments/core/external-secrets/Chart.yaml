@@ -1,8 +1,8 @@
 apiVersion: v2
 name: external-secrets
-version: v0.8.1
+version: v0.9.8
 dependencies:
   - name: external-secrets
-    version: 0.8.1
+    version: 0.9.8
     repository: https://charts.external-secrets.io
     condition: external-secrets.enabled

@@ -1,7 +1,7 @@
 apiVersion: v2
 name: ombi
 version: 1.0.0
-appVersion: 4.43.5
+appVersion: 4.43.8-development
 dependencies:
   - name: common
     version: "0.0.11"

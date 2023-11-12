@@ -20,7 +20,7 @@ spec:
           value: "1"
       containers:
         - name: qbittorrent
-          image: linuxserver/qbittorrent:latest
+          image: linuxserver/qbittorrent:{{ $.Chart.AppVersion }}
           imagePullPolicy: IfNotPresent
           env:
             - name: TZ
