@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: curseforge-manual-downloads-script
+data:
+  download-cf-mods.sh: |
+    #!/usr/local/bin/bash
+    cd /mods
+
+    {{- with $.Values.minecraft.manualCurseforgeDownloads }}
+    {{-  range . }}
+    jarName=$(basename {{ . }})
+    if ! [ -f ${jarName} ]; then
+      wget {{ . }}
+    fi
+    {{- end }}
+    {{- end }}
