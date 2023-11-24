@@ -48,3 +48,30 @@ spec:
           #   requests:
           #     cpu: 5m
           #     memory: 48Mi
+          volumeMounts:
+          # - name: config
+          #   mountPath: /data/velocity.toml
+          #   subPath: velocity.toml
+          - name: data
+            mountPath: /data
+      volumes:
+      # - name: config
+      #   configMap:
+      #     name: velocity-config
+        - name: data
+          persistentVolumeClaim:
+            claimName: velocity
+      securityContext:
+        fsGroup: 100
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: velocity
+spec:
+  storageClassName: ceph-block
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi

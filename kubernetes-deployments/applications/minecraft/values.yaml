@@ -8,6 +8,8 @@ minecraft:
     difficulty: normal
     type: AUTO_CURSEFORGE
     memory: 10240M
+    onlineMode: false
+
     autoCurseForge:
       pageUrl: https://www.curseforge.com/minecraft/modpacks/all-the-mods-9
       apiKey:
@@ -29,6 +31,7 @@ minecraft:
     - https://mediafilez.forgecdn.net/files/4881/868/allthewizardgear-1.20.1-1.0.8.jar
     - https://mediafilez.forgecdn.net/files/4763/645/entityculling-forge-1.6.2-mc1.20.1.jar
     - https://mediafilez.forgecdn.net/files/4802/113/totw_modded-1.0.2-1.20.1.jar
+    - https://cdn.modrinth.com/data/vDyrHl8l/versions/K43ePlgq/proxy-compatible-forge-1.20-1.1.4.jar
 
   initContainers:
     - name: curseforge-manual-downloads
@@ -68,3 +71,9 @@ minecraft:
     dataDir:
       enabled: true
       Size: 8Gi
+
+minecraft-proxy:
+  nameOverride: mcproxy
+  minecraftProxy:
+    type: VELOCITY
+    velocityVersion: 3.2.0-SNAPSHOT

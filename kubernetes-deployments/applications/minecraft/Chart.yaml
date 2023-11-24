@@ -6,3 +6,7 @@ dependencies:
     version: 4.11.0
     repository: https://itzg.github.io/minecraft-server-charts/
     condition: minecraft.enabled
+  - name: minecraft-proxy
+    version: 3.3.1
+    repository: https://itzg.github.io/minecraft-server-charts/
+    condition: minecraft.enabled
