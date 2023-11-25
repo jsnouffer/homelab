@@ -3,6 +3,9 @@ atm9:
 
   nameOverride: atm9
 
+  podLabels:
+    expose-minecraft-server: "true"
+
   minecraftServer:
     eula: "true"
     difficulty: normal

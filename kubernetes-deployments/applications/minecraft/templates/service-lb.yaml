@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: minecraft-servers-lb
+spec:
+  selector:
+    expose-minecraft-server: "true"
+  ports:
+  {{- $lbPort := 25565 }}
+  {{-  range $key, $value := $.Values }}
+  {{- with $value.minecraftServer}}
+    - name: {{ $key }}
+      port: {{ $lbPort }}
+      protocol: TCP
+      targetPort: minecraft
+  {{- $lbPort = add1 $lbPort }}
+  {{- end }}
+  {{- end }}
+  sessionAffinity: None
+  type: LoadBalancer
+
