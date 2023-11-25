@@ -12,6 +12,23 @@ spec:
       labels:
         app.kubernetes.io/name: velocity
     spec:
+      initContainers:
+        - name: manual-plugin-downloads
+          image: bash
+          command: ["bash"]
+          args:
+            - -c
+            - |
+              mkdir -p /data/plugins
+              /scripts/download-mods.sh /data/plugins
+              cp /config/velocity.toml /data
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: manual-mod-downloads
+              mountPath: /scripts
+            - name: config
+              mountPath: /config
       containers:
         - name: velocity
           image: dockcenter/velocity:3.2.0-SNAPSHOT
@@ -55,12 +72,16 @@ spec:
           - name: data
             mountPath: /data
       volumes:
-      # - name: config
-      #   configMap:
-      #     name: velocity-config
+        - name: config
+          configMap:
+            name: velocity-config
         - name: data
           persistentVolumeClaim:
             claimName: velocity
+        - name: manual-mod-downloads
+          configMap:
+            name: manual-mod-downloads-velocity
+            defaultMode: 0777
       securityContext:
         fsGroup: 100
 ---

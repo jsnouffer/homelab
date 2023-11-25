@@ -1,0 +1,20 @@
+{{- with $.Values.manualModDownloads }}
+{{-  range $key, $value := . }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: manual-mod-downloads-{{ $key }}
+data:
+  download-mods.sh: |
+    #!/usr/local/bin/bash
+    cd ${1}
+
+    {{-  range $value }}
+    jarName=$(basename {{ . }})
+    if ! [ -f ${jarName} ]; then
+      wget {{ . }}
+    fi
+    {{- end }}
+{{- end }}
+{{- end }}

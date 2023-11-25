@@ -38,3 +38,9 @@ traefik:
   ingressRoute:
     dashboard:
       enabled: false
+  ports:
+    mc-velocity:
+      port: 25565
+      exposedPort: 25565
+      expose: true
+      protocol: TCP
