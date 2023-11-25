@@ -32,6 +32,10 @@ sections:
         description: APCUPSD UPS Network Monitor
         icon: hl-apc
         url: http://pve1.jsnouff.net:8080/cgi-bin/apcupsd/multimon.cgi
+      - title: Dockge
+        description: Dockge on hped1
+        icon: https://raw.githubusercontent.com/louislam/dockge/master/frontend/public/icon.svg
+        url: http://dockge.jsnouff.net
       - title: iDRAC 6
         description: Dell Poweredge R710
         icon: hl-idrac
