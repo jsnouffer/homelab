@@ -2,12 +2,12 @@
 apiVersion: traefik.io/v1alpha1
 kind: IngressRouteTCP
 metadata:
-  name: mc-velocity
+  name: minecraft-tcp
 spec:
   entryPoints:
-    - mc-velocity
+    - minecraft
   routes:
   - match: HostSNI(`*`)
     services:
-    - name: velocity
-      port: 25577
+    - name: minecraft-mcserver
+      port: 25565

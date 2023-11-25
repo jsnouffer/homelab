@@ -39,7 +39,7 @@ traefik:
     dashboard:
       enabled: false
   ports:
-    mc-velocity:
+    minecraft:
       port: 25565
       exposedPort: 25565
       expose: true

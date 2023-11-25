@@ -1,8 +1,0 @@
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: velocity-config
-data:
-  velocity.toml: |
-{{ .Files.Get "files/velocity.toml" | indent 4 }}
