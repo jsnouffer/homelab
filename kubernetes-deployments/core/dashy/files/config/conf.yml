@@ -141,6 +141,9 @@ sections:
       - title: Argo Workflows
         icon: hl-argocd
         url: https://workflows.jsnouff.net/
+      - title: FreshRSS
+        icon: hl-freshrss
+        url: https://freshrss.jsnouff.net/
       - title: Immich
         icon: hl-immich
         url: https://immich.jsnouff.net/
