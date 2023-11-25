@@ -1,11 +1,8 @@
 atm9:
   enabled: true
-
   nameOverride: atm9
-
   podLabels:
     expose-minecraft-server: "true"
-
   minecraftServer:
     eula: "true"
     difficulty: normal
@@ -13,7 +10,6 @@ atm9:
     memory: 10240M
     onlineMode: true
     motd: All The Mods 9
-
     autoCurseForge:
       pageUrl: https://www.curseforge.com/minecraft/modpacks/all-the-mods-9/files/4885522
       apiKey:
@@ -23,14 +19,13 @@ atm9:
       enabled: true
       existingSecret: minecraft-admin-password
       secretKey: password
-
   mcbackup:
     enabled: true
     initialDelay: 10m
     backupMethod: restic
     rconRetries: -1
     rconRetryInterval: 30s
-    resticRepository: s3:http://barenas.jsnouff.net:9000/atm9-backups
+    resticRepository: s3:http://barenas.jsnouff.net:9000/minecraft-backups-atm9
     extraEnv:
       RESTIC_PASSWORD:
         valueFrom:
@@ -47,7 +42,6 @@ atm9:
           secretKeyRef:
             name: restic-backup-credentials
             key: s3SecretKey
-
   initContainers:
     - name: manual-mod-downloads
       image: bash
@@ -61,19 +55,16 @@ atm9:
           subPath: mods
         - name: manual-mod-downloads-atm9
           mountPath: /scripts
-
   extraVolumes:
     - volumes:
         - name: manual-mod-downloads-atm9
           configMap:
             name: manual-mod-downloads-atm9
             defaultMode: 0777
-
   startupProbe:
     enabled: true
     failureThreshold: 50
     periodSeconds: 20
-
   resources:
     requests:
       memory: 10Gi
@@ -81,11 +72,93 @@ atm9:
     limits:
       memory: 16Gi
       cpu: 2500m
-
   persistence:
     dataDir:
       enabled: true
-      Size: 6Gi
+      Size: 5Gi
+
+bettermc:
+  enabled: true
+  nameOverride: better-mc
+  podLabels:
+    expose-minecraft-server: "true"
+  minecraftServer:
+    eula: "true"
+    difficulty: normal
+    type: AUTO_CURSEFORGE
+    memory: 6144M
+    onlineMode: true
+    motd: Better MC [FORGE] - Vanilla Plus Server
+    autoCurseForge:
+      pageUrl: https://www.curseforge.com/minecraft/modpacks/better-mc-forge-bmc4/files/4863838
+      excludeMods:
+        - midnightlib
+        - ryoamiclights
+        - yungs-menu-tweaks
+      apiKey:
+          existingSecret: curseforge-api-key
+          secretKey: key
+    rcon:
+      enabled: true
+      existingSecret: minecraft-admin-password
+      secretKey: password
+  mcbackup:
+    enabled: true
+    initialDelay: 10m
+    backupMethod: restic
+    rconRetries: -1
+    rconRetryInterval: 30s
+    resticRepository: s3:http://barenas.jsnouff.net:9000/minecraft-backups-bettermc
+    extraEnv:
+      RESTIC_PASSWORD:
+        valueFrom:
+          secretKeyRef:
+            name: restic-backup-credentials
+            key: resticKey
+      AWS_ACCESS_KEY_ID:
+        valueFrom:
+          secretKeyRef:
+            name: restic-backup-credentials
+            key: s3AccessKey
+      AWS_SECRET_ACCESS_KEY:
+        valueFrom:
+          secretKeyRef:
+            name: restic-backup-credentials
+            key: s3SecretKey
+  initContainers:
+    - name: manual-mod-downloads
+      image: bash
+      command: ["bash"]
+      args:
+        - -c
+        - /scripts/download-mods.sh /mods
+      volumeMounts:
+        - name: datadir
+          mountPath: /mods
+          subPath: mods
+        - name: manual-mod-downloads-bettermc
+          mountPath: /scripts
+  extraVolumes:
+    - volumes:
+        - name: manual-mod-downloads-bettermc
+          configMap:
+            name: manual-mod-downloads-bettermc
+            defaultMode: 0777
+  startupProbe:
+    enabled: true
+    failureThreshold: 50
+    periodSeconds: 20
+  resources:
+    requests:
+      memory: 6Gi
+      cpu: 1500m
+    limits:
+      memory: 10Gi
+      cpu: 2500m
+  persistence:
+    dataDir:
+      enabled: true
+      Size: 5Gi
 
 manualModDownloads:
   atm9:
@@ -99,3 +172,9 @@ manualModDownloads:
     - https://mediafilez.forgecdn.net/files/4881/868/allthewizardgear-1.20.1-1.0.8.jar
     - https://mediafilez.forgecdn.net/files/4763/645/entityculling-forge-1.6.2-mc1.20.1.jar
     - https://mediafilez.forgecdn.net/files/4802/113/totw_modded-1.0.2-1.20.1.jar
+  bettermc:
+    - https://mediafilez.forgecdn.net/files/4785/334/blossom-blade-1.0.jar
+    - https://mediafilez.forgecdn.net/files/4767/394/Structory_1.20.2_v1.3.3.jar
+    - https://mediafilez.forgecdn.net/files/4780/547/Structory_Towers_1.20.2_v1.0.5.jar
+    - https://mediafilez.forgecdn.net/files/4846/267/PacketFixer-forge-1.2.0-1.20.1.jar
+    - https://mediafilez.forgecdn.net/files/4823/590/extra_compat-1.3.1.jar
