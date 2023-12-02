@@ -33,9 +33,9 @@ sections:
         icon: hl-apc
         url: http://pve1.jsnouff.net:8080/cgi-bin/apcupsd/multimon.cgi
       - title: Dockge
-        description: Dockge on hped1
+        description: Dockge on octavia
         icon: https://raw.githubusercontent.com/louislam/dockge/master/frontend/public/icon.svg
-        url: http://dockge.jsnouff.net
+        url: https://dockge.jsnouff.net
       - title: iDRAC 6
         description: Dell Poweredge R710
         icon: hl-idrac
@@ -52,7 +52,7 @@ sections:
         url: https://apc.jsnouff.net
       - title: Uptime Kuma
         icon: hl-uptime-kuma
-        url: http://uptime.jsnouff.net
+        url: https://uptime.jsnouff.net
       - title: Ubuntu VM
         icon: hl-ubuntu
         url: https://barenas.jsnouff.net/vm/display/18/vnc.html?path=vm%2Fdisplay%2F18%2F&autoconnect=1
@@ -74,13 +74,13 @@ sections:
         url: https://my.nordaccount.com/dashboard/
       - title: Pi-hole (1)
         icon: hl-pihole
-        url: http://hped1.jsnouff.net/
+        url: https://pihole.jsnouff.net/
       - title: Pi-hole (2)
         icon: hl-pihole
         url: http://barenas.jsnouff.net:9089/admin/
-      - title: Traefik (hped1)
+      - title: Traefik (octavia)
         icon: hl-traefik
-        url: http://hped1.jsnouff.net:8080/
+        url: http://octavia.jsnouff.net:8080/
   - name: Storage
     icon: fas fa-hdd
     items:

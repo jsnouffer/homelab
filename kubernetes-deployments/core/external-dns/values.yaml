@@ -10,7 +10,7 @@ external-dns:
           name: pihole-password
           key: pihole_password
   extraArgs:
-    - --pihole-server=http://hped1.jsnouff.net
+    - --pihole-server=https://pihole.jsnouff.net
   resources:
     limits:
       cpu: 50m

@@ -5,6 +5,6 @@ metadata:
 data:
   config: |
     Host pihole
-        HostName hped1.jsnouff.net
+        HostName octavia.jsnouff.net
         User jason
         StrictHostKeyChecking no
