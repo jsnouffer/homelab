@@ -197,6 +197,9 @@ sections:
       - title: Sonarr
         icon: hl-sonarr
         url: https://sonarr.jsnouff.net/
+      - title: Tautulli
+        icon: hl-tautulli
+        url: https://tautulli.jsnouff.net/
   - name: Audiobooks
     icon: fas fa-file-audio
     items:
