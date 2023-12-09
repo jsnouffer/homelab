@@ -12,7 +12,14 @@ changedetection:
             PUID: "1000"
             PGID: "1000"
             HIDE_REFERER: "true"
-            PLAYWRIGHT_DRIVER_URL: ws://playwright-chrome:3000/?stealth=1&--disable-web-security=true
+            PLAYWRIGHT_DRIVER_URL: ws://changedetection:3000/?stealth=1&--disable-web-security=true
+          resources:
+            requests:
+              cpu: 10m
+              memory: 200Mi
+            limits:
+              cpu: 150m
+              memory: 400Mi
         playwright-chrome:
           image:
             repository: browserless/chrome
@@ -29,15 +36,19 @@ changedetection:
             DEFAULT_BLOCK_ADS: "true"
             DEFAULT_STEALTH: "true"
             DEFAULT_IGNORE_HTTPS_ERRORS: "true"
+          resources:
+            requests:
+              cpu: 25m
+              memory: 1Gi
+            limits:
+              cpu: 500m
+              memory: 1500Mi
   service:
     main:
       ports:
         http:
           port: 5000
-    playwright-chrome:
-      controller: playwright-chrome
-      ports:
-        http:
+        chrome:
           port: 3000
   ingress:
     main:
