@@ -148,6 +148,9 @@ sections:
       - title: Change Detection
         icon: hl-changedetection-io
         url: https://changedetection.jsnouff.net/
+      - title: Firefox
+        icon: hl-firefox
+        url: https://firefox.jsnouff.net/
       - title: FreshRSS
         icon: hl-freshrss
         url: https://freshrss.jsnouff.net/
