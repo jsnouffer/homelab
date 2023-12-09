@@ -145,6 +145,9 @@ sections:
       - title: Argo Workflows
         icon: hl-argocd
         url: https://workflows.jsnouff.net/
+      - title: Change Detection
+        icon: hl-changedetection-io
+        url: https://changedetection.jsnouff.net/
       - title: FreshRSS
         icon: hl-freshrss
         url: https://freshrss.jsnouff.net/
