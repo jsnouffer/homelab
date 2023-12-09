@@ -57,8 +57,11 @@ spec:
               mountPath: /config
           resources:
             requests:
-              cpu: 50m
-              memory: 200Mi
+              cpu: 25m
+              memory: 250Mi
+            limits:
+              cpu: 750m
+              memory: 400Mi
       volumes:
         - name: pv-config
           persistentVolumeClaim:

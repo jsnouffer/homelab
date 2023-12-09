@@ -54,7 +54,7 @@ spec:
               mountPath: /audiobooks
           # resources:
           #   requests:
-          #     cpu: 5m
+          #     cpu: 10m
           #     memory: 150Mi
       volumes:
         - name: pv-config

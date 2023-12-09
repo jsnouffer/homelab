@@ -11,7 +11,7 @@ argo-cd:
         cpu: 100m
         memory: 128Mi
       requests:
-        cpu: 5m
+        cpu: 10m
         memory: 48Mi
     ingress:
       enabled: true
@@ -64,7 +64,7 @@ argo-cd:
         cpu: 200m
         memory: 128Mi
       requests:
-        cpu: 5m
+        cpu: 10m
         memory: 24Mi
   notifications:
     enabled: false

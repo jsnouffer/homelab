@@ -8,6 +8,13 @@ firefox:
           image:
             repository: jlesage/firefox
             tag: v23.11.3
+          resources:
+            requests:
+              cpu: 500m
+              memory: 750Mi
+            limits:
+              cpu: 1000m
+              memory: 1500Mi
   service:
     main:
       ports:

@@ -46,20 +46,16 @@ spec:
             tcpSocket:
               port: http
             timeoutSeconds: 1
-          # securityContext:
-          #   runAsGroup: 1000
-          #   runAsNonRoot: true
-          #   runAsUser: 1000
           volumeMounts:
             - name: data
               mountPath: /etc/linkding/data
-          # resources:
-          #   limits:
-          #     cpu: 250m
-          #     memory: 128Mi
-          #   requests:
-          #     cpu: 5m
-          #     memory: 48Mi
+          resources:
+            requests:
+              cpu: 10m
+              memory: 125Mi
+            limits:
+              cpu: 250m
+              memory: 300Mi
       volumes:
         - name: data
           persistentVolumeClaim:

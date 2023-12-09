@@ -6,7 +6,7 @@ external-secrets:
       cpu: 50m
       memory: 80Mi
     requests:
-      cpu: 5m
+      cpu: 10m
       memory: 40Mi
   webhook:
     resources:
@@ -14,7 +14,7 @@ external-secrets:
         cpu: 50m
         memory: 64Mi
       requests:
-        cpu: 5m
+        cpu: 10m
         memory: 32Mi
   certController:
     resources:
@@ -22,7 +22,7 @@ external-secrets:
         cpu: 50m
         memory: 96Mi
       requests:
-        cpu: 5m
+        cpu: 10m
         memory: 48Mi
   secret-stores:
     - name: doppler-secret-store

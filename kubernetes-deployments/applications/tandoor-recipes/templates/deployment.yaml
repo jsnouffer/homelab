@@ -44,10 +44,6 @@ spec:
                 key: {{ .Values.postgresql.auth.secretKeys.userPasswordKey }}
         image: vabene1111/recipes
         imagePullPolicy: Always
-        resources:
-          requests:
-            cpu: 250m
-            memory: 64Mi
         command:
         - sh
         - -c
@@ -72,6 +68,10 @@ spec:
           - name: recipes-pvc
             mountPath: /opt/recipes/staticfiles
             subPath: static
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
       containers:
       - name: recipes-nginx
         image: nginx:latest
@@ -81,8 +81,11 @@ spec:
             name: http
         resources:
           requests:
-            cpu: 250m
-            memory: 64Mi
+            cpu: 10m
+            memory: 8Mi
+          limits:
+            cpu: 50m
+            memory: 24Mi
         volumeMounts:
           - name: recipes-pvc
             mountPath: /media
@@ -150,8 +153,11 @@ spec:
           runAsUser: 0
         resources:
           requests:
+            cpu: 10m
+            memory: 40Mi
+          limits:
             cpu: 250m
-            memory: 64Mi
+            memory: 128Mi
         volumeMounts:
           - name: recipes-pvc
             mountPath: /opt/recipes/mediafiles

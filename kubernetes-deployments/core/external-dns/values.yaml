@@ -16,7 +16,7 @@ external-dns:
       cpu: 50m
       memory: 96Mi
     requests:
-      cpu: 5m
+      cpu: 10m
       memory: 32Mi
 
 external-dns-secondary:
@@ -37,7 +37,7 @@ external-dns-secondary:
       cpu: 50m
       memory: 96Mi
     requests:
-      cpu: 5m
+      cpu: 10m
       memory: 32Mi
   serviceAccount:
     create: false

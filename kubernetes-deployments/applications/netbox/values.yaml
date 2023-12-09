@@ -3,6 +3,27 @@ netbox:
 
   existingSecret: netbox-credentials
 
+  resources:
+    requests:
+      cpu: 20m
+      memory: 150Mi
+    limits:
+      cpu: 1000m
+      memory: 400Mi
+
+  affinity:
+    podAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+            - key: app.kubernetes.io/name
+              operator: In
+              values:
+              - netbox
+          topologyKey: kubernetes.io/hostname
+
   ingress:
     enabled: true
     annotations:
@@ -46,7 +67,30 @@ netbox:
     existingSecretName: db-credentials
     existingSecretKey: password
 
+  worker:
+    resources:
+      requests:
+        cpu: 10m
+        memory: 125Mi
+      limits:
+        cpu: 1000m
+        memory: 300Mi
+    affinity:
+      podAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                - netbox
+            topologyKey: kubernetes.io/hostname
+
   housekeeping:
+    successfulJobsHistoryLimit: 1
+    failedJobsHistoryLimit: 1
     affinity:
       podAffinity:
         preferredDuringSchedulingIgnoredDuringExecution:
@@ -70,6 +114,14 @@ postgresql:
       adminPasswordKey: postgres-password
       userPasswordKey: password
       replicationPasswordKey: replication-password
+  primary:
+    resources:
+      requests:
+        cpu: 20m
+        memory: 32Mi
+      limits:
+        cpu: 250m
+        memory: 300Mi
 
 redis:
   fullnameOverride: redis
@@ -77,6 +129,14 @@ redis:
   auth:
     existingSecret: db-credentials
     existingSecretPasswordKey: password
+  master:
+    resources:
+      requests:
+        cpu: 25m
+        memory: 32Mi
+      limits:
+        cpu: 250m
+        memory: 250Mi
 
 common:
   resticBackups:

@@ -31,5 +31,8 @@ spec:
                   name: "cloudflare-tunnel-token"
           resources:
             requests:
-              cpu: 5m
+              cpu: 10m
               memory: 40Mi
+            limits:
+              cpu: 100m
+              memory: 100Mi

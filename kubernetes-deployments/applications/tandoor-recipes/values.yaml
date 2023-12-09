@@ -4,6 +4,13 @@ tandoor-recipes:
 postgresql:
   fullnameOverride: postgresql
   primary:
+    resources:
+      requests:
+        cpu: 20m
+        memory: 32Mi
+      limits:
+        cpu: 250m
+        memory: 300Mi
     persistence:
       size: 1Gi
   auth:

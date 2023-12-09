@@ -4,6 +4,8 @@ metadata:
   name: nzbhydra2
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app.kubernetes.io/name: nzbhydra2
@@ -67,6 +69,13 @@ spec:
           volumeMounts:
             - name: pv-config
               mountPath: /config
+          resources:
+            requests:
+              cpu: 15m
+              memory: 300Mi
+            limits:
+              cpu: 250m
+              memory: 750Mi
       volumes:
         - name: config
           secret:

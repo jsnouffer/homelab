@@ -52,11 +52,13 @@ spec:
             periodSeconds: 10
             successThreshold: 1
             timeoutSeconds: 1
-          resources: {}
-          # securityContext:
-          #   runAsGroup: 1000
-          #   runAsNonRoot: true
-          #   runAsUser: 1000
+          resources:
+            requests:
+              cpu: 10m
+              memory: 80Mi
+            limits:
+              cpu: 100m
+              memory: 200Mi
           volumeMounts:
             - mountPath: /data
               name: data
