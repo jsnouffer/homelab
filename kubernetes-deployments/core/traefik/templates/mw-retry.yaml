@@ -5,5 +5,5 @@ metadata:
   name: default-retry
 spec:
   retry:
-    attempts: 4
+    attempts: 6
     initialInterval: 100ms

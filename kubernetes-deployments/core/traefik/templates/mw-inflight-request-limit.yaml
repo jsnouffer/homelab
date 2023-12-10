@@ -5,4 +5,4 @@ metadata:
   name: default-inflight-request-limit
 spec:
   inFlightReq:
-    amount: 500
+    amount: 5000

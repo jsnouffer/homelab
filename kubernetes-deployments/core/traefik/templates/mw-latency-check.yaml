@@ -5,4 +5,4 @@ metadata:
   name: default-latency-check
 spec:
   circuitBreaker:
-    expression: LatencyAtQuantileMS(50.0) > 100
+    expression: LatencyAtQuantileMS(50.0) > 500

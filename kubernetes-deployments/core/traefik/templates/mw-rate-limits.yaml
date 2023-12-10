@@ -5,5 +5,5 @@ metadata:
   name: default-rate-limit
 spec:
   rateLimit:
-    average: 1000
-    burst: 500
+    average: 10000
+    burst: 5000
