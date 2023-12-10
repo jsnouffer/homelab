@@ -10,10 +10,10 @@ freshrss:
             tag: 1.22.1
           resources:
             requests:
-              cpu: 10m
+              cpu: 25m
               memory: 80Mi
             limits:
-              cpu: 100m
+              cpu: 250m
               memory: 200Mi
   service:
     main:

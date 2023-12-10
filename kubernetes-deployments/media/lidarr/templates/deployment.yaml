@@ -59,10 +59,10 @@ spec:
               mountPath: /completed
           resources:
             requests:
-              cpu: 10m
+              cpu: 25m
               memory: 150Mi
             limits:
-              cpu: 300m
+              cpu: 500m
               memory: 500Mi
       volumes:
         - name: pv-config
