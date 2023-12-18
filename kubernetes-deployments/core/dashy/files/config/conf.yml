@@ -178,6 +178,9 @@ sections:
   - name: Media
     icon: fas fa-camera-movie
     items:
+      - title: Bazarr
+        icon: hl-bazarr
+        url: https://bazarr.jsnouff.net/
       - title: Lidarr
         icon: hl-lidarr
         url: https://lidarr.jsnouff.net/
