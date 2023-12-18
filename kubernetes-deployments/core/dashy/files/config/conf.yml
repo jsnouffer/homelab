@@ -175,6 +175,9 @@ sections:
       - title: Tandoor Recipes
         icon: hl-tandoor
         url: https://recipes.jsnouff.net/
+      - title: Wallabag
+        icon: hl-wallabag
+        url: https://wallabag.jsnouff.net/
   - name: Media
     icon: fas fa-camera-movie
     items:
