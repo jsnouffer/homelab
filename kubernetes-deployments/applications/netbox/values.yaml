@@ -9,7 +9,7 @@ netbox:
       memory: 150Mi
     limits:
       cpu: 1000m
-      memory: 400Mi
+      memory: 500Mi
 
   affinity:
     podAffinity:

@@ -154,10 +154,10 @@ spec:
         resources:
           requests:
             cpu: 10m
-            memory: 40Mi
+            memory: 64Mi
           limits:
             cpu: 250m
-            memory: 128Mi
+            memory: 200Mi
         volumeMounts:
           - name: recipes-pvc
             mountPath: /opt/recipes/mediafiles
