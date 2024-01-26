@@ -1,0 +1,18 @@
+{{-  range $name, $value := $.Values.scheduled }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: CronWorkflow
+metadata:
+  name: {{ $name }}
+spec:
+  schedule: {{ $value.schedule | quote }}
+  timezone: "America/New_York"
+  startingDeadlineSeconds: 0
+  concurrencyPolicy: "Replace"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  suspend: false
+  workflowSpec:
+    workflowTemplateRef:
+      name: {{ $value.workflowTemplate }}
+{{- end }}

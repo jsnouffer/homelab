@@ -1,0 +1,15 @@
+slackChannels:
+  - pve
+
+ttlStrategy:
+  secondsAfterCompletion: 86400
+  secondsAfterSuccess: 86400
+  secondsAfterFailure: 172800
+podGC:
+  strategy: OnWorkflowSuccess
+  deleteDelayDuration: 2h
+
+scheduled:
+  check-raid-status-daily:
+    workflowTemplate: check-raid-status
+    schedule: "0 12 * * *"

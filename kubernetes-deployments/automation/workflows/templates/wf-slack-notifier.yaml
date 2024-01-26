@@ -1,0 +1,94 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: slack-notifier
+spec:
+  serviceAccountName: workflows-sa
+  ttlStrategy: {{ toYaml $.Values.ttlStrategy | nindent 4 }}
+  podGC: {{ toYaml $.Values.podGC | nindent 4 }}
+  entrypoint: main
+  arguments:
+    parameters:
+    - name: slack-channel
+      enum:
+      {{- range $.Values.slackChannels }}
+        - {{ . }}
+      {{- end }}
+    - name: text
+  templates:
+    - name: main
+      inputs:
+        parameters:
+          - name: slack-channel
+          - name: text
+      dag:
+        tasks:
+        - name: get-webhook-url
+          template: get-webhook-url
+          arguments:
+            parameters:
+              - name: slack-channel
+                value: "{{`{{inputs.parameters.slack-channel}}`}}"
+        - name: send
+          depends: get-webhook-url
+          template: send
+          arguments:
+            parameters:
+              - name: webhook-url
+                value: "{{`{{tasks.get-webhook-url.outputs.parameters.webhook-url}}`}}"
+              - name: text
+                value: "{{`{{inputs.parameters.text}}`}}"
+
+    - name: get-webhook-url
+      inputs:
+        parameters:
+          - name: slack-channel
+      script:
+        image: bash:5.2.26
+        command: [bash]
+        source: |
+          echo "channel: ${SLACK_CHANNEL}"
+          {{- range $.Values.slackChannels }}
+          if test "${SLACK_CHANNEL}" = "{{ . }}"; then
+            echo $SLACK_WEBHOOK_{{ . | upper }} > /tmp/webhook_url.txt
+            cat /tmp/webhook_url.txt
+          fi
+          {{- end }}
+        env:
+          - name: SLACK_CHANNEL
+            value: "{{`{{inputs.parameters.slack-channel}}`}}"
+        envFrom:
+          - secretRef:
+              name: slack-webhook-secrets
+      outputs:
+        parameters:
+          - name: webhook-url
+            valueFrom:
+              path: /tmp/webhook_url.txt
+
+    - name: send
+      inputs:
+        parameters:
+          - name: webhook-url
+          - name: text
+      container:
+        image: curlimages/curl:8.5.0
+        command: [sh, -c]
+        args: [
+          "curl -X POST --data-urlencode 'payload={
+            \"blocks\": [
+              {
+                \"type\": \"section\",
+                \"text\": {
+                  \"type\": \"mrkdwn\",
+                  \"text\": \"{{`{{inputs.parameters.text}}`}}\",
+                }
+              }
+            ]
+          }'
+          ${WEBHOOK_URL}"
+        ]
+        env:
+          - name: WEBHOOK_URL
+            value: "{{`{{inputs.parameters.webhook-url}}`}}"

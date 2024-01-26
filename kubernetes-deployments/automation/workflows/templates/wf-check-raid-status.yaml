@@ -1,0 +1,118 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: check-raid-status
+spec:
+  serviceAccountName: workflows-sa
+  volumes:
+    - name: ssh-config
+      projected:
+        defaultMode: 0600
+        sources:
+          - secret:
+              name: ssh-key
+          - configMap:
+              name: ssh-config
+  volumeClaimTemplates:
+    - metadata:
+        name: results
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 50Mi
+  ttlStrategy: {{ toYaml $.Values.ttlStrategy | nindent 4 }}
+  podGC: {{ toYaml $.Values.podGC | nindent 4 }}
+  onExit: exit-handler
+  entrypoint: main
+  templates:
+    - name: main
+      dag:
+        tasks:
+          - name: get-raid-status
+            template: get-raid-status
+          - name: parse-raid-status
+            template: parse-raid-status
+            depends: get-raid-status
+          - name: notify
+            templateRef:
+              name: slack-notifier
+              template: main
+            depends: parse-raid-status
+            arguments:
+              parameters:
+                - name: slack-channel
+                  value: pve
+                - name: text
+                  value: "{{`S.M.A.R.T alert flagged by drive {{item.drive}}`}}"
+            when: "{{`{{item.smart_alert_flagged_by_drive}} == true`}}"
+            withParam: "{{`{{tasks.parse-raid-status.outputs.parameters.drive-status}}`}}"
+
+    - name: exit-handler
+      dag:
+        tasks:
+          - name: notify-failure
+            templateRef:
+              name: slack-notifier
+              template: main
+            arguments:
+              parameters:
+                - name: slack-channel
+                  value: pve
+                - name: text
+                  value: "{{`RAID status workflow {{workflow.name}} failed`}}"
+            when: "{{`{{workflow.status}} != Succeeded`}}"
+
+    - name: get-raid-status
+      script:
+        image: shellhubio/ssh:v0.14.2
+        command: [sh]
+        source: |
+          ssh pve1 "sudo /opt/MegaRAID/perccli/perccli64 /c0/eall/sall show all | grep S.M.A.R.T. -B7" > /results/raid_status.txt
+        volumeMounts:
+          - name: ssh-config
+            mountPath: /root/.ssh
+          - name: results
+            mountPath: /results
+
+    - name: parse-raid-status
+      script:
+        image: python:3.12.1-alpine
+        command: [python]
+        source: |
+          import json
+          with open("/results/raid_status.txt") as f:
+            data = f.read()
+          drive_status_all = data.split("--\n")
+          response = []
+          for drive_status in drive_status_all:
+            drive = drive_status.split("======================")[0].split("State")[0].strip("Drive").strip()
+            drive_status = drive_status.split("======================")[1]
+
+            drive_response: dict = {
+              "drive": drive
+            }
+            for line in drive_status.split("\n"):
+              if line.strip():
+                parts = line.split("=")
+                key = parts[0].strip().lower().replace(" ", "_").replace(".", "")
+                value = parts[1].strip().lower()
+                if value == "yes" or value == "no":
+                  value = True if value == "yes" else False
+                elif value.isdigit():
+                  value = int(value)
+                drive_response[key] = value
+
+            response.append(drive_response)
+
+          with open("/tmp/drive_status.json", "w") as f:
+            f.write(json.dumps(response))
+        volumeMounts:
+          - name: results
+            mountPath: /results
+      outputs:
+        parameters:
+          - name: drive-status
+            valueFrom:
+              path: /tmp/drive_status.json
