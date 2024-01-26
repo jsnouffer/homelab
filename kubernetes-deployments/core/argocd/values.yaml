@@ -89,6 +89,21 @@ argocd-apps:
       namespaceResourceWhitelist:
       - group: '*'
         kind: '*'
+    - name: automation
+      description: Project for automation deployments
+      finalizers:
+      - resources-finalizer.argocd.argoproj.io
+      sourceRepos:
+      - '*'
+      destinations:
+      - namespace: '*'
+        server: '*'
+      clusterResourceWhitelist:
+      - group: '*'
+        kind: '*'
+      namespaceResourceWhitelist:
+      - group: '*'
+        kind: '*'
     - name: core
       description: Project for core services
       finalizers:
@@ -151,6 +166,37 @@ argocd-apps:
           argocd.argoproj.io/manifest-generate-paths: .
       spec:
         project: applications
+        source:
+          repoURL: git@github.com:jsnouffer/homelab.git
+          targetRevision: HEAD
+          path: '{{ .path.path }}'
+        destination:
+          server: https://kubernetes.default.svc
+          namespace: '{{ base .path.path }}'
+        revisionHistoryLimit: 5
+        syncPolicy:
+          syncOptions:
+          - ApplyOutOfSyncOnly=true
+          - CreateNamespace=true
+          - RespectIgnoreDifferences=true
+          - PruneLast=true
+        ignoreDifferences: []
+  - name: automation
+    goTemplate: true
+    generators:
+    - git:
+        repoURL: git@github.com:jsnouffer/homelab.git
+        revision: HEAD
+        directories:
+        - path: kubernetes-deployments/automation/*
+    template:
+      metadata:
+        name: '{{ base .path.path }}'
+        labels: {}
+        annotations:
+          argocd.argoproj.io/manifest-generate-paths: .
+      spec:
+        project: automation
         source:
           repoURL: git@github.com:jsnouffer/homelab.git
           targetRevision: HEAD
