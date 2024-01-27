@@ -209,6 +209,9 @@ sections:
       - title: Tautulli
         icon: hl-tautulli
         url: https://tautulli.jsnouff.net/
+      - title: ytdl-sub
+        icon: hl-youtubedl
+        url: https://ytdl-sub.jsnouff.net/
   - name: Audiobooks
     icon: fas fa-file-audio
     items:
