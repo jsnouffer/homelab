@@ -184,6 +184,9 @@ sections:
       - title: Lidarr
         icon: hl-lidarr
         url: https://lidarr.jsnouff.net/
+      - title: MeTube
+        icon: hl-metube
+        url: https://metube.jsnouff.net/
       - title: NZBHydra2
         icon: hl-nzbhydra2
         url: https://nzbhydra2.jsnouff.net/
@@ -209,9 +212,6 @@ sections:
       - title: Tautulli
         icon: hl-tautulli
         url: https://tautulli.jsnouff.net/
-      - title: ytdl-sub
-        icon: hl-youtubedl
-        url: https://ytdl-sub.jsnouff.net/
   - name: Audiobooks
     icon: fas fa-file-audio
     items:
