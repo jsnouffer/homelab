@@ -53,3 +53,10 @@ metube:
         main:
           main:
             - path: /downloads
+    media:
+      enabled: true
+      existingClaim: metube-plex-media
+      advancedMounts:
+        main:
+          main:
+            - path: /media

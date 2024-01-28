@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: metube-plex-media
+spec:
+  storageClassName: metube-plex-media
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 250Gi
