@@ -1,0 +1,222 @@
+piped-backend:
+  global:
+    fullnameOverride: piped
+  controllers:
+    main:
+      enabled: false
+    backend:
+      containers:
+        backend:
+          image:
+            repository: 1337kavin/piped
+            tag: latest
+          probes:
+            liveness: &lr-probe
+              enabled: true
+              spec:
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                timeoutSeconds: 1
+                failureThreshold: 3
+            readiness: *lr-probe
+            startup: &startup-probe
+              enabled: true
+              spec:
+                initialDelaySeconds: 0
+                timeoutSeconds: 1
+                periodSeconds: 5
+                failureThreshold: 30
+
+  persistence:
+    config:
+      enabled: true
+      type: secret
+      name: piped-config
+      advancedMounts:
+        backend:
+          backend:
+            - path: /app/config.properties
+              subPath: config.properties
+
+  service:
+    main:
+      enabled: false
+    backend:
+      controller: backend
+      ports:
+        http:
+          port: 8080
+
+  ingress:
+    backend:
+      enabled: true
+      hosts:
+        - host: &pipedapi-domain pipedapi.jsnouff.net
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: backend
+      tls:
+        - hosts:
+            - *pipedapi-domain
+          secretName: pipedapi-tls-secret
+      annotations:
+        cert-manager.io/cluster-issuer: lets-encrypt-production
+        ingress.kubernetes.io/force-ssl-redirect: "true"
+        ingress.kubernetes.io/protocol: http
+        kubernetes.io/ingress.class: traefik
+        kubernetes.io/tls-acme: "true"
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls: "true"
+
+piped-frontend:
+  global:
+    fullnameOverride: piped
+  controllers:
+    main:
+      enabled: false
+    frontend:
+      containers:
+        frontend:
+          image:
+            repository: 1337kavin/piped-frontend
+            tag: latest
+          env:
+            BACKEND_HOSTNAME: *pipedapi-domain
+          probes:
+            liveness: *lr-probe
+            readiness: *lr-probe
+            startup: *startup-probe
+
+  service:
+    main:
+      enabled: false
+    frontend:
+      controller: frontend
+      ports:
+        http:
+          port: 80
+
+  ingress:
+    frontend:
+      enabled: true
+      hosts:
+        - host: &piped-domain piped.jsnouff.net
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: frontend
+      tls:
+        - hosts:
+            - *piped-domain
+          secretName: piped-tls-secret
+      annotations:
+        cert-manager.io/cluster-issuer: lets-encrypt-production
+        ingress.kubernetes.io/force-ssl-redirect: "true"
+        ingress.kubernetes.io/protocol: http
+        kubernetes.io/ingress.class: traefik
+        kubernetes.io/tls-acme: "true"
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls: "true"
+
+piped-ytproxy:
+  global:
+    fullnameOverride: piped
+  controllers:
+    main:
+      enabled: false
+    ytproxy:
+      containers:
+        ytproxy:
+          image:
+            repository: 1337kavin/piped-proxy
+            tag: latest
+          command: /app/piped-proxy
+          probes:
+            liveness: *lr-probe
+            readiness: *lr-probe
+            startup: *startup-probe
+
+  service:
+    main:
+      enabled: false
+    ytproxy:
+      controller: ytproxy
+      ports:
+        http:
+          port: 8080
+
+  ingress:
+    ytproxy:
+      enabled: true
+      hosts:
+        - host: &ytproxy-domain piped-ytproxy.jsnouff.net
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: ytproxy
+      tls:
+        - hosts:
+            - *ytproxy-domain
+          secretName: ytproxy-tls-secret
+      annotations:
+        cert-manager.io/cluster-issuer: lets-encrypt-production
+        ingress.kubernetes.io/force-ssl-redirect: "true"
+        ingress.kubernetes.io/protocol: http
+        kubernetes.io/ingress.class: traefik
+        kubernetes.io/tls-acme: "true"
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls: "true"
+
+postgresql:
+  fullnameOverride: postgresql
+  primary:
+    resources:
+      requests:
+        cpu: 20m
+        memory: 32Mi
+      limits:
+        cpu: 250m
+        memory: 300Mi
+    persistence:
+      size: 1Gi
+  auth:
+    username: piped
+    database: piped
+    existingSecret: db-credentials
+    secretKeys:
+      adminPasswordKey: postgres-password
+      userPasswordKey: password
+      replicationPasswordKey: replication-password
+  serviceAccount:
+    create: false
+
+common:
+  resticBackups:
+    enabled: true
+    targets:
+      piped-postgresql:
+        pvcName: data-postgresql-0
+        bucket: piped-postgresql-backup
+        restoreVersion: latest
+        affinity:
+          podAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: statefulset.kubernetes.io/pod-name
+                    operator: In
+                    values:
+                    - postgresql-0
+                topologyKey: kubernetes.io/hostname
