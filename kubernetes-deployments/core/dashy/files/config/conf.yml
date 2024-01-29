@@ -175,6 +175,9 @@ sections:
       - title: Wallabag
         icon: hl-wallabag
         url: https://wallabag.jsnouff.net/
+      - title: Wiki.js
+        icon: hl-wikijs
+        url: https://wikijs.jsnouff.net/
   - name: Media
     icon: fas fa-camera-movie
     items:
@@ -193,6 +196,9 @@ sections:
       - title: Ombi
         icon: hl-ombi
         url: https://ombi.jsnouff.net/
+      - title: Piped
+        icon: https://avatars.githubusercontent.com/u/74294114?s=48&v=4
+        url: https://piped.jsnouff.net/
       - title: Plex
         description: hosted on TrueNas Bare-metal server
         icon: hl-plex
