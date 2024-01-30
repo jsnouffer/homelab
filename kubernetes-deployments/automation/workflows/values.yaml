@@ -9,6 +9,9 @@ podGC:
   strategy: OnWorkflowSuccess
   deleteDelayDuration: 2h
 
+images:
+  python: ghcr.io/jsnouffer/docker-containers/python-tools:latest
+
 scheduled:
   check-raid-status-daily:
     workflowTemplate: check-raid-status
