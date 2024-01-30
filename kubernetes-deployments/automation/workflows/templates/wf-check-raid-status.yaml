@@ -59,7 +59,7 @@ spec:
             arguments:
               parameters:
                 - name: slack-channel
-                  value: pve
+                  value: workflows
                 - name: text
                   value: "{{`RAID status workflow {{workflow.name}} failed`}}"
             when: "{{`{{workflow.status}} != Succeeded`}}"
