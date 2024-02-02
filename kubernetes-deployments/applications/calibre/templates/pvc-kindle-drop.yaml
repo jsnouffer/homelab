@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: calibre-kindle-drop
+spec:
+  storageClassName: calibre-kindle-drop
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 25Gi

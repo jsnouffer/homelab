@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: calibre-plex-media
+spec:
+  storageClassName: calibre-plex-media
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 25Gi

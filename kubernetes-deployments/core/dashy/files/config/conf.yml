@@ -218,12 +218,18 @@ sections:
       - title: Tautulli
         icon: hl-tautulli
         url: https://tautulli.jsnouff.net/
-  - name: Audiobooks
-    icon: fas fa-file-audio
+  - name: Books
+    icon: fas fa-book
     items:
       - title: Audiobookshelf
         icon: hl-audiobookshelf
         url: https://audiobookshelf.jsnouff.net/
-      - title: Readarr
+      - title: Readarr (Audiobooks)
         icon: hl-readarr
         url: https://readarr.jsnouff.net/
+      - title: Calibre
+        icon: hl-calibre
+        url: https://calibre.jsnouff.net/
+      - title: Calibre Web
+        icon: hl-calibre-web
+        url: https://calibre-web.jsnouff.net/

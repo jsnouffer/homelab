@@ -43,7 +43,7 @@ inputs = {
       disks = [
         {
           type = "scsi"
-          size = "75G"
+          size = "150G"
         },
         {
           type = "scsi"
@@ -62,7 +62,7 @@ inputs = {
       disks = [
         {
           type = "scsi"
-          size = "75G"
+          size = "150G"
         },
         {
           type = "scsi"
@@ -81,7 +81,7 @@ inputs = {
       disks = [
         {
           type = "scsi"
-          size = "75G"
+          size = "150G"
         },
         {
           type = "scsi"
