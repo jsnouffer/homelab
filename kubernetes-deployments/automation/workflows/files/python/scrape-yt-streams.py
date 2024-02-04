@@ -29,7 +29,7 @@ for api_url in api_urls:
             youtube_link = youtube_link.replace(replacement, "youtube.com")
 
         req = requests.get(f"https://{self_hosted_domain}/streams/{id}")
-        if req.json()["duration"] > 60 * 60:
+        if req.json()["duration"] > 60 * 60 or req.json()["duration"] == 0:
             print(f"{entry['title']} - {youtube_link}")
             content += f"* [{entry['title']}]({youtube_link})\n"
 
