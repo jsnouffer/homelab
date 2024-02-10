@@ -1,7 +1,7 @@
 provider "proxmox-telmate" {
   pm_api_url      = "${var.proxmox_config.api_url}/api2/json"
   pm_user         = var.proxmox_config.api_user
-  pm_password     = var.api_password
+  pm_password     = var.proxmox_password
   pm_tls_insecure = true
 }
 
@@ -9,9 +9,21 @@ provider "proxmox-bpg" {
   virtual_environment {
     endpoint = var.proxmox_config.api_url
     username = var.proxmox_config.api_user
-    password = var.api_password
+    password = var.proxmox_password
     insecure = true
   }
+}
+
+provider "pihole" {
+  alias    = "primary"
+  url      = var.pihole_primary
+  password = var.pihole_password
+}
+
+provider "pihole" {
+  alias    = "secondary"
+  url      = var.pihole_secondary
+  password = var.pihole_password
 }
 
 resource "proxmox_virtual_environment_pool" "cluster_pool" {
@@ -63,7 +75,22 @@ resource "proxmox_vm_qemu" "vms" {
     }
   }
 
+  ciuser                  = "cloud-user"
   cloudinit_cdrom_storage = "local-lvm"
   sshkeys                 = var.ssh_key
   ipconfig0               = "ip=${each.value.ip}/16,gw=${var.gateway}"
+}
+
+resource "pihole_dns_record" "pihole_primary_records" {
+  provider = pihole.primary
+  for_each = var.node_configs
+  domain   = "${each.key}.${var.pihole_records_base_domain}"
+  ip       = each.value.ip
+}
+
+resource "pihole_dns_record" "pihole_secondary_records" {
+  provider = pihole.secondary
+  for_each = var.node_configs
+  domain   = "${each.key}.${var.pihole_records_base_domain}"
+  ip       = each.value.ip
 }

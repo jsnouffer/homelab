@@ -1,4 +1,9 @@
-variable "api_password" {
+variable "proxmox_password" {
+  type      = string
+  sensitive = true
+}
+
+variable "pihole_password" {
   type      = string
   sensitive = true
 }
@@ -42,4 +47,16 @@ variable "node_configs" {
     }))
     usb = list(string)
   }))
+}
+
+variable "pihole_primary" {
+  type = string
+}
+
+variable "pihole_secondary" {
+  type = string
+}
+
+variable "pihole_records_base_domain" {
+  type = string
 }

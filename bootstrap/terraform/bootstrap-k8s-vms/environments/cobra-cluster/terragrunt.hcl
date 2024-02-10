@@ -1,18 +1,12 @@
-inputs = {
-  api_password = run_cmd("--terragrunt-quiet", "./get-password.sh", "~/.proxmox-api-password")
-  ssh_key      = run_cmd("--terragrunt-quiet", "./get-password.sh", "~/.ssh/id_rsa.pub")
+include {
+  path = find_in_parent_folders()
+}
 
-  proxmox_config = {
-    api_url          = "https://pve1man.jsnouff.net"
-    api_user         = "root@pam"
-    target_node      = "pve1"
-    bridge_interface = "vmbr0"
-    storage_pool     = "local-lvm"
-  }
+
+inputs = {
 
   cluster_name     = "cobra"
   vm_template_name = "rocky9-template"
-  gateway          = "192.168.1.1"
 
   node_configs = {
     "cobra-cp" = {

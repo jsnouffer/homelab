@@ -21,6 +21,10 @@ variable "ssh_password" {
   type = string
 }
 
+variable "ssh_password_encrypted" {
+  type = string
+}
+
 variable "user_password" {
   type    = string
   default = env("USER_PASSWORD")

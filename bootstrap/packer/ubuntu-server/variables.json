@@ -7,9 +7,9 @@
     "storage_pool": "local-lvm"
   },
   "iso_config": {
-    "iso_file": "local:iso/Rocky-9.2-x86_64-dvd.iso",
-    "iso_url": "https://download.rockylinux.org/pub/rocky/9/isos/x86_64/Rocky-9.2-x86_64-dvd.iso",
-    "iso_checksum": "cd43bb2671472471b1fc0a7a30113dfc9a56831516c46f4dbd12fb43bb4286d2",
+    "iso_file": "local:iso/ubuntu-22.04.3-live-server-amd64.iso",
+    "iso_url": "https://releases.ubuntu.com/22.04.3/ubuntu-22.04.3-live-server-amd64.iso",
+    "iso_checksum": "a4acfda10b18da50e2ec50ccaf860d7f20b389df8765611142305c0e911d16fd",
     "iso_storage_pool": "local"
   },
   "boot_disk_config": {
@@ -26,6 +26,7 @@
     "bridge": "vmbr0",
     "model": "virtio"
   },
-  "ssh_username": "root",
-  "ssh_password": "Packer"
+  "ssh_username": "cloud-user",
+  "ssh_password": "Packer",
+  "ssh_password_encrypted": "$1$ykTq46Ds$j8p0Vkw55A89L0yq.Om2d/"
 }
