@@ -5,13 +5,13 @@ icon: https://argo-cd.readthedocs.io/en/stable/assets/logo.png
 sources:
   - https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd
   - https://github.com/argoproj/argo-cd
-version: v2.9.0
+version: v2.10.0
 dependencies:
   - name: argo-cd
-    version: 5.51.1
+    version: 6.0.5
     repository: https://argoproj.github.io/argo-helm
     condition: argo-cd.enabled
   - name: argocd-apps
-    version: 1.4.1
+    version: 1.6.1
     repository: https://argoproj.github.io/argo-helm
     condition: argocd-apps.enabled

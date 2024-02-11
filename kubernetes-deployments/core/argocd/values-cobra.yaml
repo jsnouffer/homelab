@@ -3,6 +3,7 @@ argo-cd:
   configs:
     params:
       server.insecure: "true"
+      applicationsetcontroller.policy: create-update
     secret:
       createSecret: false
   server:
@@ -26,8 +27,7 @@ argo-cd:
         traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
         traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
         traefik.ingress.kubernetes.io/router.tls: "true"
-      hosts:
-        - argocd.jsnouff.net
+      hostname: argocd.jsnouff.net
       tls:
         - secretName: tls-secret
           hosts:
@@ -152,6 +152,8 @@ argocd-apps:
   applicationsets:
   - name: applications
     goTemplate: true
+    syncPolicy:
+      preserveResourcesOnDeletion: true
     generators:
     - git:
         repoURL: git@github.com:jsnouffer/homelab.git
@@ -170,6 +172,9 @@ argocd-apps:
           repoURL: git@github.com:jsnouffer/homelab.git
           targetRevision: HEAD
           path: '{{ .path.path }}'
+          helm:
+            valueFiles:
+              - values-cobra.yaml
         destination:
           server: https://kubernetes.default.svc
           namespace: '{{ base .path.path }}'
@@ -181,6 +186,8 @@ argocd-apps:
           - RespectIgnoreDifferences=true
           - PruneLast=true
         ignoreDifferences: []
+    syncPolicy:
+      preserveResourcesOnDeletion: true
   - name: automation
     goTemplate: true
     generators:
@@ -201,6 +208,9 @@ argocd-apps:
           repoURL: git@github.com:jsnouffer/homelab.git
           targetRevision: HEAD
           path: '{{ .path.path }}'
+          helm:
+            valueFiles:
+              - values-cobra.yaml
         destination:
           server: https://kubernetes.default.svc
           namespace: '{{ base .path.path }}'
@@ -212,6 +222,8 @@ argocd-apps:
           - RespectIgnoreDifferences=true
           - PruneLast=true
         ignoreDifferences: []
+    syncPolicy:
+      preserveResourcesOnDeletion: true
   - name: core
     goTemplate: true
     generators:
@@ -232,6 +244,9 @@ argocd-apps:
           repoURL: git@github.com:jsnouffer/homelab.git
           targetRevision: HEAD
           path: '{{ .path.path }}'
+          helm:
+            valueFiles:
+              - values-cobra.yaml
         destination:
           server: https://kubernetes.default.svc
           namespace: '{{ base .path.path }}'
@@ -246,6 +261,8 @@ argocd-apps:
             prune: false
             selfHeal: true
         ignoreDifferences: []
+    syncPolicy:
+      preserveResourcesOnDeletion: true
   - name: media
     goTemplate: true
     generators:
@@ -266,6 +283,9 @@ argocd-apps:
           repoURL: git@github.com:jsnouffer/homelab.git
           targetRevision: HEAD
           path: '{{ .path.path }}'
+          helm:
+            valueFiles:
+              - values-cobra.yaml
         destination:
           server: https://kubernetes.default.svc
           namespace: '{{ base .path.path }}'
@@ -277,6 +297,8 @@ argocd-apps:
           - RespectIgnoreDifferences=true
           - PruneLast=true
         ignoreDifferences: []
+    syncPolicy:
+      preserveResourcesOnDeletion: true
   - name: storage
     goTemplate: true
     generators:
@@ -297,6 +319,9 @@ argocd-apps:
           repoURL: git@github.com:jsnouffer/homelab.git
           targetRevision: HEAD
           path: '{{ .path.path }}'
+          helm:
+            valueFiles:
+              - values-cobra.yaml
         destination:
           server: https://kubernetes.default.svc
           namespace: '{{ base .path.path }}'
