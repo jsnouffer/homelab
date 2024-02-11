@@ -37,5 +37,7 @@ letsencrypt:
 truenas:
   - name: bare-metal
     hostname: barenas.jsnouff.net
-    apiKeyRemoteRef: TRUENAS_BARE_API_KEY
+    apiKeyRemoteRef:
+      key: /cert-manager
+      property: truenas-api-key
     s3Enabled: false

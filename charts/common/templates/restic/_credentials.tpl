@@ -7,24 +7,28 @@ metadata:
 spec:
   secretStoreRef:
     kind: ClusterSecretStore
-    name: doppler-secret-store
+    name: infisical-secret-store
   target:
-    name: restic-backup-credentials
     deletionPolicy: Delete
   data:
     - secretKey: b2KeyID
       remoteRef:
-        key: BACKBLAZE_MASTER_KEY_ID
+        key: /restic/backblaze
+        property: keyId
     - secretKey: b2ApplicationKey
       remoteRef:
-        key: BACKBLAZE_MASTER_APPLICATION_KEY
+        key: /restic/backblaze
+        property: applicationKey
     - secretKey: s3AccessKey
       remoteRef:
-        key: MINIO_ACCESS_KEY
+        key: /restic/minio
+        property: accessKey
     - secretKey: s3SecretKey
       remoteRef:
-        key: MINIO_SECRET_KEY
+        key: /restic/minio
+        property: secretKey
     - secretKey: resticKey
       remoteRef:
-        key: RESTIC_ENCRYPTION_KEY
+        key: /restic
+        property: encryptionKey
 {{- end }}

@@ -7,5 +7,5 @@ dependencies:
     repository: https://bjw-s.github.io/helm-charts
     alias: freshrss
   - name: common
-    version: "0.1.1"
-    repository: https://chartmuseum.jsnouff.net
+    version: ">0.0.0"
+    repository: "file://../../../charts/common/"

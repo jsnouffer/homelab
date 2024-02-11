@@ -8,13 +8,13 @@ dependencies:
     condition: netbox.enabled
   - name: postgresql
     version: 12.8.2
-    repository: https://charts.bitnami.com/bitnami
+    repository: oci://registry-1.docker.io/bitnamicharts
     condition: netbox.enabled
   - name: redis
     version: 17.15.2
-    repository: https://charts.bitnami.com/bitnami
+    repository: oci://registry-1.docker.io/bitnamicharts
     condition: netbox.enabled
   - name: common
-    version: "0.1.1"
-    repository: https://chartmuseum.jsnouff.net
+    version: ">0.0.0"
+    repository: "file://../../../charts/common/"
     condition: netbox.enabled

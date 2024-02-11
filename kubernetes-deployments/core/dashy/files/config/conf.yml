@@ -93,6 +93,9 @@ sections:
       - title: Doppler
         icon: https://f005.backblazeb2.com/file/jsnouff-icons/doppler.png
         url: https://dashboard.doppler.com/workplace/b161fb27ad70bce89a63/projects
+      - title: Infisical
+        icon: https://avatars.githubusercontent.com/u/107880645?s=200&v=4
+        url: https://infisical.jsnouff.net/
       - title: Minio
         icon: hl-minio
         url: http://barenas.jsnouff.net:9002

@@ -24,15 +24,35 @@ external-secrets:
       requests:
         cpu: 10m
         memory: 48Mi
-  secret-stores:
-    - name: doppler-secret-store
-      kind: ClusterSecretStore
-      spec:
-        provider:
-          doppler:
-            auth:
-              secretRef:
-                dopplerToken:
-                  name: doppler-cobra-es-token
-                  namespace: "{{ $.Release.Namespace }}"
-                  key: token
+secret-stores:
+  - name: doppler-secret-store
+    kind: ClusterSecretStore
+    spec:
+      provider:
+        doppler:
+          auth:
+            secretRef:
+              dopplerToken:
+                name: doppler-cobra-es-token
+                namespace: "{{ $.Release.Namespace }}"
+                key: token
+  - name: infisical-secret-store
+    kind: ClusterSecretStore
+    spec:
+      provider:
+        webhook:
+          url: "{{ .Values.infisical.url }}/api/v3/secrets/raw/{{`{{ .remoteRef.property }}`}}?environment={{ .Values.infisical.environment }}&secretPath={{`{{ .remoteRef.key }}`}}&workspaceId={{ .Values.infisical.workspaceId }}"
+          result:
+            jsonPath: "$.secret.secretValue"
+          headers:
+            Content-Type: application/json
+            Authorization: "{{`Bearer {{ .auth.token }}`}}"
+          secrets:
+          - name: auth
+            secretRef:
+              name: infisical-api-token
+              namespace: "{{ $.Release.Namespace }}"
+infisical:
+  url: https://infisical.jsnouff.net
+  workspaceId: 65c90ea492aa91c0f3476280
+  environment: common
