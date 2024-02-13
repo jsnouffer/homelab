@@ -38,9 +38,3 @@ traefik:
   ingressRoute:
     dashboard:
       enabled: false
-  ports:
-    minecraft:
-      port: 25565
-      exposedPort: 25565
-      expose: true
-      protocol: TCP
