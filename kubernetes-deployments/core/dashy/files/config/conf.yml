@@ -136,9 +136,6 @@ sections:
       - title: Ceph
         icon: hl-ceph
         url: https://ceph.jsnouff.net/
-      - title: ChartMuseum
-        icon: https://github.com/helm/chartmuseum/raw/main/logo.png
-        url: https://chartmuseum-ui.jsnouff.net/charts
       - title: Traefik
         icon: hl-traefik
         url: https://traefik.jsnouff.net/dashboard
@@ -157,27 +154,18 @@ sections:
       - title: FreshRSS
         icon: hl-freshrss
         url: https://freshrss.jsnouff.net/
-      - title: Immich
-        icon: hl-immich
-        url: https://immich.jsnouff.net/
       - title: Linkding
         icon: hl-linkding
         url: https://linkding.jsnouff.net/
       - title: Netbox
         icon: hl-netbox
         url: https://netbox.jsnouff.net/
-      - title: Nextcloud
-        icon: hl-nextcloud
-        url: https://nextcloud.jsnouff.net/
       - title: Portainer
         icon: hl-portainer
         url: https://portainer.jsnouff.net/
       - title: Tandoor Recipes
         icon: hl-tandoor
         url: https://recipes.jsnouff.net/
-      - title: Wallabag
-        icon: hl-wallabag
-        url: https://wallabag.jsnouff.net/
       - title: Wiki.js
         icon: hl-wikijs
         url: https://wikijs.jsnouff.net/
