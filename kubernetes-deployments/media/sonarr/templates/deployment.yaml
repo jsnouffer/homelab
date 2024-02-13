@@ -63,7 +63,7 @@ spec:
               memory: 300Mi
             limits:
               cpu: 700m
-              memory: 1Gi
+              memory: 1200Mi
       volumes:
         - name: pv-config
           persistentVolumeClaim:

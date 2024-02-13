@@ -17,8 +17,8 @@ bazarr:
               cpu: 25m
               memory: 100Mi
             limits:
-              cpu: 350m
-              memory: 350Mi
+              cpu: 500m
+              memory: 400Mi
   service:
     main:
       ports:
