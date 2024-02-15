@@ -14,7 +14,7 @@ metadata:
     traefik.ingress.kubernetes.io/router.tls: "true"
 spec:
   rules:
-  - host: dashboard.jsnouff.net
+  - host: {{ $.Values.ingressDomain }}
     http:
       paths:
       - backend:
@@ -26,5 +26,5 @@ spec:
         pathType: Prefix
   tls:
     - hosts:
-        - dashboard.jsnouff.net
+        - {{ $.Values.ingressDomain }}
       secretName: tls-secret

@@ -3,6 +3,7 @@ apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
   name: default-inflight-request-limit
+  namespace: {{ $.Release.Namespace }}
 spec:
   inFlightReq:
     amount: 5000

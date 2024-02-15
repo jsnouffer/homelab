@@ -13,7 +13,7 @@
     "iso_storage_pool": "local"
   },
   "boot_disk_config": {
-    "disk_size": "32G",
+    "disk_size": "150G",
     "storage_pool": "local-lvm",
     "type": "scsi",
     "scsi_controller": "virtio-scsi-single"

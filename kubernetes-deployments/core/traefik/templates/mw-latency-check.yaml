@@ -3,6 +3,7 @@ apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
   name: default-latency-check
+  namespace: {{ $.Release.Namespace }}
 spec:
   circuitBreaker:
     expression: LatencyAtQuantileMS(50.0) > 500

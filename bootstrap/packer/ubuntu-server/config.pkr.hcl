@@ -84,6 +84,12 @@ build {
       "sudo dpkg-reconfigure openssh-server",
       "sudo apt-get purge -y cloud-init; sudo rm -rf /etc/cloud/; sudo rm -rf /var/lib/cloud/", # purge bootstrap cloud-init configuration
       "sudo apt-get install -y cloud-init", # re-enable cloud-init for proxmox cloud-init injection
+      "sudo swapoff -a",
+      "sudo fallocate -l 4G /swap.img",
+      "sudo chmod 600 /swap.img",
+      "sudo mkswap /swap.img",
+      "sudo swapon /swap.img",
+      "echo '/swap.img none swap sw 0 0' | sudo tee -a /etc/fstab",
       "sudo rm -f /etc/ssh/ssh_config.d/allow-root-ssh.conf",
       "sudo rm -f /var/run/utmp",
       "sudo rm -f /var/log/lastlog",

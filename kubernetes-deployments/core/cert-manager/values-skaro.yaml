@@ -1,0 +1,43 @@
+cert-manager:
+  installCRDs: true
+  enableCertificateOwnerRef: true
+  prometheus:
+    enabled: false
+  resources:
+    limits:
+      cpu: 250m
+      memory: 96Mi
+    requests:
+      cpu: 10m
+      memory: 48Mi
+  webhook:
+    resources:
+      limits:
+        cpu: 100m
+        memory: 48Mi
+      requests:
+        cpu: 10m
+        memory: 24Mi
+  cainjector:
+    resources:
+      limits:
+        cpu: 50m
+        memory: 128Mi
+      requests:
+        cpu: 10m
+        memory: 90Mi
+
+
+letsencrypt:
+  email: jsnouff@gmail.com
+  server:
+    staging: https://acme-staging-v02.api.letsencrypt.org/directory
+    production: https://acme-v02.api.letsencrypt.org/directory
+
+truenas:
+  - name: bare-metal
+    hostname: barenas.jsnouff.net
+    apiKeyRemoteRef:
+      key: /cert-manager
+      property: truenas-api-key
+    s3Enabled: false

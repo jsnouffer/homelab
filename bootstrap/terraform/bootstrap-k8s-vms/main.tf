@@ -81,6 +81,14 @@ resource "proxmox_vm_qemu" "vms" {
   ipconfig0               = "ip=${each.value.ip}/16,gw=${var.gateway}"
 }
 
+resource "time_sleep" "reboot-vm" {
+  for_each = proxmox_vm_qemu.vms
+  provisioner "local-exec" {
+    command = "python3 reboot-vm.py --url ${var.proxmox_config.api_url} --username ${var.proxmox_config.api_user} --password ${var.proxmox_password} --id ${each.value.id}"
+  }
+  create_duration = "60s"
+}
+
 resource "pihole_dns_record" "pihole_primary_records" {
   provider = pihole.primary
   for_each = var.node_configs

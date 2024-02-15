@@ -9,7 +9,7 @@ traefik:
   additionalArguments:
     - --api.insecure
     - --ping=true
-    - --providers.kubernetesingress.ingressendpoint.hostname=jsnouff.net
+    - --providers.kubernetesingress.ingressendpoint.hostname=skaro.jsnouff.net
     - --serversTransport.insecureSkipVerify=true
   resources:
     requests:
@@ -35,8 +35,12 @@ traefik:
     type: LoadBalancer
     spec:
       externalTrafficPolicy: Local
+    annotations:
+      metallb.universe.tf/ip-allocated-from-pool: ip-address-pool-100
+      metallb.universe.tf/loadBalancerIPs: 192.168.30.100
+      external-dns.alpha.kubernetes.io/hostname: skaro.jsnouff.net
   ingressRoute:
     dashboard:
       enabled: false
 
-ingressDomain: traefik.jsnouff.net
+ingressDomain: traefik.skaro.jsnouff.net

@@ -3,6 +3,7 @@ apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
   name: default-security
+  namespace: {{ $.Release.Namespace }}
 spec:
   chain:
     middlewares:
@@ -13,6 +14,7 @@ apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
   name: default-security-external
+  namespace: {{ $.Release.Namespace }}
 spec:
   chain:
     middlewares:

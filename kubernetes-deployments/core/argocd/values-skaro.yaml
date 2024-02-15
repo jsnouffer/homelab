@@ -1,0 +1,337 @@
+argo-cd:
+  enabled: true
+  configs:
+    params:
+      server.insecure: "true"
+      applicationsetcontroller.policy: create-update
+    secret:
+      createSecret: false
+  server:
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 10m
+        memory: 48Mi
+    ingress:
+      enabled: true
+      annotations:
+        cert-manager.io/cluster-issuer: lets-encrypt-production
+        external-dns.alpha.kubernetes.io/alias: "true"
+        ingress.kubernetes.io/force-ssl-redirect: "true"
+        ingress.kubernetes.io/protocol: http
+        kubernetes.io/ingress.class: traefik
+        kubernetes.io/tls-acme: "true"
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls: "true"
+      hostname: argocd.skaro.jsnouff.net
+      tls:
+        - secretName: tls-secret
+          hosts:
+            - argocd.skaro.jsnouff.net
+  controller:
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 1024Mi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+  repoServer:
+    resources:
+      limits:
+        cpu: 2000m
+        memory: 512Mi
+      requests:
+        cpu: 150m
+        memory: 128Mi
+  applicationSet:
+    enabled: true
+    resources:
+      limits:
+        cpu: 250m
+        memory: 128Mi
+      requests:
+        cpu: 50m
+        memory: 48Mi
+  redis:
+    enabled: true
+    resources:
+      limits:
+        cpu: 200m
+        memory: 128Mi
+      requests:
+        cpu: 10m
+        memory: 24Mi
+  notifications:
+    enabled: false
+  dex:
+    enabled: false
+
+argocd-apps:
+  enabled: true
+  projects:
+    - name: applications
+      description: Generic project for applications
+      finalizers:
+      - resources-finalizer.argocd.argoproj.io
+      sourceRepos:
+      - '*'
+      destinations:
+      - namespace: '*'
+        server: '*'
+      clusterResourceWhitelist:
+      - group: '*'
+        kind: '*'
+      namespaceResourceWhitelist:
+      - group: '*'
+        kind: '*'
+    - name: automation
+      description: Project for automation deployments
+      finalizers:
+      - resources-finalizer.argocd.argoproj.io
+      sourceRepos:
+      - '*'
+      destinations:
+      - namespace: '*'
+        server: '*'
+      clusterResourceWhitelist:
+      - group: '*'
+        kind: '*'
+      namespaceResourceWhitelist:
+      - group: '*'
+        kind: '*'
+    - name: core
+      description: Project for core services
+      finalizers:
+      - resources-finalizer.argocd.argoproj.io
+      sourceRepos:
+      - '*'
+      destinations:
+      - namespace: '*'
+        server: '*'
+      clusterResourceWhitelist:
+      - group: '*'
+        kind: '*'
+      namespaceResourceWhitelist:
+      - group: '*'
+        kind: '*'
+    - name: media
+      description: Project for media services
+      finalizers:
+      - resources-finalizer.argocd.argoproj.io
+      sourceRepos:
+      - '*'
+      destinations:
+      - namespace: '*'
+        server: '*'
+      clusterResourceWhitelist:
+      - group: '*'
+        kind: '*'
+      namespaceResourceWhitelist:
+      - group: '*'
+        kind: '*'
+    - name: storage
+      description: Project for storage services
+      finalizers:
+      - resources-finalizer.argocd.argoproj.io
+      sourceRepos:
+      - '*'
+      destinations:
+      - namespace: '*'
+        server: '*'
+      clusterResourceWhitelist:
+      - group: '*'
+        kind: '*'
+      namespaceResourceWhitelist:
+      - group: '*'
+        kind: '*'
+  applicationsets:
+  - name: applications
+    goTemplate: true
+    syncPolicy:
+      preserveResourcesOnDeletion: true
+    generators:
+    - git:
+        repoURL: git@github.com:jsnouffer/homelab.git
+        revision: HEAD
+        directories:
+        - path: kubernetes-deployments/applications/*
+    template:
+      metadata:
+        name: '{{ base .path.path }}'
+        labels: {}
+        annotations:
+          argocd.argoproj.io/manifest-generate-paths: .
+      spec:
+        project: applications
+        source:
+          repoURL: git@github.com:jsnouffer/homelab.git
+          targetRevision: HEAD
+          path: '{{ .path.path }}'
+          helm:
+            valueFiles:
+              - values-skaro.yaml
+        destination:
+          server: https://kubernetes.default.svc
+          namespace: '{{ base .path.path }}'
+        revisionHistoryLimit: 5
+        syncPolicy:
+          syncOptions:
+          - ApplyOutOfSyncOnly=true
+          - CreateNamespace=true
+          - RespectIgnoreDifferences=true
+          - PruneLast=true
+        ignoreDifferences: []
+    syncPolicy:
+      preserveResourcesOnDeletion: true
+  - name: automation
+    goTemplate: true
+    generators:
+    - git:
+        repoURL: git@github.com:jsnouffer/homelab.git
+        revision: HEAD
+        directories:
+        - path: kubernetes-deployments/automation/*
+    template:
+      metadata:
+        name: '{{ base .path.path }}'
+        labels: {}
+        annotations:
+          argocd.argoproj.io/manifest-generate-paths: .
+      spec:
+        project: automation
+        source:
+          repoURL: git@github.com:jsnouffer/homelab.git
+          targetRevision: HEAD
+          path: '{{ .path.path }}'
+          helm:
+            valueFiles:
+              - values-skaro.yaml
+        destination:
+          server: https://kubernetes.default.svc
+          namespace: '{{ base .path.path }}'
+        revisionHistoryLimit: 5
+        syncPolicy:
+          syncOptions:
+          - ApplyOutOfSyncOnly=true
+          - CreateNamespace=true
+          - RespectIgnoreDifferences=true
+          - PruneLast=true
+        ignoreDifferences: []
+    syncPolicy:
+      preserveResourcesOnDeletion: true
+  - name: core
+    goTemplate: true
+    generators:
+    - git:
+        repoURL: git@github.com:jsnouffer/homelab.git
+        revision: HEAD
+        directories:
+        - path: kubernetes-deployments/core/*
+    template:
+      metadata:
+        name: '{{ base .path.path }}'
+        labels: {}
+        annotations:
+          argocd.argoproj.io/manifest-generate-paths: .
+      spec:
+        project: core
+        source:
+          repoURL: git@github.com:jsnouffer/homelab.git
+          targetRevision: HEAD
+          path: '{{ .path.path }}'
+          helm:
+            valueFiles:
+              - values-skaro.yaml
+        destination:
+          server: https://kubernetes.default.svc
+          namespace: '{{ base .path.path }}'
+        revisionHistoryLimit: 5
+        syncPolicy:
+          syncOptions:
+          - ApplyOutOfSyncOnly=true
+          - CreateNamespace=true
+          - RespectIgnoreDifferences=true
+          - PruneLast=true
+          automated:
+            prune: false
+            selfHeal: true
+        ignoreDifferences: []
+    syncPolicy:
+      preserveResourcesOnDeletion: true
+  - name: media
+    goTemplate: true
+    generators:
+    - git:
+        repoURL: git@github.com:jsnouffer/homelab.git
+        revision: HEAD
+        directories:
+        - path: kubernetes-deployments/media/*
+    template:
+      metadata:
+        name: '{{ base .path.path }}'
+        labels: {}
+        annotations:
+          argocd.argoproj.io/manifest-generate-paths: .
+      spec:
+        project: media
+        source:
+          repoURL: git@github.com:jsnouffer/homelab.git
+          targetRevision: HEAD
+          path: '{{ .path.path }}'
+          helm:
+            valueFiles:
+              - values-skaro.yaml
+        destination:
+          server: https://kubernetes.default.svc
+          namespace: '{{ base .path.path }}'
+        revisionHistoryLimit: 5
+        syncPolicy:
+          syncOptions:
+          - ApplyOutOfSyncOnly=true
+          - CreateNamespace=true
+          - RespectIgnoreDifferences=true
+          - PruneLast=true
+        ignoreDifferences: []
+    syncPolicy:
+      preserveResourcesOnDeletion: true
+  - name: storage
+    goTemplate: true
+    generators:
+    - git:
+        repoURL: git@github.com:jsnouffer/homelab.git
+        revision: HEAD
+        directories:
+        - path: kubernetes-deployments/storage/*
+    template:
+      metadata:
+        name: '{{ base .path.path }}'
+        labels: {}
+        annotations:
+          argocd.argoproj.io/manifest-generate-paths: .
+      spec:
+        project: storage
+        source:
+          repoURL: git@github.com:jsnouffer/homelab.git
+          targetRevision: HEAD
+          path: '{{ .path.path }}'
+          helm:
+            valueFiles:
+              - values-skaro.yaml
+        destination:
+          server: https://kubernetes.default.svc
+          namespace: '{{ base .path.path }}'
+        revisionHistoryLimit: 5
+        syncPolicy:
+          syncOptions:
+          - ApplyOutOfSyncOnly=true
+          - CreateNamespace=true
+          - RespectIgnoreDifferences=true
+          - PruneLast=true
+        ignoreDifferences: []
+    syncPolicy:
+      preserveResourcesOnDeletion: true

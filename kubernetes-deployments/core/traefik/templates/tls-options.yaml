@@ -3,6 +3,7 @@ apiVersion: traefik.containo.us/v1alpha1
 kind: TLSOption
 metadata:
   name: default-tls
+  namespace: {{ $.Release.Namespace }}
 spec:
   cipherSuites:
     - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
