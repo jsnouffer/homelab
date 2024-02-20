@@ -12,7 +12,7 @@ inputs = {
       startup = ""
       cores   = 4
       memory  = 24576
-      ip      = "192.168.5.11"
+      ip      = "192.168.5.15"
 
       disks = [
         {
@@ -31,7 +31,7 @@ inputs = {
       startup = ""
       cores   = 4
       memory  = 24576
-      ip      = "192.168.5.12"
+      ip      = "192.168.5.16"
 
       disks = [
         {

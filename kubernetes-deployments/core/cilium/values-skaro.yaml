@@ -1,0 +1,60 @@
+cilium:
+  enabled: true
+  upgradeCompatibility: "1.13"
+  bpf:
+    autoMount:
+      enabled: true
+  extraEnv:
+    - name: TZ
+      value: "America/New_York"
+  endpointRoutes:
+    enabled: true
+  hubble:
+    relay:
+      enabled: true
+    ui:
+      enabled: true
+      ingress:
+        enabled: true
+        annotations:
+          cert-manager.io/cluster-issuer: lets-encrypt-production
+          ingress.kubernetes.io/force-ssl-redirect: "true"
+          ingress.kubernetes.io/protocol: http
+          kubernetes.io/ingress.class: traefik
+          kubernetes.io/tls-acme: "true"
+          traefik.ingress.kubernetes.io/router.entrypoints: websecure
+          traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
+          traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+          traefik.ingress.kubernetes.io/router.tls: "true"
+        hosts:
+          - hubble.skaro.jsnouff.net
+        tls:
+          - hosts:
+              - hubble.skaro.jsnouff.net
+            secretName: tls-secret
+  ipam:
+    mode: cluster-pool
+    operator:
+      clusterPoolIPv4MaskSize: 24
+      clusterPoolIPv4PodCIDRList: ["172.30.0.0/20"]
+  k8sServiceHost: 192.168.5.10
+  k8sServicePort: 6443
+  kubeProxyReplacement: true
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      cpu: 1500m
+      memory: 1250Mi
+  socketLB:
+    enabled: true
+    hostNamespaceOnly: true
+  externalIPs:
+    enabled: true
+  nodePort:
+    enabled: true
+  hostPort:
+    enabled: true
+  l2announcements:
+    enabled: true

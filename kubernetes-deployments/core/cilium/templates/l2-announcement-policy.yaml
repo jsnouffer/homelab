@@ -1,0 +1,12 @@
+{{- with $.Values.cilium }}
+{{- if .enabled }}
+---
+apiVersion: cilium.io/v2alpha1
+kind: CiliumL2AnnouncementPolicy
+metadata:
+  name: l2-announcement-policy
+spec:
+  externalIPs: true
+  loadBalancerIPs: true
+{{- end }}
+{{- end }}

@@ -1,2 +1,2 @@
-metallb:
+cilium:
   enabled: false
