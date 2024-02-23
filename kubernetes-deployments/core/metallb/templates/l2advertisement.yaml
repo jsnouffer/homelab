@@ -1,0 +1,12 @@
+{{- with $.Values.metallb }}
+{{- if .enabled }}
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: l2-advertisement
+  namespace: {{ $.Release.Namespace }}
+spec:
+  ipAddressPools: {{ toYaml (keys .addresses) | nindent 4 }}
+{{- end }}
+{{- end }}

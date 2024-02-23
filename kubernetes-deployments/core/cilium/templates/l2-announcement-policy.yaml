@@ -1,5 +1,6 @@
 {{- with $.Values.cilium }}
 {{- if .enabled }}
+{{- if not .initialInstall }}
 ---
 apiVersion: cilium.io/v2alpha1
 kind: CiliumL2AnnouncementPolicy
@@ -8,5 +9,6 @@ metadata:
 spec:
   externalIPs: true
   loadBalancerIPs: true
+{{- end }}
 {{- end }}
 {{- end }}

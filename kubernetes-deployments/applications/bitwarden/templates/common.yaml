@@ -1,1 +1,5 @@
-{{- include "common.all" . -}}
+{{- with $.Values.bitwarden }}
+{{- if .enabled }}
+{{- include "common.all" $ -}}
+{{- end }}
+{{- end }}

@@ -1,4 +1,5 @@
 changedetection:
+  enabled: false
   global:
     fullnameOverride: changedetection
   controllers:

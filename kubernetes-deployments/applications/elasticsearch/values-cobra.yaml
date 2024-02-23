@@ -1,4 +1,5 @@
 elasticsearch:
+  enabled: false
   fullnameOverride: elasticsearch
   global:
     kibanaEnabled: true

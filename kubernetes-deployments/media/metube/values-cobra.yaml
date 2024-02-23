@@ -1,4 +1,5 @@
 metube:
+  enabled: false
   global:
     fullnameOverride: metube
   controllers:

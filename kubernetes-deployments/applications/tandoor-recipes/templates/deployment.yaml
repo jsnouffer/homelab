@@ -1,3 +1,6 @@
+{{- with (index .Values "tandoor-recipes") }}
+{{- if .enabled }}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,7 +19,7 @@ spec:
       labels:
         app: tandoor-recipes
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/nginx-cm.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/nginx-cm.yaml") $ | sha256sum }}
     spec:
       restartPolicy: Always
       initContainers:
@@ -40,8 +43,8 @@ spec:
           - name: POSTGRES_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ .Values.postgresql.auth.existingSecret }}
-                key: {{ .Values.postgresql.auth.secretKeys.userPasswordKey }}
+                name: {{ $.Values.postgresql.auth.existingSecret }}
+                key: {{ $.Values.postgresql.auth.secretKeys.userPasswordKey }}
         image: vabene1111/recipes
         imagePullPolicy: Always
         command:
@@ -145,8 +148,8 @@ spec:
           - name: POSTGRES_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ .Values.postgresql.auth.existingSecret }}
-                key: {{ .Values.postgresql.auth.secretKeys.userPasswordKey }}
+                name: {{ $.Values.postgresql.auth.existingSecret }}
+                key: {{ $.Values.postgresql.auth.secretKeys.userPasswordKey }}
           - name: CSRF_TRUSTED_ORIGINS
             value: https://recipes.jsnouff.net,https://recipes.jsnouff.io
         securityContext:
@@ -178,3 +181,5 @@ spec:
           configMap:
             name: gunicorn
             defaultMode: 0777
+{{- end }}
+{{- end }}

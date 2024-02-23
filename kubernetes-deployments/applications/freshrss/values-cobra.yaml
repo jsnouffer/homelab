@@ -1,4 +1,5 @@
 freshrss:
+  enabled: false
   global:
     fullnameOverride: freshrss
   controllers:

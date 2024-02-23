@@ -1,6 +1,9 @@
 cilium:
   enabled: true
+  initialInstall: true
   upgradeCompatibility: "1.13"
+  operator:
+    rollOutPods: true
   bpf:
     autoMount:
       enabled: true

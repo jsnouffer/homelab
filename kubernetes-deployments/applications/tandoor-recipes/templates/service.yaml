@@ -1,8 +1,14 @@
+{{- with (index .Values "tandoor-recipes") }}
+{{- if .enabled }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: tandoor-recipes
+  annotations:
+    metallb.universe.tf/ip-allocated-from-pool: ip-address-pool-100
+    metallb.universe.tf/loadBalancerIPs: 192.168.30.102
+    external-dns.alpha.kubernetes.io/hostname: recipes-lb.jsnouff.net
 spec:
   selector:
     app: tandoor-recipes
@@ -16,3 +22,5 @@ spec:
     name: gunicorn
     protocol: TCP
   type: LoadBalancer
+{{- end }}
+{{- end }}

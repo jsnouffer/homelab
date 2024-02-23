@@ -1,5 +1,5 @@
 tandoor-recipes:
-  enabled: true
+  enabled: false
 
 postgresql:
   fullnameOverride: postgresql

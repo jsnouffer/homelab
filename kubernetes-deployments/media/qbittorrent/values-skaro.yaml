@@ -1,0 +1,30 @@
+qbittorrent:
+  enabled: true
+  ingress:
+    host: qbittorrent.jsnouff.net
+  config:
+    serverPort: 8080
+
+wireguard:
+  enabled: false
+
+common:
+  resticBackups:
+    enabled: true
+    targets:
+      qbittorrent:
+        pvcName: qbittorrent-pvc
+        bucket: "b2:jsnouff-qbittorrent"
+        restoreVersion: latest
+        affinity:
+          podAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - qbittorrent
+                topologyKey: kubernetes.io/hostname

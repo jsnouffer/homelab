@@ -1,4 +1,5 @@
 calibre:
+  enabled: false
   global:
     fullnameOverride: calibre
   controllers:

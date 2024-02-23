@@ -1,1 +1,5 @@
-{{- include "common.all" . -}}
+{{- with $.Values.calibre }}
+{{- if .enabled }}
+{{- include "common.all" $ -}}
+{{- end }}
+{{- end }}

@@ -1,0 +1,108 @@
+changedetection:
+  enabled: true
+  global:
+    fullnameOverride: changedetection
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: dgtlmoon/changedetection.io
+            tag: 0.45.14
+          env:
+            PUID: "1000"
+            PGID: "1000"
+            HIDE_REFERER: "true"
+            PLAYWRIGHT_DRIVER_URL: ws://changedetection:3000/?stealth=1&--disable-web-security=true
+          resources:
+            requests:
+              cpu: 10m
+              memory: 300Mi
+            limits:
+              cpu: 150m
+              memory: 500Mi
+        playwright-chrome:
+          image:
+            repository: browserless/chrome
+            tag: 1.61-chrome-stable
+          env:
+            SCREEN_WIDTH: "1920"
+            SCREEN_HEIGHT: "1024"
+            SCREEN_DEPTH: "16"
+            ENABLE_DEBUGGER: "false"
+            PREBOOT_CHROME: "true"
+            CONNECTION_TIMEOUT: "300000"
+            MAX_CONCURRENT_SESSIONS: "10"
+            CHROME_REFRESH_TIME: "600000"
+            DEFAULT_BLOCK_ADS: "true"
+            DEFAULT_STEALTH: "true"
+            DEFAULT_IGNORE_HTTPS_ERRORS: "true"
+          resources:
+            requests:
+              cpu: 25m
+              memory: 1Gi
+            limits:
+              cpu: 500m
+              memory: 1750Mi
+  service:
+    main:
+      ports:
+        http:
+          port: 5000
+        chrome:
+          port: 3000
+  ingress:
+    main:
+      enabled: true
+      hosts:
+        - host: &domain changedetection.jsnouff.net
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: main
+      tls:
+        - hosts:
+            - *domain
+          secretName: tls-secret
+      annotations:
+        cert-manager.io/cluster-issuer: lets-encrypt-production
+        ingress.kubernetes.io/force-ssl-redirect: "true"
+        ingress.kubernetes.io/protocol: http
+        kubernetes.io/ingress.class: traefik
+        kubernetes.io/tls-acme: "true"
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls: "true"
+
+  persistence:
+    datastore:
+      enabled: true
+      accessMode: ReadWriteOnce
+      size: 1Gi
+      advancedMounts:
+        main:
+          main:
+            - path: /datastore
+
+common:
+  resticBackups:
+    enabled: true
+    targets:
+      changedetection-datastore:
+        pvcName: changedetection-datastore
+        bucket: changedetection-backup
+        restoreVersion: latest
+        affinity:
+          podAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - changedetection
+                topologyKey: kubernetes.io/hostname

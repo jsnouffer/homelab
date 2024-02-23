@@ -3,20 +3,25 @@ name: piped
 version: 1.0.0
 dependencies:
   - name: app-template
-    version: 2.5.0
+    version: 2.6.0
     repository: https://bjw-s.github.io/helm-charts
     alias: piped-backend
+    condition: piped.enabled
   - name: app-template
-    version: 2.5.0
+    version: 2.6.0
     repository: https://bjw-s.github.io/helm-charts
     alias: piped-frontend
+    condition: piped.enabled
   - name: app-template
-    version: 2.5.0
+    version: 2.6.0
     repository: https://bjw-s.github.io/helm-charts
     alias: piped-ytproxy
+    condition: piped.enabled
   - name: postgresql
     version: 13.4.2
     repository: oci://registry-1.docker.io/bitnamicharts
+    condition: piped.enabled
   - name: common
     version: ">0.0.0"
     repository: "file://../../../charts/common/"
+    condition: piped.enabled

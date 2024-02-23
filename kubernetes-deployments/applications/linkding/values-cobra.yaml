@@ -1,5 +1,5 @@
 linkding:
-  enabled: true
+  enabled: false
 
 common:
   resticBackups:

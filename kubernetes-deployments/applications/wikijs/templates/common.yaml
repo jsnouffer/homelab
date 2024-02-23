@@ -1,1 +1,5 @@
-{{- include "common.all" . -}}
+{{- with $.Values.wikijs }}
+{{- if .enabled }}
+{{- include "common.all" $ -}}
+{{- end }}
+{{- end }}

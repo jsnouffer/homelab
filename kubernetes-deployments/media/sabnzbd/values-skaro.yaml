@@ -1,0 +1,7 @@
+sabnzbd:
+  enable: true
+  pvcName: sabnzbd
+  ingress:
+    host: sabnzbd.jsnouff.net
+  config:
+    serverPort: 8080

@@ -1,0 +1,24 @@
+ombi:
+  enabled: true
+pvcName: ombi-pvc
+
+common:
+  resticBackups:
+    enabled: true
+    targets:
+      ombi:
+        pvcName: ombi-pvc
+        bucket: "b2:jsnouff-ombi"
+        restoreVersion: latest
+        affinity:
+          podAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - ombi
+                topologyKey: kubernetes.io/hostname

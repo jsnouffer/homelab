@@ -1,7 +1,11 @@
+{{- with (index .Values "tandoor-recipes") }}
+{{- if .enabled }}
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: gunicorn
 data:
-{{ (.Files.Glob "files/*").AsConfig | indent 2 }}
+{{ ($.Files.Glob "files/*").AsConfig | indent 2 }}
+{{- end }}
+{{- end }}

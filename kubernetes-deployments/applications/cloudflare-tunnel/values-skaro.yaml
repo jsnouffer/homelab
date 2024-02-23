@@ -1,0 +1,33 @@
+cloudflare-tunnel:
+  enabled: true
+  global:
+    fullnameOverride: cloudflare-tunnel
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: cloudflare/cloudflared
+            tag: latest
+          args:
+            - "tunnel"
+            - "--no-autoupdate"
+            - "run"
+          env:
+            TUNNEL_TOKEN:
+              valueFrom:
+                secretKeyRef:
+                  key: "token"
+                  name: "cloudflare-tunnel-token"
+          resources:
+            requests:
+              cpu: 10m
+              memory: 40Mi
+            limits:
+              cpu: 100m
+              memory: 100Mi
+  service:
+    main:
+      enabled: false
+
+

@@ -1,5 +1,5 @@
 netbox:
-  enabled: true
+  enabled: false
 
   existingSecret: netbox-credentials
 

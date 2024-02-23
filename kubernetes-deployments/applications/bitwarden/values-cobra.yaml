@@ -1,5 +1,5 @@
 bitwarden:
-  enabled: true
+  enabled: false
 pvcName: bitwarden
 
 common:

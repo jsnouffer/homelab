@@ -1,0 +1,24 @@
+audiobookshelf:
+  enabled: true
+pvcName: audiobookshelf-pvc
+
+common:
+  resticBackups:
+    enabled: true
+    targets:
+      audiobookshelf:
+        pvcName: audiobookshelf-pvc
+        bucket: "b2:jsnouff-audiobookshelf"
+        restoreVersion: latest
+        affinity:
+          podAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - audiobookshelf
+                topologyKey: kubernetes.io/hostname

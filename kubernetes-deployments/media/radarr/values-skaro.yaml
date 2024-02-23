@@ -1,0 +1,24 @@
+radarr:
+  enabled: true
+pvcName: radarr-pvc
+
+common:
+  resticBackups:
+    enabled: true
+    targets:
+      radarr:
+        pvcName: radarr-pvc
+        bucket: "b2:jsnouff-radarr"
+        restoreVersion: latest
+        affinity:
+          podAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - radarr
+                topologyKey: kubernetes.io/hostname

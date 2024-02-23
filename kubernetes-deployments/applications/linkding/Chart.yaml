@@ -2,6 +2,11 @@ apiVersion: v2
 name: linkding
 version: 1.0.0
 dependencies:
+  - name: app-template
+    version: 2.6.0
+    repository: https://bjw-s.github.io/helm-charts
+    alias: linkding
+    condition: linkding.enabled
   - name: common
     version: ">0.0.0"
     repository: "file://../../../charts/common/"

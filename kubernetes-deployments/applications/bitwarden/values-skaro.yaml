@@ -1,0 +1,84 @@
+bitwarden:
+  enabled: true
+  global:
+    fullnameOverride: bitwarden
+  controllers:
+    main:
+      strategy: Recreate
+      containers:
+        main:
+          image:
+            repository: vaultwarden/server
+            tag: latest
+          env:
+            INVITATIONS_ALLOWED: "false"
+            SIGNUPS_ALLOWED: "false"
+            SHOW_PASSWORD_HINT: "false"
+            ADMIN_TOKEN:
+              valueFrom:
+                secretKeyRef:
+                  key: token
+                  name: bitwarden-admin-token
+          resources:
+            requests:
+              cpu: 10m
+              memory: 80Mi
+            limits:
+              cpu: 100m
+              memory: 200Mi
+  service:
+    main:
+      ports:
+        http:
+          port: 80
+  ingress:
+    main:
+      enabled: true
+      hosts:
+        - host: &domain bitwarden.jsnouff.net
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: main
+      tls:
+        - hosts:
+            - *domain
+          secretName: tls-secret
+      annotations:
+        cert-manager.io/cluster-issuer: lets-encrypt-production
+        ingress.kubernetes.io/force-ssl-redirect: "true"
+        ingress.kubernetes.io/protocol: http
+        kubernetes.io/ingress.class: traefik
+        kubernetes.io/tls-acme: "true"
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security-external@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls: "true"
+
+  persistence:
+    data:
+      enabled: true
+      accessMode: ReadWriteOnce
+      size: 2Gi
+
+common:
+  resticBackups:
+    enabled: true
+    targets:
+      bitwarden:
+        pvcName: bitwarden-data
+        bucket: "b2:jsnouff-vaultwarden"
+        restoreVersion: latest
+        affinity:
+          podAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - bitwarden
+                topologyKey: kubernetes.io/hostname

@@ -1,7 +1,7 @@
 apiVersion: v2
 name: qbittorrent
 version: 1.0.0
-appVersion: 4.6.0
+appVersion: 4.6.3
 dependencies:
   - name: common
     version: ">0.0.0"

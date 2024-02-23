@@ -1,4 +1,5 @@
 bazarr:
+  enabled: false
   global:
     fullnameOverride: bazarr
   controllers:

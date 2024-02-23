@@ -1,0 +1,81 @@
+linkding:
+  enabled: true
+  global:
+    fullnameOverride: linkding
+  controllers:
+    main:
+      strategy: Recreate
+      containers:
+        main:
+          image:
+            repository: sissbruecker/linkding
+            tag: latest
+          env:
+            LD_CSRF_TRUSTED_ORIGINS: https://linkding.jsnouff.io
+          resources:
+            requests:
+              cpu: 10m
+              memory: 200Mi
+            limits:
+              cpu: 250m
+              memory: 400Mi
+  service:
+    main:
+      ports:
+        http:
+          port: 9090
+  ingress:
+    main:
+      enabled: true
+      hosts:
+        - host: &domain linkding.jsnouff.net
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: main
+      tls:
+        - hosts:
+            - *domain
+          secretName: tls-secret
+      annotations:
+        cert-manager.io/cluster-issuer: lets-encrypt-production
+        ingress.kubernetes.io/force-ssl-redirect: "true"
+        ingress.kubernetes.io/protocol: http
+        kubernetes.io/ingress.class: traefik
+        kubernetes.io/tls-acme: "true"
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security-external@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls: "true"
+
+  persistence:
+    data:
+      enabled: true
+      accessMode: ReadWriteOnce
+      size: 2Gi
+      advancedMounts:
+        main:
+          main:
+            - path: /etc/linkding/data
+
+common:
+  resticBackups:
+    enabled: true
+    targets:
+      linkding-data:
+        pvcName: linkding-data
+        bucket: linkding-backup
+        restoreVersion: latest
+        affinity:
+          podAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - linkding
+                topologyKey: kubernetes.io/hostname

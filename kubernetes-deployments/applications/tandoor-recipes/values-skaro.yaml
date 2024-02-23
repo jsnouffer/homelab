@@ -1,0 +1,60 @@
+tandoor-recipes:
+  enabled: true
+
+postgresql:
+  fullnameOverride: postgresql
+  primary:
+    resources:
+      requests:
+        cpu: 20m
+        memory: 32Mi
+      limits:
+        cpu: 250m
+        memory: 300Mi
+    persistence:
+      size: 1Gi
+  auth:
+    username: recipes
+    database: recipes
+    existingSecret: db-credentials
+    secretKeys:
+      adminPasswordKey: postgres-password
+      userPasswordKey: password
+      replicationPasswordKey: replication-password
+
+common:
+  resticBackups:
+    enabled: true
+    targets:
+      recipes:
+        pvcName: recipes-pvc
+        bucket: tandoor-recipes-backup
+        restoreVersion: latest
+        affinity:
+          podAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                    - tandoor-recipes
+                topologyKey: kubernetes.io/hostname
+      recipes-db:
+        pvcName: data-postgresql-0
+        bucket: tandoor-recipes-db-backup
+        restoreVersion: latest
+        affinity:
+          podAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: statefulset.kubernetes.io/pod-name
+                    operator: In
+                    values:
+                    - postgresql-0
+                topologyKey: kubernetes.io/hostname

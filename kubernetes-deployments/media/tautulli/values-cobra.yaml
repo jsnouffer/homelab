@@ -1,4 +1,5 @@
 tautulli:
+  enabled: false
   global:
     fullnameOverride: tautulli
   controllers:

@@ -14,10 +14,14 @@ spec:
       labels:
         app.kubernetes.io/name: qbittorrent
     spec:
+      {{- with $.Values.wireguard }}
+      {{- if .enabled }}
       securityContext:
         sysctls:
         - name: net.ipv4.conf.all.src_valid_mark
           value: "1"
+      {{- end }}
+      {{- end }}
       containers:
         - name: qbittorrent
           image: linuxserver/qbittorrent:{{ $.Chart.AppVersion }}
@@ -61,6 +65,8 @@ spec:
               mountPath: /config
             - name: downloads
               mountPath: /downloads
+        {{- with $.Values.wireguard }}
+        {{- if .enabled }}
         - name: wireguard
           image: linuxserver/wireguard:1.0.20210914
           imagePullPolicy: IfNotPresent
@@ -80,14 +86,20 @@ spec:
               add:
                 - NET_ADMIN
                 - SYS_MODULE
+        {{- end }}
+        {{- end }}
       volumes:
         - name: pv
           persistentVolumeClaim:
             claimName: qbittorrent-pvc
+        {{- with $.Values.wireguard }}
+        {{- if .enabled }}
         - name: wireguard-config
           secret:
             defaultMode: 0600
             secretName: nordvpn-wireguard-config
+        {{- end }}
+        {{- end }}
         - name: downloads
           persistentVolumeClaim:
             claimName: qbittorrent-nfs-downloads

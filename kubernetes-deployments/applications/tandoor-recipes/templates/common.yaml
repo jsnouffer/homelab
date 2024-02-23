@@ -1,1 +1,5 @@
-{{- include "common.all" . -}}
+{{- with (index .Values "tandoor-recipes") }}
+{{- if .enabled }}
+{{- include "common.all" $ -}}
+{{- end }}
+{{- end }}
