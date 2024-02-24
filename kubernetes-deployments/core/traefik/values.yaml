@@ -35,6 +35,10 @@ traefik:
     type: LoadBalancer
     spec:
       externalTrafficPolicy: Local
+    annotations:
+      metallb.universe.tf/ip-allocated-from-pool: ip-address-pool-100
+      metallb.universe.tf/loadBalancerIPs: 192.168.30.100
+      external-dns.alpha.kubernetes.io/hostname: jsnouff.net
   ingressRoute:
     dashboard:
       enabled: false

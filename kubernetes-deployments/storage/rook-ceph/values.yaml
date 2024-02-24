@@ -7,11 +7,11 @@ rook-ceph-cluster:
   ingress:
     dashboard:
       host:
-        name: ceph.skaro.jsnouff.net
+        name: &domain ceph.jsnouff.net
         path: "/"
       tls:
         - hosts:
-            - ceph.skaro.jsnouff.net
+            - *domain
           secretName: tls-secret
       annotations:
         cert-manager.io/cluster-issuer: lets-encrypt-production

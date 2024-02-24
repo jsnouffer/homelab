@@ -10,8 +10,8 @@ inputs = {
   node_configs = {
     "dalek-sec" = {
       startup = ""
-      cores   = 4
-      memory  = 24576
+      cores   = 8
+      memory  = 32768
       ip      = "192.168.5.15"
 
       disks = [
@@ -29,8 +29,8 @@ inputs = {
     },
     "dalek-caan" = {
       startup = ""
-      cores   = 4
-      memory  = 24576
+      cores   = 8
+      memory  = 32768
       ip      = "192.168.5.16"
 
       disks = [

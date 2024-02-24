@@ -27,11 +27,11 @@ argo-cd:
         traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
         traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
         traefik.ingress.kubernetes.io/router.tls: "true"
-      hostname: argocd.jsnouff.net
+      hostname: &domain argocd.jsnouff.net
       tls:
         - secretName: tls-secret
           hosts:
-            - argocd.jsnouff.net
+            - *domain
   controller:
     resources:
       limits:
@@ -174,7 +174,7 @@ argocd-apps:
           path: '{{ .path.path }}'
           helm:
             valueFiles:
-              - values-cobra.yaml
+              - values.yaml
         destination:
           server: https://kubernetes.default.svc
           namespace: '{{ base .path.path }}'
@@ -210,7 +210,7 @@ argocd-apps:
           path: '{{ .path.path }}'
           helm:
             valueFiles:
-              - values-cobra.yaml
+              - values.yaml
         destination:
           server: https://kubernetes.default.svc
           namespace: '{{ base .path.path }}'
@@ -246,7 +246,7 @@ argocd-apps:
           path: '{{ .path.path }}'
           helm:
             valueFiles:
-              - values-cobra.yaml
+              - values.yaml
         destination:
           server: https://kubernetes.default.svc
           namespace: '{{ base .path.path }}'
@@ -285,7 +285,7 @@ argocd-apps:
           path: '{{ .path.path }}'
           helm:
             valueFiles:
-              - values-cobra.yaml
+              - values.yaml
         destination:
           server: https://kubernetes.default.svc
           namespace: '{{ base .path.path }}'
@@ -321,7 +321,7 @@ argocd-apps:
           path: '{{ .path.path }}'
           helm:
             valueFiles:
-              - values-cobra.yaml
+              - values.yaml
         destination:
           server: https://kubernetes.default.svc
           namespace: '{{ base .path.path }}'

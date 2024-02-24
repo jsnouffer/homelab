@@ -9,7 +9,7 @@ metadata:
   labels:
     restic-backup: {{ $name }}
 spec:
-  successfulJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 0
   failedJobsHistoryLimit: 1
   concurrencyPolicy: Forbid
   schedule: {{ $ctx.cron.schedule | quote }}

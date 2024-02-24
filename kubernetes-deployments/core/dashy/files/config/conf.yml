@@ -7,19 +7,7 @@ appConfig:
 pageInfo:
   title: Homelab
   description: Dashboard
-  # navLinks:
-  #   - title: GitHub
-  #     path: https://github.com/Lissy93/dashy
-  #   - title: Documentation
-  #     path: https://dashy.to/docs
   footerText: ''
-# pages:
-# - name: Getting Started
-#   path: 'https://snippet.host/tvcw/raw'
-# - name: Homelab
-#   path: 'https://snippet.host/tetp/raw'
-# - name: Browser Startpage
-#   path: 'https://snippet.host/zcom/raw'
 sections:
   - name: Server Management
     icon: fas fa-server
@@ -136,6 +124,9 @@ sections:
       - title: Ceph
         icon: hl-ceph
         url: https://ceph.jsnouff.net/
+      - title: Cilium Hubble
+        icon: hl-cilium
+        url: https://hubble.jsnouff.net/
       - title: Traefik
         icon: hl-traefik
         url: https://traefik.jsnouff.net/dashboard
@@ -160,9 +151,6 @@ sections:
       - title: Netbox
         icon: hl-netbox
         url: https://netbox.jsnouff.net/
-      - title: Portainer
-        icon: hl-portainer
-        url: https://portainer.jsnouff.net/
       - title: Tandoor Recipes
         icon: hl-tandoor
         url: https://recipes.jsnouff.net/

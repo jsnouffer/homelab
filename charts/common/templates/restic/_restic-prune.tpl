@@ -9,7 +9,7 @@ metadata:
   labels:
     restic-prune: {{ $name }}
 spec:
-  successfulJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 0
   failedJobsHistoryLimit: 1
   concurrencyPolicy: Forbid
   schedule: {{ $ctx.prune.schedule | quote }}
