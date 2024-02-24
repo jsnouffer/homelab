@@ -15,10 +15,10 @@ bazarr:
             TZ: "America/New_York"
           resources:
             requests:
-              cpu: 25m
+              cpu: 100m
               memory: 100Mi
             limits:
-              cpu: 500m
+              cpu: 700m
               memory: 400Mi
   service:
     main:
