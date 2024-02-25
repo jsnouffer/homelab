@@ -1,14 +1,14 @@
-tautulli:
+overseerr:
   enabled: true
   global:
-    fullnameOverride: tautulli
+    fullnameOverride: overseerr
   controllers:
     main:
       containers:
         main:
           image:
-            repository: tautulli/tautulli
-            tag: v2.13.4
+            repository: linuxserver/overseerr
+            tag: 1.33.2
           env:
             PUID: "1000"
             PGID: "1000"
@@ -16,20 +16,20 @@ tautulli:
           resources:
             requests:
               cpu: 25m
-              memory: 100Mi
+              memory: 250Mi
             limits:
-              cpu: 250m
-              memory: 300Mi
+              cpu: 500m
+              memory: 500Mi
   service:
     main:
       ports:
         http:
-          port: 8181
+          port: 5055
   ingress:
     main:
       enabled: true
       hosts:
-        - host: &domain tautulli.jsnouff.net
+        - host: &domain overseerr.jsnouff.net
           paths:
             - path: /
               pathType: Prefix
@@ -60,9 +60,9 @@ common:
   resticBackups:
     enabled: true
     targets:
-      tautulli-data:
-        pvcName: tautulli-config
-        bucket: "b2:jsnouff-tautulli"
+      overseerr-data:
+        pvcName: overseerr-config
+        bucket: "b2:jsnouff-overseerr"
         restoreVersion: latest
         affinity:
           podAffinity:
@@ -74,5 +74,5 @@ common:
                   - key: app.kubernetes.io/name
                     operator: In
                     values:
-                    - tautulli
+                    - overseerr
                 topologyKey: kubernetes.io/hostname

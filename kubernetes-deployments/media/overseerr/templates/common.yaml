@@ -1,0 +1,5 @@
+{{- with $.Values.overseerr }}
+{{- if .enabled }}
+{{- include "common.all" $ -}}
+{{- end }}
+{{- end }}

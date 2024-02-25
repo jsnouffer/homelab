@@ -175,6 +175,9 @@ sections:
       - title: Ombi
         icon: hl-ombi
         url: https://ombi.jsnouff.net/
+      - title: Overseerr
+        icon: hl-overseerr
+        url: https://overseerr.jsnouff.net/
       - title: Piped
         icon: https://avatars.githubusercontent.com/u/74294114?s=48&v=4
         url: https://piped.jsnouff.net/
