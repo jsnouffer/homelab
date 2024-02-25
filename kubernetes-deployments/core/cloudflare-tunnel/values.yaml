@@ -8,7 +8,7 @@ cloudflare-tunnel:
         main:
           image:
             repository: cloudflare/cloudflared
-            tag: latest
+            tag: latest # managed by ArgoCD Image Updater
           args:
             - "tunnel"
             - "--no-autoupdate"

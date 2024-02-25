@@ -1,0 +1,41 @@
+name: Create a Pull Request
+
+on:
+  push:
+    branches:
+      - 'image-updater-**'
+  pull_request:
+    types: [closed]
+
+jobs:
+  createPullRequest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Extract branch name
+        if: github.event_name == 'push'
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+
+      - name: Create Pull Request
+        if: github.event_name == 'push'
+        id: cpr
+        uses: peter-evans/create-pull-request@v4
+        with:
+          token: ${{ secrets.workflows }}
+          committer: GitHub <noreply@github.com>
+          commit-message: Update container image
+          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          title: 'image updater PR'
+          assignees: jsnouffer
+          reviewers: jsnouffer
+          base: ${{ steps.extract_branch.outputs.branch }}
+          branch: main
+
+      - name: delete branch
+        if: github.event_name == 'pull_request'
+        uses: SvanBoxel/delete-merged-branch@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.workflows }}

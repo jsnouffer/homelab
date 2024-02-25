@@ -1,0 +1,8 @@
+helm:
+  parameters:
+  - name: cloudflare-tunnel.controllers.main.containers.main.image.repository
+    value: cloudflare/cloudflared
+    forcestring: true
+  - name: cloudflare-tunnel.controllers.main.containers.main.image.tag
+    value: 2024.1.4
+    forcestring: true

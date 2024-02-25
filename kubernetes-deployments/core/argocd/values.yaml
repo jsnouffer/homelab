@@ -3,10 +3,13 @@ argo-cd:
   configs:
     params:
       server.insecure: "true"
-      applicationsetcontroller.policy: create-update
+      applicationsetcontroller.enable.policy.override: true
     secret:
       createSecret: false
   server:
+    env:
+      - name: TZ
+        value: America/New_York
     resources:
       limits:
         cpu: 100m
@@ -41,6 +44,9 @@ argo-cd:
         cpu: 250m
         memory: 256Mi
   repoServer:
+    env:
+      - name: TZ
+        value: America/New_York
     resources:
       limits:
         cpu: 2000m
@@ -59,6 +65,9 @@ argo-cd:
         memory: 48Mi
   redis:
     enabled: true
+    env:
+      - name: TZ
+        value: America/New_York
     resources:
       limits:
         cpu: 200m
@@ -76,88 +85,54 @@ argocd-apps:
   projects:
     - name: applications
       description: Generic project for applications
-      finalizers:
-      - resources-finalizer.argocd.argoproj.io
-      sourceRepos:
-      - '*'
-      destinations:
-      - namespace: '*'
-        server: '*'
-      clusterResourceWhitelist:
-      - group: '*'
-        kind: '*'
-      namespaceResourceWhitelist:
-      - group: '*'
-        kind: '*'
+      finalizers: &app-projects-finalizers
+        - resources-finalizer.argocd.argoproj.io
+      sourceRepos: &app-projects-source-repos
+        - '*'
+      destinations: &app-projects-destinations
+        - namespace: '*'
+          server: '*'
+      clusterResourceWhitelist: &app-projects-cluster-resource-whitelist
+        - group: '*'
+          kind: '*'
+      namespaceResourceWhitelist: &app-projects-ns-resource-whitelist
+        - group: '*'
+          kind: '*'
     - name: automation
       description: Project for automation deployments
-      finalizers:
-      - resources-finalizer.argocd.argoproj.io
-      sourceRepos:
-      - '*'
-      destinations:
-      - namespace: '*'
-        server: '*'
-      clusterResourceWhitelist:
-      - group: '*'
-        kind: '*'
-      namespaceResourceWhitelist:
-      - group: '*'
-        kind: '*'
+      finalizers: *app-projects-finalizers
+      sourceRepos: *app-projects-source-repos
+      destinations: *app-projects-destinations
+      clusterResourceWhitelist: *app-projects-cluster-resource-whitelist
+      namespaceResourceWhitelist: *app-projects-ns-resource-whitelist
     - name: core
       description: Project for core services
-      finalizers:
-      - resources-finalizer.argocd.argoproj.io
-      sourceRepos:
-      - '*'
-      destinations:
-      - namespace: '*'
-        server: '*'
-      clusterResourceWhitelist:
-      - group: '*'
-        kind: '*'
-      namespaceResourceWhitelist:
-      - group: '*'
-        kind: '*'
+      finalizers: *app-projects-finalizers
+      sourceRepos: *app-projects-source-repos
+      destinations: *app-projects-destinations
+      clusterResourceWhitelist: *app-projects-cluster-resource-whitelist
+      namespaceResourceWhitelist: *app-projects-ns-resource-whitelist
     - name: media
       description: Project for media services
-      finalizers:
-      - resources-finalizer.argocd.argoproj.io
-      sourceRepos:
-      - '*'
-      destinations:
-      - namespace: '*'
-        server: '*'
-      clusterResourceWhitelist:
-      - group: '*'
-        kind: '*'
-      namespaceResourceWhitelist:
-      - group: '*'
-        kind: '*'
+      finalizers: *app-projects-finalizers
+      sourceRepos: *app-projects-source-repos
+      destinations: *app-projects-destinations
+      clusterResourceWhitelist: *app-projects-cluster-resource-whitelist
+      namespaceResourceWhitelist: *app-projects-ns-resource-whitelist
     - name: storage
       description: Project for storage services
-      finalizers:
-      - resources-finalizer.argocd.argoproj.io
-      sourceRepos:
-      - '*'
-      destinations:
-      - namespace: '*'
-        server: '*'
-      clusterResourceWhitelist:
-      - group: '*'
-        kind: '*'
-      namespaceResourceWhitelist:
-      - group: '*'
-        kind: '*'
+      finalizers: []
+      sourceRepos: *app-projects-source-repos
+      destinations: *app-projects-destinations
+      clusterResourceWhitelist: *app-projects-cluster-resource-whitelist
+      namespaceResourceWhitelist: *app-projects-ns-resource-whitelist
   applicationsets:
   - name: applications
     goTemplate: true
-    syncPolicy:
-      preserveResourcesOnDeletion: true
     generators:
     - git:
-        repoURL: git@github.com:jsnouffer/homelab.git
-        revision: HEAD
+        repoURL: &gitops-repo-url git@github.com:jsnouffer/homelab.git
+        revision: &gitops-repo-revision HEAD
         directories:
         - path: kubernetes-deployments/applications/*
     template:
@@ -169,31 +144,32 @@ argocd-apps:
       spec:
         project: applications
         source:
-          repoURL: git@github.com:jsnouffer/homelab.git
-          targetRevision: HEAD
+          repoURL: *gitops-repo-url
+          targetRevision: *gitops-repo-revision
           path: '{{ .path.path }}'
-          helm:
+          helm: &appsets-helm
             valueFiles:
               - values.yaml
-        destination:
+        destination: &appsets-destination
           server: https://kubernetes.default.svc
           namespace: '{{ base .path.path }}'
         revisionHistoryLimit: 5
         syncPolicy:
-          syncOptions:
-          - ApplyOutOfSyncOnly=true
-          - CreateNamespace=true
-          - RespectIgnoreDifferences=true
-          - PruneLast=true
+          syncOptions: &appsets-sync-options
+            - ApplyOutOfSyncOnly=true
+            - CreateNamespace=true
+            - RespectIgnoreDifferences=true
+            - PruneLast=true
         ignoreDifferences: []
     syncPolicy:
       preserveResourcesOnDeletion: true
+      applicationsSync: sync
   - name: automation
     goTemplate: true
     generators:
     - git:
-        repoURL: git@github.com:jsnouffer/homelab.git
-        revision: HEAD
+        repoURL: *gitops-repo-url
+        revision: *gitops-repo-revision
         directories:
         - path: kubernetes-deployments/automation/*
     template:
@@ -205,31 +181,24 @@ argocd-apps:
       spec:
         project: automation
         source:
-          repoURL: git@github.com:jsnouffer/homelab.git
-          targetRevision: HEAD
+          repoURL: *gitops-repo-url
+          targetRevision: *gitops-repo-revision
           path: '{{ .path.path }}'
-          helm:
-            valueFiles:
-              - values.yaml
-        destination:
-          server: https://kubernetes.default.svc
-          namespace: '{{ base .path.path }}'
+          helm: *appsets-helm
+        destination: *appsets-destination
         revisionHistoryLimit: 5
         syncPolicy:
-          syncOptions:
-          - ApplyOutOfSyncOnly=true
-          - CreateNamespace=true
-          - RespectIgnoreDifferences=true
-          - PruneLast=true
+          syncOptions: *appsets-sync-options
         ignoreDifferences: []
     syncPolicy:
       preserveResourcesOnDeletion: true
+      applicationsSync: sync
   - name: core
     goTemplate: true
     generators:
     - git:
-        repoURL: git@github.com:jsnouffer/homelab.git
-        revision: HEAD
+        repoURL: *gitops-repo-url
+        revision: *gitops-repo-revision
         directories:
         - path: kubernetes-deployments/core/*
     template:
@@ -238,37 +207,37 @@ argocd-apps:
         labels: {}
         annotations:
           argocd.argoproj.io/manifest-generate-paths: .
+
+          argocd-image-updater.argoproj.io/write-back-method: git
+          argocd-image-updater.argoproj.io/git-branch: main:image-updater-{{`{{.SHA256}}`}}
+          argocd-image-updater.argoproj.io/image-list: cf=cloudflare/cloudflared
+
+          argocd-image-updater.argoproj.io/cf.helm.image-name: cloudflare-tunnel.controllers.main.containers.main.image.repository
+          argocd-image-updater.argoproj.io/cf.helm.image-tag: cloudflare-tunnel.controllers.main.containers.main.image.tag
       spec:
         project: core
         source:
-          repoURL: git@github.com:jsnouffer/homelab.git
-          targetRevision: HEAD
+          repoURL: *gitops-repo-url
+          targetRevision: *gitops-repo-revision
           path: '{{ .path.path }}'
-          helm:
-            valueFiles:
-              - values.yaml
-        destination:
-          server: https://kubernetes.default.svc
-          namespace: '{{ base .path.path }}'
+          helm: *appsets-helm
+        destination: *appsets-destination
         revisionHistoryLimit: 5
         syncPolicy:
-          syncOptions:
-          - ApplyOutOfSyncOnly=true
-          - CreateNamespace=true
-          - RespectIgnoreDifferences=true
-          - PruneLast=true
+          syncOptions: *appsets-sync-options
           automated:
             prune: false
             selfHeal: true
         ignoreDifferences: []
     syncPolicy:
       preserveResourcesOnDeletion: true
+      applicationsSync: sync
   - name: media
     goTemplate: true
     generators:
     - git:
-        repoURL: git@github.com:jsnouffer/homelab.git
-        revision: HEAD
+        repoURL: *gitops-repo-url
+        revision: *gitops-repo-revision
         directories:
         - path: kubernetes-deployments/media/*
     template:
@@ -280,31 +249,24 @@ argocd-apps:
       spec:
         project: media
         source:
-          repoURL: git@github.com:jsnouffer/homelab.git
-          targetRevision: HEAD
+          repoURL: *gitops-repo-url
+          targetRevision: *gitops-repo-revision
           path: '{{ .path.path }}'
-          helm:
-            valueFiles:
-              - values.yaml
-        destination:
-          server: https://kubernetes.default.svc
-          namespace: '{{ base .path.path }}'
+          helm: *appsets-helm
+        destination: *appsets-destination
         revisionHistoryLimit: 5
         syncPolicy:
-          syncOptions:
-          - ApplyOutOfSyncOnly=true
-          - CreateNamespace=true
-          - RespectIgnoreDifferences=true
-          - PruneLast=true
+          syncOptions: *appsets-sync-options
         ignoreDifferences: []
     syncPolicy:
       preserveResourcesOnDeletion: true
+      applicationsSync: sync
   - name: storage
     goTemplate: true
     generators:
     - git:
-        repoURL: git@github.com:jsnouffer/homelab.git
-        revision: HEAD
+        repoURL: *gitops-repo-url
+        revision: *gitops-repo-revision
         directories:
         - path: kubernetes-deployments/storage/*
     template:
@@ -316,22 +278,29 @@ argocd-apps:
       spec:
         project: storage
         source:
-          repoURL: git@github.com:jsnouffer/homelab.git
-          targetRevision: HEAD
+          repoURL: *gitops-repo-url
+          targetRevision: *gitops-repo-revision
           path: '{{ .path.path }}'
-          helm:
-            valueFiles:
-              - values.yaml
-        destination:
-          server: https://kubernetes.default.svc
-          namespace: '{{ base .path.path }}'
+          helm: *appsets-helm
+        destination: *appsets-destination
         revisionHistoryLimit: 5
         syncPolicy:
-          syncOptions:
-          - ApplyOutOfSyncOnly=true
-          - CreateNamespace=true
-          - RespectIgnoreDifferences=true
-          - PruneLast=true
+          syncOptions: *appsets-sync-options
         ignoreDifferences: []
     syncPolicy:
       preserveResourcesOnDeletion: true
+      applicationsSync: create-update
+
+argocd-image-updater:
+  enabled: true
+  fullnameOverride: argocd-image-updater
+  extraEnv:
+    - name: TZ
+      value: America/New_York
+  config:
+    argocd:
+      insecure: true
+      plaintext: true
+    gitCommitUser: "Argo Image Updater"
+    gitCommitMail: "jsnouff+argoimage@gmail.com"
+    logLevel: "debug"
