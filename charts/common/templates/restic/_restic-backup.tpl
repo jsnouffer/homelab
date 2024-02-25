@@ -49,6 +49,9 @@ spec:
               - backup
               - --host
               - kubernetes
+              {{- range $value.tags }}
+              - --tag {{ tpl . $ }}
+              {{- end }}
               - .
             {{- if hasPrefix "b2" $value.bucket }}
             env: {{ toYaml $ctx.env.b2 | nindent 14 }}

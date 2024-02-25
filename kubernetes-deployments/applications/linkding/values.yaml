@@ -67,6 +67,8 @@ common:
         pvcName: linkding-data
         bucket: linkding-backup
         restoreVersion: latest
+        tags:
+          - "{{ $.Values.linkding.controllers.main.containers.main.image.repository }}:{{ $.Values.linkding.controllers.main.containers.main.image.tag }}"
         affinity:
           podAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:
