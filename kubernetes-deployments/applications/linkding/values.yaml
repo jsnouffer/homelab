@@ -9,7 +9,7 @@ linkding:
         main:
           image:
             repository: sissbruecker/linkding
-            tag: latest
+            tag: latest # managed by ArgoCD Image Updater
           env:
             LD_CSRF_TRUSTED_ORIGINS: https://linkding.jsnouff.io
           resources:

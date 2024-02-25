@@ -1,0 +1,8 @@
+helm:
+  parameters:
+  - name: linkding.controllers.main.containers.main.image.repository
+    value: sissbruecker/linkding
+    forcestring: true
+  - name: linkding.controllers.main.containers.main.image.tag
+    value: 1.23.1
+    forcestring: true
