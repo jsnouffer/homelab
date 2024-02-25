@@ -1,0 +1,8 @@
+helm:
+  parameters:
+  - name: freshrss.controllers.main.containers.main.image.repository
+    value: freshrss/freshrss
+    forcestring: true
+  - name: freshrss.controllers.main.containers.main.image.tag
+    value: 1.23.1
+    forcestring: true
