@@ -12,6 +12,7 @@ spec:
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
   concurrencyPolicy: Forbid
+  timeZone: America/New_York
   schedule: "* * 31 2 *" # never runs
   suspend: true
   jobTemplate:

@@ -12,6 +12,7 @@ spec:
   successfulJobsHistoryLimit: 0
   failedJobsHistoryLimit: 1
   concurrencyPolicy: Forbid
+  timeZone: America/New_York
   schedule: {{ $ctx.prune.schedule | quote }}
   jobTemplate:
     spec:
@@ -53,6 +54,7 @@ spec:
                 - |
                   cat /snapshots/snapshots.json | jq > /tmp/snapshots.json
                   kubectl create configmap restic-backups-snapshots-{{ $name }} --from-file=/tmp/snapshots.json --dry-run=client -o yaml | kubectl apply -f -
+                  kubectl label configmap restic-backups-snapshots-{{ $name }} restic.snapshots={{ $name }}
               volumeMounts:
                 - name: snapshots
                   mountPath: /snapshots

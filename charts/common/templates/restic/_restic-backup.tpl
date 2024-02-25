@@ -12,6 +12,7 @@ spec:
   successfulJobsHistoryLimit: 0
   failedJobsHistoryLimit: 1
   concurrencyPolicy: Forbid
+  timeZone: America/New_York
   schedule: {{ $ctx.cron.schedule | quote }}
   jobTemplate:
     spec:
@@ -50,7 +51,8 @@ spec:
               - --host
               - kubernetes
               {{- range $value.tags }}
-              - --tag {{ tpl . $ }}
+              - --tag
+              - {{ tpl . $ }}
               {{- end }}
               - .
             {{- if hasPrefix "b2" $value.bucket }}
