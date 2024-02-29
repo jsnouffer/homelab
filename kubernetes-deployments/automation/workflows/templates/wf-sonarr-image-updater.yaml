@@ -1,0 +1,147 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: update-sonarr-image
+spec:
+  serviceAccountName: workflows-sa
+  volumeClaimTemplates:
+    - metadata:
+        name: repo
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 512Mi
+  volumes:
+    - name: ssh-key
+      secret:
+        defaultMode: 0600
+        secretName: ssh-key
+  ttlStrategy: {{ toYaml $.Values.ttlStrategy | nindent 4 }}
+  podGC: {{ toYaml $.Values.podGC | nindent 4 }}
+  # onExit: exit-handler
+  entrypoint: main
+  templates:
+    - name: main
+      dag:
+        tasks:
+          - name: get-latest-sonarr-version
+            template: get-latest-sonarr-version
+          - name: clone-repository
+            template: clone-repository
+          - name: update-image-tag
+            template: update-image-tag
+            depends: get-latest-sonarr-version && clone-repository
+            arguments:
+              parameters:
+                - name: version
+                  value: "{{`{{tasks.get-latest-sonarr-version.outputs.parameters.version}}`}}"
+          - name: push-changes
+            template: push-changes
+            depends: update-image-tag
+
+    - name: exit-handler
+      dag:
+        tasks:
+          - name: notify-failure
+            templateRef:
+              name: slack-notifier
+              template: main
+            arguments:
+              parameters:
+                - name: slack-channel
+                  value: workflows
+                - name: text
+                  value: "{{`Image updater workflow {{workflow.name}} failed`}}"
+            when: "{{`{{workflow.status}} != Succeeded`}}"
+
+    - name: get-latest-sonarr-version
+      script:
+        image: apteno/alpine-jq:2024-02-25
+        command: [sh]
+        source: |
+          set -ex
+          set -o pipefail
+          curl -X 'GET' ${API_URL} -H 'accept: application/json' -H "X-Api-Key: ${API_KEY}" \
+            | jq '.[] | select(.latest==true and .installed==false and .installable==true).version' | tr -d '"' > /tmp/output.out
+          cat /tmp/output.out
+        env:
+          - name: API_URL
+            value: {{ .Values.sonarr.url }}
+          - name: API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.sonarr.existingSecret.name }}
+                key: {{ .Values.sonarr.existingSecret.key }}
+      outputs:
+        parameters:
+          - name: version
+            valueFrom:
+              path: /tmp/output.out
+
+    - name: clone-repository
+      script:
+        image: bitnami/git:2.44.0
+        command: [bash]
+        workingDir: /repo
+        source: |
+          set -ex
+          git clone git@github.com:jsnouffer/homelab.git .
+          git checkout -b workflow-image-updater-$(cat /proc/sys/kernel/random/uuid)
+        env:
+          - name: GIT_SSH_COMMAND
+            value: "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i /root/.ssh/ssh-privatekey"
+        volumeMounts:
+          - name: repo
+            mountPath: /repo
+            subPath: homelab
+          - name: ssh-key
+            mountPath: /root/.ssh
+
+    - name: update-image-tag
+      inputs:
+        parameters:
+          - name: version
+      script:
+        image: mikefarah/yq:4.42.1
+        command: [sh]
+        workingDir: /repo/kubernetes-deployments/media/sonarr
+        source: |
+          set -ex
+          pwd
+          ls -alrt
+          yq -i '.helm.parameters[1].value = "version-{{`{{inputs.parameters.version}}`}}"' .argocd-source-sonarr.yaml
+          cat .argocd-source-sonarr.yaml
+        securityContext:
+          runAsGroup: 0
+          runAsNonRoot: false
+          runAsUser: 0
+        volumeMounts:
+          - name: repo
+            mountPath: /repo
+            subPath: homelab
+
+    - name: push-changes
+      script:
+        image: bitnami/git:2.44.0
+        command: [bash]
+        workingDir: /repo
+        source: |
+          set -ex
+          git config --global user.email "jsnouff@gmail.com"
+          git config --global user.name "Workflow Image Updater"
+          git config --global --add --bool push.autoSetupRemote true
+          git add --all
+          git commit -a -m "Updating sonarr image version"
+          git push
+        env:
+          - name: GIT_SSH_COMMAND
+            value: "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i /root/.ssh/ssh-privatekey"
+        volumeMounts:
+          - name: repo
+            mountPath: /repo
+            subPath: homelab
+          - name: ssh-key
+            mountPath: /root/.ssh
+

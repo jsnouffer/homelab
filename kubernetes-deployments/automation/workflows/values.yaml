@@ -25,6 +25,13 @@ youtube:
     api: pipedapi.jsnouff.net
     frontend: piped.jsnouff.net
 
+sonarr:
+  url: https://sonarr.jsnouff.net/api/v3/update
+  existingSecret:
+    name: sonarr-api-key
+    key: key
+
+
 scheduled:
   check-raid-status-daily:
     workflowTemplate: check-raid-status
