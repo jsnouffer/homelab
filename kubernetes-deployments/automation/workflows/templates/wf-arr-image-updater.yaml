@@ -1,8 +1,9 @@
+{{-  range $name, $values := $.Values.arrImageUpdater }}
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: WorkflowTemplate
 metadata:
-  name: update-sonarr-image
+  name: update-{{ $name }}-image
 spec:
   serviceAccountName: workflows-sa
   volumeClaimTemplates:
@@ -26,24 +27,24 @@ spec:
     - name: main
       dag:
         tasks:
-          - name: get-latest-sonarr-version
-            template: get-latest-sonarr-version
+          - name: get-latest-version
+            template: get-latest-version
           - name: clone-repository
             template: clone-repository
           - name: update-image-tag
             template: update-image-tag
-            depends: get-latest-sonarr-version && clone-repository
+            depends: get-latest-version && clone-repository
             arguments:
               parameters:
                 - name: version
-                  value: "{{`{{tasks.get-latest-sonarr-version.outputs.parameters.version}}`}}"
+                  value: "{{`{{tasks.get-latest-version.outputs.parameters.version}}`}}"
             when: >-
-              {{`{{tasks.get-latest-sonarr-version.outputs.parameters.version}} != "none"`}}
+              {{`{{tasks.get-latest-version.outputs.parameters.version}} != "none"`}}
           - name: push-changes
             template: push-changes
             depends: update-image-tag
             when: >-
-              {{`{{tasks.get-latest-sonarr-version.outputs.parameters.version}} != "none"`}}
+              {{`{{tasks.get-latest-version.outputs.parameters.version}} != "none"`}}
 
     - name: exit-handler
       dag:
@@ -60,7 +61,7 @@ spec:
                   value: "{{`Image updater workflow {{workflow.name}} failed`}}"
             when: "{{`{{workflow.status}} != Succeeded`}}"
 
-    - name: get-latest-sonarr-version
+    - name: get-latest-version
       script:
         image: apteno/alpine-jq:2024-02-25
         command: [sh]
@@ -76,12 +77,12 @@ spec:
           fi
         env:
           - name: API_URL
-            value: {{ .Values.sonarr.url }}
+            value: {{ $values.url }}
           - name: API_KEY
             valueFrom:
               secretKeyRef:
-                name: {{ .Values.sonarr.existingSecret.name }}
-                key: {{ .Values.sonarr.existingSecret.key }}
+                name: {{ $values.existingSecret.name }}
+                key: {{ $values.existingSecret.key }}
       outputs:
         parameters:
           - name: version
@@ -115,13 +116,13 @@ spec:
       script:
         image: mikefarah/yq:4.42.1
         command: [sh]
-        workingDir: /repo/kubernetes-deployments/media/sonarr
+        workingDir: /repo/kubernetes-deployments/media/{{ $name }}
         source: |
           set -ex
           pwd
           ls -alrt
-          yq -i '.helm.parameters[1].value = "version-{{`{{inputs.parameters.version}}`}}"' .argocd-source-sonarr.yaml
-          cat .argocd-source-sonarr.yaml
+          yq -i '.helm.parameters[1].value = "version-{{`{{inputs.parameters.version}}`}}"' .argocd-source-{{ $name }}.yaml
+          cat .argocd-source-{{ $name }}.yaml
         securityContext:
           runAsGroup: 0
           runAsNonRoot: false
@@ -142,7 +143,7 @@ spec:
           git config --global user.name "Workflow Image Updater"
           git config --global --add --bool push.autoSetupRemote true
           git add --all
-          git commit -a -m "Updating sonarr image version"
+          git commit -a -m "Updating {{ $name }} image version"
           git push
         env:
           - name: GIT_SSH_COMMAND
@@ -153,4 +154,4 @@ spec:
             subPath: homelab
           - name: ssh-key
             mountPath: /root/.ssh
-
+{{- end }}
