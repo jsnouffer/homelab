@@ -37,9 +37,13 @@ spec:
               parameters:
                 - name: version
                   value: "{{`{{tasks.get-latest-sonarr-version.outputs.parameters.version}}`}}"
+            when: >-
+              {{`{{tasks.get-latest-sonarr-version.outputs.parameters.version}} != "none"`}}
           - name: push-changes
             template: push-changes
             depends: update-image-tag
+            when: >-
+              {{`{{tasks.get-latest-sonarr-version.outputs.parameters.version}} != "none"`}}
 
     - name: exit-handler
       dag:
@@ -66,6 +70,10 @@ spec:
           curl -X 'GET' ${API_URL} -H 'accept: application/json' -H "X-Api-Key: ${API_KEY}" \
             | jq '.[] | select(.latest==true and .installed==false and .installable==true).version' | tr -d '"' > /tmp/output.out
           cat /tmp/output.out
+          if [ -z "$(cat /tmp/output.out)" ]; then
+            echo "Output is empty"
+            rm /tmp/output.out
+          fi
         env:
           - name: API_URL
             value: {{ .Values.sonarr.url }}
@@ -79,6 +87,7 @@ spec:
           - name: version
             valueFrom:
               path: /tmp/output.out
+              default: "none"
 
     - name: clone-repository
       script:
