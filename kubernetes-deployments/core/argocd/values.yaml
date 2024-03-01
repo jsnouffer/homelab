@@ -144,10 +144,20 @@ argocd-apps:
 
           argocd-image-updater.argoproj.io/write-back-method: git
           argocd-image-updater.argoproj.io/git-branch: main:image-updater-{{`{{.SHA256}}`}}
-          argocd-image-updater.argoproj.io/image-list: bitwarden=vaultwarden/server, freshrss=freshrss/freshrss, linkding=sissbruecker/linkding
+          argocd-image-updater.argoproj.io/image-list: >-
+            bitwarden=vaultwarden/server,
+            calibre=lscr.io/linuxserver/calibre,
+            calibre-web=lscr.io/linuxserver/calibre-web,
+            freshrss=freshrss/freshrss,
+            linkding=sissbruecker/linkding
 
           argocd-image-updater.argoproj.io/bitwarden.helm.image-name: bitwarden.controllers.main.containers.main.image.repository
           argocd-image-updater.argoproj.io/bitwarden.helm.image-tag: bitwarden.controllers.main.containers.main.image.tag
+
+          argocd-image-updater.argoproj.io/calibre.helm.image-name: calibre.controllers.main.containers.main.image.repository
+          argocd-image-updater.argoproj.io/calibre.helm.image-tag: calibre.controllers.main.containers.main.image.tag
+          argocd-image-updater.argoproj.io/calibre-web.helm.image-name: calibre.controllers.main.containers.web.image.repository
+          argocd-image-updater.argoproj.io/calibre-web.helm.image-tag: calibre.controllers.main.containers.web.image.tag
 
           argocd-image-updater.argoproj.io/freshrss.helm.image-name: freshrss.controllers.main.containers.main.image.repository
           argocd-image-updater.argoproj.io/freshrss.helm.image-tag: freshrss.controllers.main.containers.main.image.tag

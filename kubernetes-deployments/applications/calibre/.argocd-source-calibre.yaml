@@ -1,0 +1,14 @@
+helm:
+  parameters:
+  - name: calibre.controllers.main.containers.main.image.repository
+    value: lscr.io/linuxserver/calibre
+    forcestring: true
+  - name: calibre.controllers.main.containers.main.image.tag
+    value: 7.5.1
+    forcestring: true
+  - name: calibre.controllers.main.containers.web.image.repository
+    value: lscr.io/linuxserver/calibre-web
+    forcestring: true
+  - name: calibre.controllers.main.containers.web.image.tag
+    value: 0.6.21
+    forcestring: true
