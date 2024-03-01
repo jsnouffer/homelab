@@ -1,8 +1,8 @@
 helm:
   parameters:
-  - name: sonarr.controllers.main.containers.main.image.repository
-    value: linuxserver/sonarr
-    forcestring: true
-  - name: sonarr.controllers.main.containers.main.image.tag
-    value: 4.0.1
-    forcestring: true
+    - name: sonarr.controllers.main.containers.main.image.repository
+      value: linuxserver/sonarr
+      forcestring: true
+    - name: sonarr.controllers.main.containers.main.image.tag
+      value: version-4.0.2.1183
+      forcestring: true
