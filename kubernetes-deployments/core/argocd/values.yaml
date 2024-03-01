@@ -146,8 +146,8 @@ argocd-apps:
           argocd-image-updater.argoproj.io/git-branch: main:image-updater-{{`{{.SHA256}}`}}
           argocd-image-updater.argoproj.io/image-list: >-
             bitwarden=vaultwarden/server,
-            calibre=lscr.io/linuxserver/calibre,
-            calibre-web=lscr.io/linuxserver/calibre-web,
+            calibre=lscr.io/linuxserver/calibre:7.x.x,
+            calibre-web=lscr.io/linuxserver/calibre-web:0.x.x,
             freshrss=freshrss/freshrss,
             linkding=sissbruecker/linkding
 
