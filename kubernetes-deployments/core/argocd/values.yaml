@@ -144,13 +144,16 @@ argocd-apps:
 
           argocd-image-updater.argoproj.io/write-back-method: git
           argocd-image-updater.argoproj.io/git-branch: main:image-updater-{{`{{.SHA256}}`}}
-          argocd-image-updater.argoproj.io/image-list: linkding=sissbruecker/linkding, freshrss=freshrss/freshrss
+          argocd-image-updater.argoproj.io/image-list: bitwarden=vaultwarden/server, freshrss=freshrss/freshrss, linkding=sissbruecker/linkding
 
-          argocd-image-updater.argoproj.io/linkding.helm.image-name: linkding.controllers.main.containers.main.image.repository
-          argocd-image-updater.argoproj.io/linkding.helm.image-tag: linkding.controllers.main.containers.main.image.tag
+          argocd-image-updater.argoproj.io/bitwarden.helm.image-name: bitwarden.controllers.main.containers.main.image.repository
+          argocd-image-updater.argoproj.io/bitwarden.helm.image-tag: bitwarden.controllers.main.containers.main.image.tag
 
           argocd-image-updater.argoproj.io/freshrss.helm.image-name: freshrss.controllers.main.containers.main.image.repository
           argocd-image-updater.argoproj.io/freshrss.helm.image-tag: freshrss.controllers.main.containers.main.image.tag
+
+          argocd-image-updater.argoproj.io/linkding.helm.image-name: linkding.controllers.main.containers.main.image.repository
+          argocd-image-updater.argoproj.io/linkding.helm.image-tag: linkding.controllers.main.containers.main.image.tag
       spec:
         project: applications
         source:

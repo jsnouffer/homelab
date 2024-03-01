@@ -9,7 +9,7 @@ bitwarden:
         main:
           image:
             repository: vaultwarden/server
-            tag: latest
+            tag: latest # managed by ArgoCD Image Updater
           env:
             INVITATIONS_ALLOWED: "false"
             SIGNUPS_ALLOWED: "false"

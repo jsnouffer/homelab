@@ -1,0 +1,8 @@
+helm:
+  parameters:
+  - name: bitwarden.controllers.main.containers.main.image.repository
+    value: vaultwarden/server
+    forcestring: true
+  - name: bitwarden.controllers.main.containers.main.image.tag
+    value: 1.30.3
+    forcestring: true
