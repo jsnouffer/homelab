@@ -70,6 +70,8 @@ common:
         pvcName: bitwarden-data
         bucket: "b2:jsnouff-vaultwarden"
         restoreVersion: latest
+        tags:
+          - "{{ $.Values.bitwarden.controllers.main.containers.main.image.repository }}:{{ $.Values.bitwarden.controllers.main.containers.main.image.tag }}"
         affinity:
           podAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:

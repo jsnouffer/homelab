@@ -158,6 +158,8 @@ common:
         pvcName: calibre-config
         bucket: calibre-data-backup
         restoreVersion: latest
+        tags:
+          - "{{ $.Values.calibre.controllers.main.containers.main.image.repository }}:{{ $.Values.calibre.controllers.main.containers.main.image.tag }}"
         affinity:
           podAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:
