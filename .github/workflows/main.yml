@@ -5,8 +5,8 @@ on:
     branches:
       - 'image-updater-**'
       # - 'workflow-image-updater-**'
-  pull_request:
-    types: [closed]
+  # pull_request:
+  #   types: [closed]
 
 jobs:
   createPullRequest:
