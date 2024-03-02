@@ -1,0 +1,98 @@
+kvmd:
+    msd:
+        type: disabled
+    atx:
+        type: disabled
+    gpio:
+        drivers:
+            ez:
+                type: ezcoo
+                protocol: 2
+                device: /dev/ttyUSB0
+            wol_oswin:
+                type: wol
+                mac: ac:e2:d3:06:64:6b
+            wol_barenas:
+                type: wol
+                mac: 04:7c:16:3d:d2:c9
+            wol_davros:
+                type: wol
+                mac: 40:b0:34:f7:17:08
+            reboot:
+                type: cmd
+                cmd: [/usr/bin/sudo, reboot]
+            restart_service:
+                type: cmd
+                cmd: [/usr/bin/sudo, systemctl, restart, kvmd]
+        scheme:
+            ch0_led:
+                driver: ez
+                pin: 0
+                mode: input
+            ch1_led:
+                driver: ez
+                pin: 1
+                mode: input
+            ch2_led:
+                driver: ez
+                pin: 2
+                mode: input
+            ch3_led:
+                driver: ez
+                pin: 3
+                mode: input
+            pikvm_led:
+                pin: 0
+                mode: input
+            ch0_button:
+                driver: ez
+                pin: 0
+                mode: output
+                switch: false
+            ch1_button:
+                driver: ez
+                pin: 1
+                mode: output
+                switch: false
+            ch2_button:
+                driver: ez
+                pin: 2
+                mode: output
+                switch: false
+            ch3_button:
+                driver: ez
+                pin: 3
+                mode: output
+                switch: false
+            wol_oswin:
+                driver: wol_oswin
+                pin: 0
+                mode: output
+                switch: false
+            wol_barenas:
+                driver: wol_barenas
+                pin: 1
+                mode: output
+                switch: false
+            wol_davros:
+                driver: wol_davros
+                pin: 2
+                mode: output
+                switch: false
+            reboot_button:
+                driver: reboot
+                pin: 0
+                mode: output
+                switch: false
+            restart_service_button:
+                driver: restart_service
+                pin: 0
+                mode: output
+                switch: false
+        view:
+            table:
+                - ["#PiKVM", "pikvm_led|green", "restart_service_button|confirm|Service", "reboot_button|confirm|Reboot"]
+                - ["#oswin", ch0_led, ch0_button, "wol_oswin | WoL"]
+                - ["#barenas", ch1_led, ch1_button, "wol_barenas | WoL"]
+                - ["#davros", ch2_led, ch2_button, "wol_davros | WoL"]
+                - ["#Input 4", ch3_led, ch3_button]
