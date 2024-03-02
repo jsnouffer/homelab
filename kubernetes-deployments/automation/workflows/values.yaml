@@ -37,6 +37,23 @@ arrImageUpdater:
       name: sonarr-api-key
       key: key
 
+ghReleaseImageUpdater:
+  gitopsRepo:
+    cloneUrl: git@github.com:jsnouffer/homelab.git
+    basePath: kubernetes-deployments/
+
+  applications:
+    calibre:
+      ghRepo: linuxserver/docker-calibre
+      gitopsRepo:
+        filePath: applications/calibre/.argocd-source-calibre.yaml
+        yamlPath: ".helm.parameters[1].value"
+    calibre-web:
+      ghRepo: linuxserver/docker-calibre-web
+      gitopsRepo:
+        filePath: applications/calibre/.argocd-source-calibre.yaml
+        yamlPath: ".helm.parameters[3].value"
+
 scheduled:
   check-raid-status-daily:
     workflowTemplate: check-raid-status

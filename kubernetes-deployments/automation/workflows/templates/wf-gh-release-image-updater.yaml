@@ -1,0 +1,270 @@
+{{- with $.Values.ghReleaseImageUpdater }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gh-release-image-updater-semaphore
+data:
+  limit: "1"
+---
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: gh-release-image-updater
+spec:
+  serviceAccountName: workflows-sa
+  volumeClaimTemplates:
+    - metadata:
+        name: repo
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 512Mi
+  volumes:
+    - name: ssh-key
+      secret:
+        defaultMode: 0600
+        secretName: ssh-key
+  ttlStrategy: {{ toYaml $.Values.ttlStrategy | nindent 4 }}
+  podGC: {{ toYaml $.Values.podGC | nindent 4 }}
+  onExit: exit-handler
+  entrypoint: main
+  arguments:
+    parameters:
+    - name: application
+      enum:
+        - all
+      {{-  range $name, $_ := .applications }}
+        - {{ $name }}
+      {{- end }}
+  templates:
+    - name: main
+      dag:
+        tasks:
+          - name: clone-repository
+            template: clone-repository
+          - name: perform-image-version-update
+            template: perform-image-version-update
+            depends: clone-repository
+            arguments:
+              parameters:
+                - name: application
+                  value: "{{`{{workflow.parameters.application}}`}}"
+            when: >-
+              {{`"{{workflow.parameters.application}}" != "all"`}}
+          - name: perform-image-version-update-all
+            template: perform-image-version-update
+            depends: clone-repository
+            arguments:
+              parameters:
+                - name: application
+                  value: "{{`{{item}}`}}"
+            when: >-
+              {{`"{{workflow.parameters.application}}" == "all"`}}
+            withItems:
+            {{-  range $name, $_ := .applications }}
+              - {{ $name }}
+            {{- end }}
+          - name: check-git-working-tree
+            template: check-git-working-tree
+            depends: perform-image-version-update && perform-image-version-update-all
+          - name: check-failures
+            depends: check-git-working-tree
+            inline:
+              container:
+                image: alpine:3.19.1
+                command: [sh, -c]
+                args: ["exit 1"]
+            when: "{{`{{tasks.check-git-working-tree.outputs.parameters.changes-to-push}} > 1`}}"
+          - name: push-changes
+            template: push-changes
+            depends: check-git-working-tree
+            when: "{{`{{tasks.check-git-working-tree.outputs.parameters.changes-to-push}} == 1`}}"
+
+    - name: exit-handler
+      dag:
+        tasks:
+          - name: notify-failure
+            templateRef:
+              name: slack-notifier
+              template: main
+            arguments:
+              parameters:
+                - name: slack-channel
+                  value: workflows
+                - name: text
+                  value: "{{`Image updater workflow {{workflow.name}} failed for application {{workflow.parameters.application}}.`}}"
+            when: "{{`{{workflow.status}} != Succeeded`}}"
+
+    - name: perform-image-version-update
+      inputs:
+        parameters:
+          - name: application
+      steps:
+      - - name: get-application-parameters
+          template: get-application-parameters
+          arguments:
+            parameters:
+              - name: application
+                value: "{{`{{inputs.parameters.application}}`}}"
+      - - name: get-latest-release-tag
+          template: get-latest-release-tag
+          arguments:
+            parameters:
+              - name: github-repo
+                value: "{{`{{steps.get-application-parameters.outputs.parameters.github-repo}}`}}"
+      - - name: update-image-tag
+          template: update-image-tag
+          arguments:
+            parameters:
+              - name: gitops-repo-file-path
+                value: "{{`{{steps.get-application-parameters.outputs.parameters.gitops-repo-file-path}}`}}"
+              - name: gitops-repo-yaml-path
+                value: "{{`{{steps.get-application-parameters.outputs.parameters.gitops-repo-yaml-path}}`}}"
+              - name: version
+                value: "{{`{{steps.get-latest-release-tag.outputs.parameters.release-tag}}`}}"
+
+    - name: clone-repository
+      script:
+        image: bitnami/git:2.44.0
+        command: [bash]
+        workingDir: /repo
+        source: |
+          set -ex
+          git clone {{ .gitopsRepo.cloneUrl }} .
+          git checkout -b workflow-image-updater-$(cat /proc/sys/kernel/random/uuid)
+        env:
+          - name: GIT_SSH_COMMAND
+            value: "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i /root/.ssh/ssh-privatekey"
+        volumeMounts:
+          - name: repo
+            mountPath: /repo
+            subPath: gitops
+          - name: ssh-key
+            mountPath: /root/.ssh
+
+    - name: get-application-parameters
+      inputs:
+        parameters:
+          - name: application
+      script:
+        image: bash:4.1.17
+        command: [bash]
+        source: |
+          {{-  range $name, $values := .applications }}
+          if [  "{{`{{inputs.parameters.application}}`}}" = "{{ $name }}" ]; then
+            echo "{{ $values.ghRepo }}" > /tmp/github-repo.out
+            echo "{{ $values.gitopsRepo.filePath }}" > /tmp/gitops-repo-file-path.out
+            echo "{{ $values.gitopsRepo.yamlPath }}" > /tmp/gitops-repo-yaml-path.out
+          fi
+          {{- end }}
+      outputs:
+        parameters:
+          - name: github-repo
+            valueFrom:
+              path: /tmp/github-repo.out
+          - name: gitops-repo-file-path
+            valueFrom:
+              path: /tmp/gitops-repo-file-path.out
+          - name: gitops-repo-yaml-path
+            valueFrom:
+              path: /tmp/gitops-repo-yaml-path.out
+
+    - name: get-latest-release-tag
+      inputs:
+        parameters:
+          - name: github-repo
+      script:
+        image: curlimages/curl:8.6.0
+        command: [sh]
+        source: |
+          set -ex
+          set -o pipefail
+          curl -sS -D - https://github.com/{{`{{inputs.parameters.github-repo}}`}}/releases/latest -o /dev/null \
+            | grep location: | awk -F/ '{print $NF}' | tr -d '\r' > /tmp/release-tag.out
+          cat /tmp/release-tag.out
+          if [ -z "$(cat /tmp/release-tag.out)" ]; then
+            echo "Output is empty"
+            rm /tmp/release-tag.out
+          fi
+      outputs:
+        parameters:
+          - name: release-tag
+            valueFrom:
+              path: /tmp/release-tag.out
+              default: ""
+
+    - name: update-image-tag
+      synchronization:
+        semaphore:
+          configMapKeyRef:
+            name: gh-release-image-updater-semaphore
+            key: limit
+      inputs:
+        parameters:
+          - name: gitops-repo-file-path
+          - name: gitops-repo-yaml-path
+          - name: version
+      script:
+        image: mikefarah/yq:4.42.1
+        command: [sh]
+        workingDir: /repo/{{ .gitopsRepo.basePath }}
+        source: |
+          set -ex
+          pwd
+          ls -alrt
+          yq -i '{{`{{inputs.parameters.gitops-repo-yaml-path}}`}} = "{{`{{inputs.parameters.version}}`}}"' $FILE_PATH
+          cat $FILE_PATH
+        env:
+          - name: FILE_PATH
+            value: "{{`{{inputs.parameters.gitops-repo-file-path}}`}}"
+        securityContext:
+          runAsGroup: 0
+          runAsNonRoot: false
+          runAsUser: 0
+        volumeMounts:
+          - name: repo
+            mountPath: /repo
+            subPath: gitops
+
+    - name: check-git-working-tree
+      script:
+        image: bitnami/git:2.44.0
+        command: [bash]
+        workingDir: /repo
+        source: |
+          git diff-files --quiet
+          echo $? > /tmp/changes-to-push.out
+        volumeMounts:
+          - name: repo
+            mountPath: /repo
+            subPath: gitops
+      outputs:
+        parameters:
+          - name: changes-to-push
+            valueFrom:
+              path: /tmp/changes-to-push.out
+
+    - name: push-changes
+      script:
+        image: bitnami/git:2.44.0
+        command: [bash]
+        workingDir: /repo
+        source: |
+          set -ex
+          git config --global user.email "jsnouff@gmail.com"
+          git config --global user.name "Workflow Image Updater"
+          git config --global --add --bool push.autoSetupRemote true
+          git add --all
+          git commit -a -m "Updating image tags"
+          git push
+        env:
+          - name: GIT_SSH_COMMAND
+            value: "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i /root/.ssh/ssh-privatekey"
+        volumeMounts:
+          - name: repo
+            mountPath: /repo
+            subPath: gitops
+          - name: ssh-key
+            mountPath: /root/.ssh
+{{- end }}
