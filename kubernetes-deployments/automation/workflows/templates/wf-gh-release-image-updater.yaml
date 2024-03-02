@@ -68,18 +68,10 @@ spec:
           - name: check-git-working-tree
             template: check-git-working-tree
             depends: perform-image-version-update && perform-image-version-update-all
-          - name: check-failures
-            depends: check-git-working-tree
-            inline:
-              container:
-                image: alpine:3.19.1
-                command: [sh, -c]
-                args: ["exit 1"]
-            when: "{{`{{tasks.check-git-working-tree.outputs.parameters.changes-to-push}} > 1`}}"
           - name: push-changes
             template: push-changes
             depends: check-git-working-tree
-            when: "{{`{{tasks.check-git-working-tree.outputs.parameters.changes-to-push}} == 1`}}"
+            when: "{{`{{tasks.check-git-working-tree.outputs.parameters.changes-to-push}} > 0`}}"
 
     - name: exit-handler
       dag:
@@ -233,8 +225,7 @@ spec:
         command: [bash]
         workingDir: /repo
         source: |
-          git diff-files --quiet
-          echo $? > /tmp/changes-to-push.out
+          git status -s | wc -l > /tmp/changes-to-push.out
         volumeMounts:
           - name: repo
             mountPath: /repo
