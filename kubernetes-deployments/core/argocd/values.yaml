@@ -262,6 +262,14 @@ argocd-apps:
         labels: {}
         annotations:
           argocd.argoproj.io/manifest-generate-paths: .
+
+          argocd-image-updater.argoproj.io/write-back-method: git
+          argocd-image-updater.argoproj.io/git-branch: main:image-updater-{{`{{.SHA256}}`}}
+          argocd-image-updater.argoproj.io/image-list: >-
+            audiobookshelf=advplyr/audiobookshelf
+
+          argocd-image-updater.argoproj.io/audiobookshelf.helm.image-name: audiobookshelf.controllers.main.containers.main.image.repository
+          argocd-image-updater.argoproj.io/audiobookshelf.helm.image-tag: audiobookshelf.controllers.main.containers.main.image.tag
       spec:
         project: media
         source:

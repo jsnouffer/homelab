@@ -1,15 +1,83 @@
 audiobookshelf:
   enabled: true
-pvcName: audiobookshelf-pvc
+  global:
+    fullnameOverride: audiobookshelf
+  controllers:
+    main:
+      strategy: Recreate
+      containers:
+        main:
+          image:
+            repository: advplyr/audiobookshelf
+            tag: latest # managed by ArgoCD Image Updater
+          resources:
+            requests:
+              cpu: 50m
+              memory: 100Mi
+            limits:
+              cpu: 500m
+              memory: 500Mi
+  service:
+    main:
+      annotations:
+        metallb.universe.tf/ip-allocated-from-pool: ip-address-pool-100
+        metallb.universe.tf/loadBalancerIPs: 192.168.30.101
+        external-dns.alpha.kubernetes.io/hostname: audiobookshelf-lb.jsnouff.net
+      ports:
+        http:
+          port: 80
+      type: LoadBalancer
+  ingress:
+    main:
+      enabled: true
+      hosts:
+        - host: &domain audiobookshelf.jsnouff.net
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: main
+      tls:
+        - hosts:
+            - *domain
+          secretName: tls-secret
+      annotations:
+        cert-manager.io/cluster-issuer: lets-encrypt-production
+        ingress.kubernetes.io/force-ssl-redirect: "true"
+        ingress.kubernetes.io/protocol: http
+        kubernetes.io/ingress.class: traefik
+        kubernetes.io/tls-acme: "true"
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls: "true"
+
+  persistence:
+    config:
+      enabled: true
+      accessMode: ReadWriteOnce
+      size: 2Gi
+      advancedMounts:
+        main:
+          main:
+            - path: /config
+              subPath: config
+            - path: /metadata
+              subPath: metadata
+    audiobooks:
+      enabled: true
+      existingClaim: audiobookshelf-nfs-audiobooks
 
 common:
   resticBackups:
     enabled: true
     targets:
       audiobookshelf:
-        pvcName: audiobookshelf-pvc
+        pvcName: audiobookshelf-config
         bucket: "b2:jsnouff-audiobookshelf"
         restoreVersion: latest
+        tags:
+          - "{{ $.Values.audiobookshelf.controllers.main.containers.main.image.repository }}:{{ $.Values.audiobookshelf.controllers.main.containers.main.image.tag }}"
         affinity:
           podAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:

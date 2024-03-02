@@ -1,0 +1,8 @@
+helm:
+  parameters:
+  - name: audiobookshelf.controllers.main.containers.main.image.repository
+    value: advplyr/audiobookshelf
+    forcestring: true
+  - name: audiobookshelf.controllers.main.containers.main.image.tag
+    value: 2.8.0
+    forcestring: true
