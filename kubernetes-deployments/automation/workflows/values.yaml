@@ -53,6 +53,11 @@ ghReleaseImageUpdater:
       gitopsRepo:
         filePath: applications/calibre/.argocd-source-calibre.yaml
         yamlPath: ".helm.parameters[3].value"
+    ombi:
+      ghRepo: linuxserver/docker-ombi
+      gitopsRepo:
+        filePath: media/ombi/.argocd-source-ombi.yaml
+        yamlPath: ".helm.parameters[1].value"
 
 scheduled:
   check-raid-status-daily:
