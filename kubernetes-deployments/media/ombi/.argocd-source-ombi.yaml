@@ -1,8 +1,8 @@
 helm:
   parameters:
-  - name: ombi.controllers.main.containers.main.image.repository
-    value: lscr.io/linuxserver/ombi
-    forcestring: true
-  - name: ombi.controllers.main.containers.main.image.tag
-    value: 4.43.11-development
-    forcestring: true
+    - name: ombi.controllers.main.containers.main.image.repository
+      value: lscr.io/linuxserver/ombi
+      forcestring: true
+    - name: ombi.controllers.main.containers.main.image.tag
+      value: v4.43.5-ls183
+      forcestring: true
