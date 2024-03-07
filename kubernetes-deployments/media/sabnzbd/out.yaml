@@ -1,0 +1,935 @@
+---
+# Source: sabnzbd/templates/common.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: restic-backups
+---
+# Source: sabnzbd/templates/pv-nfs-downloads.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: sabnzbd-nfs-downloads
+spec:
+  capacity:
+    storage: 3000Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: sabnzbd-nfs-downloads
+  mountOptions:
+    - hard
+    - nfsvers=4.1
+  nfs:
+    path: /mnt/ssd-noraid/downloads
+    server: barenas.jsnouff.net
+---
+# Source: sabnzbd/charts/sabnzbd/templates/common.yaml
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: sabnzbd-config
+  labels:
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: release-name
+    helm.sh/chart: sabnzbd-2.6.0
+spec:
+  accessModes:
+    - "ReadWriteOnce"
+  resources:
+    requests:
+      storage: "256Mi"
+---
+# Source: sabnzbd/templates/pvc-nfs-downloads.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sabnzbd-nfs-downloads
+spec:
+  storageClassName: sabnzbd-nfs-downloads
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 250Gi
+---
+# Source: sabnzbd/templates/common.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: restic-backups-role
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+---
+# Source: sabnzbd/templates/common.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: restic-backups-rb
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: restic-backups-role
+subjects:
+  - kind: ServiceAccount
+    name: restic-backups
+    namespace: default
+---
+# Source: sabnzbd/charts/sabnzbd/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: sabnzbd
+  labels:
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: release-name
+    app.kubernetes.io/service: sabnzbd
+    helm.sh/chart: sabnzbd-2.6.0
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/component: main
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/name: release-name
+---
+# Source: sabnzbd/charts/sabnzbd/templates/common.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sabnzbd
+  labels:
+    app.kubernetes.io/component: main
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: release-name
+    helm.sh/chart: sabnzbd-2.6.0
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: main
+      app.kubernetes.io/name: release-name
+      app.kubernetes.io/instance: release-name
+  template:
+    metadata:
+      labels: 
+        app.kubernetes.io/component: main
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/name: release-name
+    spec: 
+      enableServiceLinks: true
+      serviceAccountName: default
+      automountServiceAccountToken: true
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      dnsPolicy: ClusterFirst
+      initContainers: 
+        - command:
+          - sh
+          - -c
+          - |
+            cp /cm/sabnzbd.ini /config
+          image: busybox:latest
+          name: copy-configs
+          volumeMounts:
+          - mountPath: /config
+            name: config
+          - mountPath: /cm/sabnzbd.ini
+            name: config-secret
+            subPath: sabnzbd.ini
+      containers: 
+        - env:
+          - name: PGID
+            value: "1000"
+          - name: PUID
+            value: "1000"
+          - name: TZ
+            value: America/New_York
+          image: lscr.io/linuxserver/sabnzbd:latest
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            tcpSocket:
+              port: 8080
+            timeoutSeconds: 1
+          name: main
+          readinessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            tcpSocket:
+              port: 8080
+            timeoutSeconds: 1
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+          startupProbe:
+            failureThreshold: 30
+            initialDelaySeconds: 0
+            periodSeconds: 5
+            tcpSocket:
+              port: 8080
+            timeoutSeconds: 1
+          volumeMounts:
+          - mountPath: /config
+            name: config
+          - mountPath: /downloads
+            name: downloads
+      volumes: 
+        - name: config
+          persistentVolumeClaim:
+            claimName: sabnzbd-config
+        - name: config-secret
+          secret:
+            secretName: sabnzbd-config-secret
+        - name: downloads
+          persistentVolumeClaim:
+            claimName: sabnzbd-nfs-downloads
+---
+# Source: sabnzbd/templates/common.yaml
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: restic-prune-sabnzbd
+  labels:
+    restic-prune: sabnzbd
+spec:
+  successfulJobsHistoryLimit: 0
+  failedJobsHistoryLimit: 1
+  concurrencyPolicy: Forbid
+  timeZone: America/New_York
+  schedule: "0 0 * * 0"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: restic-backups
+          initContainers:
+            - name: prune-backups
+              image: restic/restic:latest
+              command:
+                - sh
+                - -c
+                - |
+                  restic forget \
+                    --keep-daily=14 \
+                    --keep-weekly=4 \
+                    --keep-monthly=6 \
+                    --prune
+                  restic snapshots --json > /snapshots/snapshots.json
+              env: 
+                - name: RESTIC_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: resticKey
+                      name: restic-backup-credentials
+                      optional: false
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      key: s3AccessKey
+                      name: restic-backup-credentials
+                      optional: false
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      key: s3SecretKey
+                      name: restic-backup-credentials
+                      optional: false
+                - name: RESTIC_REPOSITORY
+                  value: "s3:http://barenas.jsnouff.net:9000/sabnzbd-backup"
+              volumeMounts:
+                - name: snapshots
+                  mountPath: /snapshots
+          containers:
+            - name: save-snapshot-history
+              image: bitnami/kubectl:latest
+              imagePullPolicy: Always
+              command:
+                - /bin/bash
+                - -c
+                - |
+                  cat /snapshots/snapshots.json | jq > /tmp/snapshots.json
+                  kubectl create configmap restic-backups-snapshots-sabnzbd --from-file=/tmp/snapshots.json --dry-run=client -o yaml | kubectl apply -f -
+                  kubectl label configmap restic-backups-snapshots-sabnzbd restic.snapshots=sabnzbd
+              volumeMounts:
+                - name: snapshots
+                  mountPath: /snapshots
+          volumes:
+            - name: snapshots
+              emptyDir: {}
+          restartPolicy: OnFailure
+---
+# Source: sabnzbd/templates/common.yaml
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: restic-backup-sabnzbd
+  labels:
+    restic-backup: sabnzbd
+spec:
+  successfulJobsHistoryLimit: 0
+  failedJobsHistoryLimit: 1
+  concurrencyPolicy: Forbid
+  timeZone: America/New_York
+  schedule: "0 */12 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          affinity: 
+            podAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+              - podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                    - key: app.kubernetes.io/name
+                      operator: In
+                      values:
+                      - sabnzbd
+                  topologyKey: kubernetes.io/hostname
+                weight: 100
+          initContainers:
+          - name: restic-init
+            image: restic/restic:latest
+            imagePullPolicy: Always
+            command:
+              - sh
+              - -c
+              - |
+                restic init || echo "skipped"
+            env: 
+              - name: RESTIC_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    key: resticKey
+                    name: restic-backup-credentials
+                    optional: false
+              - name: AWS_ACCESS_KEY_ID
+                valueFrom:
+                  secretKeyRef:
+                    key: s3AccessKey
+                    name: restic-backup-credentials
+                    optional: false
+              - name: AWS_SECRET_ACCESS_KEY
+                valueFrom:
+                  secretKeyRef:
+                    key: s3SecretKey
+                    name: restic-backup-credentials
+                    optional: false
+              - name: RESTIC_REPOSITORY
+                value: "s3:http://barenas.jsnouff.net:9000/sabnzbd-backup"
+          containers:
+          - name: restic-backup
+            image: restic/restic:latest
+            workingDir: /data
+            args:
+              - backup
+              - --host
+              - kubernetes
+              - --tag
+              - lscr.io/linuxserver/sabnzbd:latest
+              - .
+            env: 
+              - name: RESTIC_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    key: resticKey
+                    name: restic-backup-credentials
+                    optional: false
+              - name: AWS_ACCESS_KEY_ID
+                valueFrom:
+                  secretKeyRef:
+                    key: s3AccessKey
+                    name: restic-backup-credentials
+                    optional: false
+              - name: AWS_SECRET_ACCESS_KEY
+                valueFrom:
+                  secretKeyRef:
+                    key: s3SecretKey
+                    name: restic-backup-credentials
+                    optional: false
+              - name: RESTIC_REPOSITORY
+                value: "s3:http://barenas.jsnouff.net:9000/sabnzbd-backup"
+            volumeMounts:
+              - name: backupdata
+                mountPath: /data
+                readOnly: true
+          volumes:
+            - name: backupdata
+              persistentVolumeClaim:
+                claimName: sabnzbd-config
+          restartPolicy: OnFailure
+---
+# Source: sabnzbd/templates/common.yaml
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: restic-restore-sabnzbd
+  labels:
+    restic-restore: sabnzbd
+spec:
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  concurrencyPolicy: Forbid
+  timeZone: America/New_York
+  schedule: "* * 31 2 *" # never runs
+  suspend: true
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          affinity: 
+            podAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+              - podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                    - key: app.kubernetes.io/name
+                      operator: In
+                      values:
+                      - sabnzbd
+                  topologyKey: kubernetes.io/hostname
+                weight: 100
+          containers:
+          - image: restic/restic:latest
+            imagePullPolicy: IfNotPresent
+            name: restic
+            args:
+            - restore
+            - latest
+            - --target
+            - /data
+            env: 
+              - name: RESTIC_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    key: resticKey
+                    name: restic-backup-credentials
+                    optional: false
+              - name: AWS_ACCESS_KEY_ID
+                valueFrom:
+                  secretKeyRef:
+                    key: s3AccessKey
+                    name: restic-backup-credentials
+                    optional: false
+              - name: AWS_SECRET_ACCESS_KEY
+                valueFrom:
+                  secretKeyRef:
+                    key: s3SecretKey
+                    name: restic-backup-credentials
+                    optional: false
+              - name: RESTIC_REPOSITORY
+                value: "s3:http://barenas.jsnouff.net:9000/sabnzbd-backup"
+            volumeMounts:
+            - mountPath: /data
+              name: backupdata
+          restartPolicy: OnFailure
+          volumes:
+          - name: backupdata
+            persistentVolumeClaim:
+              claimName: sabnzbd-config
+---
+# Source: sabnzbd/charts/sabnzbd/templates/common.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sabnzbd
+  labels:
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: release-name
+    helm.sh/chart: sabnzbd-2.6.0
+  annotations:
+    cert-manager.io/cluster-issuer: lets-encrypt-production
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+    ingress.kubernetes.io/protocol: http
+    kubernetes.io/ingress.class: traefik
+    kubernetes.io/tls-acme: "true"
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+spec:
+  tls:
+    - hosts:
+        - "sabnzbd.jsnouff.net"
+      secretName: "tls-secret"
+  rules:
+    - host: "sabnzbd.jsnouff.net"
+      http:
+        paths:
+          - path: "/"
+            pathType: Prefix
+            backend:
+              service:
+                name: sabnzbd
+                port:
+                  number: 8080
+---
+# Source: sabnzbd/templates/common.yaml
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: restic-backup-credentials
+spec:
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: infisical-secret-store
+  target:
+    deletionPolicy: Delete
+  data:
+    - secretKey: b2KeyID
+      remoteRef:
+        key: /restic/backblaze
+        property: keyId
+    - secretKey: b2ApplicationKey
+      remoteRef:
+        key: /restic/backblaze
+        property: applicationKey
+    - secretKey: s3AccessKey
+      remoteRef:
+        key: /restic/minio
+        property: accessKey
+    - secretKey: s3SecretKey
+      remoteRef:
+        key: /restic/minio
+        property: secretKey
+    - secretKey: resticKey
+      remoteRef:
+        key: /restic
+        property: encryptionKey
+---
+# Source: sabnzbd/templates/config-secret.yaml
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: sabnzbd-config-secret
+spec:
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: infisical-secret-store
+  target:
+    deletionPolicy: Delete
+    template:
+      engineVersion: v2
+      data:
+        sabnzbd.ini: |-
+          __version__ = 19
+          __encoding__ = utf-8
+          [misc]
+          pre_script = None
+          queue_complete = ""
+          queue_complete_pers = 0
+          bandwidth_perc = 100
+          refresh_rate = 0
+          interface_settings = ""
+          queue_limit = 20
+          config_lock = 0
+          fixed_ports = 1
+          sched_converted = 0
+          notified_new_skin = 0
+          direct_unpack_tested = 1
+          check_new_rel = 1
+          auto_browser = 1
+          language = en
+          enable_https_verification = 1
+          host = ::
+          port = 8080
+          https_port = ""
+          username = "{{ .username }}"
+          password = "{{ .password }}"
+          bandwidth_max = 100M
+          cache_limit = 1G
+          web_dir = Glitter
+          web_color = Auto
+          https_cert = server.cert
+          https_key = server.key
+          https_chain = ""
+          enable_https = 0
+          inet_exposure = 0
+          api_key = "{{ .api_key }}"
+          nzb_key = "{{ .nzb_key }}"
+          socks5_proxy_url = ""
+          permissions = ""
+          download_dir = /downloads/incomplete
+          download_free = ""
+          complete_dir = /downloads/complete
+          complete_free = ""
+          fulldisk_autoresume = 0
+          script_dir = ""
+          nzb_backup_dir = ""
+          admin_dir = admin
+          backup_dir = ""
+          dirscan_dir = ""
+          dirscan_speed = 5
+          password_file = ""
+          log_dir = logs
+          max_art_tries = 3
+          load_balancing = 2
+          top_only = 1
+          sfv_check = 1
+          script_can_fail = 0
+          enable_recursive = 1
+          flat_unpack = 1
+          par_option = ""
+          pre_check = 0
+          nice = ""
+          win_process_prio = 3
+          ionice = ""
+          fail_hopeless_jobs = 1
+          fast_fail = 1
+          auto_disconnect = 1
+          no_dupes = 3
+          no_series_dupes = 3
+          series_propercheck = 1
+          pause_on_pwrar = 2
+          ignore_samples = 1
+          deobfuscate_final_filenames = 1
+          auto_sort = avg_age asc
+          direct_unpack = 1
+          propagation_delay = 0
+          folder_rename = 1
+          replace_spaces = 0
+          replace_underscores = 0
+          replace_dots = 0
+          safe_postproc = 1
+          pause_on_post_processing = 0
+          enable_all_par = 0
+          sanitize_safe = 0
+          cleanup_list = ,
+          unwanted_extensions = iso,
+          action_on_unwanted_extensions = 2
+          unwanted_extensions_mode = 0
+          new_nzb_on_failure = 1
+          history_retention = 0
+          quota_size = ""
+          quota_day = ""
+          quota_resume = 0
+          quota_period = m
+          enable_tv_sorting = 0
+          tv_sort_string = ""
+          tv_categories = tv,
+          enable_movie_sorting = 0
+          movie_sort_string = ""
+          movie_sort_extra = -cd%1
+          movie_categories = movies,
+          enable_date_sorting = 0
+          date_sort_string = ""
+          date_categories = tv,
+          schedlines = ,
+          rss_rate = 60
+          ampm = 0
+          start_paused = 0
+          preserve_paused_state = 0
+          enable_par_cleanup = 1
+          process_unpacked_par2 = 1
+          enable_unrar = 1
+          enable_unzip = 1
+          enable_7zip = 1
+          enable_filejoin = 1
+          enable_tsjoin = 1
+          overwrite_files = 0
+          ignore_unrar_dates = 0
+          backup_for_duplicates = 1
+          empty_postproc = 0
+          wait_for_dfolder = 0
+          rss_filenames = 0
+          api_logging = 1
+          html_login = 1
+          warn_dupl_jobs = 1
+          helpful_warnings = 1
+          keep_awake = 1
+          tray_icon = 1
+          allow_incomplete_nzb = 0
+          enable_broadcast = 1
+          ipv6_hosting = 0
+          api_warnings = 1
+          no_penalties = 0
+          x_frame_options = 1
+          allow_old_ssl_tls = 0
+          rss_odd_titles = nzbindex.nl/, nzbindex.com/, nzbclub.com/
+          quick_check_ext_ignore = nfo, sfv, srr
+          req_completion_rate = 100.2
+          selftest_host = self-test.sabnzbd.org
+          movie_rename_limit = 100M
+          episode_rename_limit = 20M
+          size_limit = 0
+          direct_unpack_threads = 3
+          history_limit = 10
+          wait_ext_drive = 5
+          max_foldername_length = 246
+          nomedia_marker = ""
+          ipv6_servers = 1
+          url_base = /sabnzbd
+          host_whitelist = sabnzbd.jsnouff.net,
+          local_ranges = ,
+          max_url_retries = 10
+          downloader_sleep_time = 10
+          num_simd_decoders = 2
+          ssdp_broadcast_interval = 15
+          ext_rename_ignore = ,
+          email_server = ""
+          email_to = ,
+          email_from = ""
+          email_account = ""
+          email_pwd = ""
+          email_endjob = 0
+          email_full = 0
+          email_dir = ""
+          email_rss = 0
+          email_cats = *,
+          sorters_converted = 1
+          enable_season_sorting = 1
+          receive_threads = 2
+          switchinterval = 0.005
+          [logging]
+          log_level = 1
+          max_log_size = 5242880
+          log_backups = 5
+          [ncenter]
+          ncenter_enable = 0
+          ncenter_cats = *,
+          ncenter_prio_startup = 1
+          ncenter_prio_download = 0
+          ncenter_prio_pause_resume = 0
+          ncenter_prio_pp = 0
+          ncenter_prio_complete = 1
+          ncenter_prio_failed = 1
+          ncenter_prio_disk_full = 1
+          ncenter_prio_new_login = 0
+          ncenter_prio_warning = 0
+          ncenter_prio_error = 0
+          ncenter_prio_queue_done = 1
+          ncenter_prio_other = 1
+          [acenter]
+          acenter_enable = 0
+          acenter_cats = *,
+          acenter_prio_startup = 0
+          acenter_prio_download = 0
+          acenter_prio_pause_resume = 0
+          acenter_prio_pp = 0
+          acenter_prio_complete = 1
+          acenter_prio_failed = 1
+          acenter_prio_disk_full = 1
+          acenter_prio_new_login = 0
+          acenter_prio_warning = 0
+          acenter_prio_error = 0
+          acenter_prio_queue_done = 1
+          acenter_prio_other = 1
+          [ntfosd]
+          ntfosd_enable = 1
+          ntfosd_cats = *,
+          ntfosd_prio_startup = 1
+          ntfosd_prio_download = 0
+          ntfosd_prio_pause_resume = 0
+          ntfosd_prio_pp = 0
+          ntfosd_prio_complete = 1
+          ntfosd_prio_failed = 1
+          ntfosd_prio_disk_full = 1
+          ntfosd_prio_new_login = 0
+          ntfosd_prio_warning = 0
+          ntfosd_prio_error = 0
+          ntfosd_prio_queue_done = 1
+          ntfosd_prio_other = 1
+          [prowl]
+          prowl_enable = 0
+          prowl_cats = *,
+          prowl_apikey = ""
+          prowl_prio_startup = -3
+          prowl_prio_download = -3
+          prowl_prio_pause_resume = -3
+          prowl_prio_pp = -3
+          prowl_prio_complete = 0
+          prowl_prio_failed = 1
+          prowl_prio_disk_full = 1
+          prowl_prio_new_login = -3
+          prowl_prio_warning = -3
+          prowl_prio_error = -3
+          prowl_prio_queue_done = 0
+          prowl_prio_other = 0
+          [pushover]
+          pushover_token = ""
+          pushover_userkey = ""
+          pushover_device = ""
+          pushover_emergency_expire = 3600
+          pushover_emergency_retry = 60
+          pushover_enable = 0
+          pushover_cats = *,
+          pushover_prio_startup = -3
+          pushover_prio_download = -2
+          pushover_prio_pause_resume = -2
+          pushover_prio_pp = -3
+          pushover_prio_complete = -1
+          pushover_prio_failed = -1
+          pushover_prio_disk_full = 1
+          pushover_prio_new_login = -3
+          pushover_prio_warning = 1
+          pushover_prio_error = 1
+          pushover_prio_queue_done = -1
+          pushover_prio_other = -1
+          [pushbullet]
+          pushbullet_enable = 0
+          pushbullet_cats = *,
+          pushbullet_apikey = ""
+          pushbullet_device = ""
+          pushbullet_prio_startup = 0
+          pushbullet_prio_download = 0
+          pushbullet_prio_pause_resume = 0
+          pushbullet_prio_pp = 0
+          pushbullet_prio_complete = 1
+          pushbullet_prio_failed = 1
+          pushbullet_prio_disk_full = 1
+          pushbullet_prio_new_login = 0
+          pushbullet_prio_warning = 0
+          pushbullet_prio_error = 0
+          pushbullet_prio_queue_done = 0
+          pushbullet_prio_other = 1
+          [nscript]
+          nscript_enable = 0
+          nscript_cats = *,
+          nscript_script = ""
+          nscript_parameters = ""
+          nscript_prio_startup = 1
+          nscript_prio_download = 0
+          nscript_prio_pause_resume = 0
+          nscript_prio_pp = 0
+          nscript_prio_complete = 1
+          nscript_prio_failed = 1
+          nscript_prio_disk_full = 1
+          nscript_prio_new_login = 0
+          nscript_prio_warning = 0
+          nscript_prio_error = 0
+          nscript_prio_queue_done = 1
+          nscript_prio_other = 1
+          [servers]
+          [[news.tweaknews.eu]]
+          name = news.tweaknews.eu
+          displayname = news.tweaknews.eu
+          host = news.tweaknews.eu
+          port = 563
+          timeout = 60
+          username = "{{ .tweaknews_username }}"
+          password = "{{ .tweaknews_password }}"
+          connections = 8
+          ssl = 1
+          ssl_verify = 2
+          ssl_ciphers = ""
+          enable = 1
+          required = 0
+          optional = 0
+          retention = 0
+          expire_date = ""
+          quota = ""
+          usage_at_start = 0
+          send_group = 0
+          priority = 0
+          notes = ""
+          [categories]
+          [[*]]
+          name = *
+          order = 0
+          pp = 3
+          script = None
+          dir = ""
+          newzbin = ""
+          priority = 0
+          [[audio]]
+          name = audio
+          order = 0
+          pp = ""
+          script = Default
+          dir = ""
+          newzbin = ""
+          priority = -100
+          [[software]]
+          name = software
+          order = 0
+          pp = ""
+          script = Default
+          dir = ""
+          newzbin = ""
+          priority = -100
+          [[tv]]
+          name = tv
+          order = 0
+          pp = ""
+          script = Default
+          dir = tv
+          newzbin = ""
+          priority = -100
+          [[movies]]
+          name = movies
+          order = 0
+          pp = ""
+          script = Default
+          dir = movies
+          newzbin = ""
+          priority = -100
+          [[music]]
+          name = music
+          order = 0
+          pp = ""
+          script = Default
+          dir = music
+          newzbin = ""
+          priority = -100
+          [[audiobooks]]
+          name = audiobooks
+          order = 0
+          pp = ""
+          script = Default
+          dir = audiobooks
+          newzbin = ""
+          priority = -100
+  data:
+    - secretKey: username
+      remoteRef:
+        key: /sabnzbd
+        property: username
+    - secretKey: password
+      remoteRef:
+        key: /sabnzbd
+        property: password
+    - secretKey: api_key
+      remoteRef:
+        key: /sabnzbd
+        property: api-key
+    - secretKey: nzb_key
+      remoteRef:
+        key: /sabnzbd
+        property: nzb-key
+    - secretKey: tweaknews_username
+      remoteRef:
+        key: /tweaknews
+        property: username
+    - secretKey: tweaknews_password
+      remoteRef:
+        key: /tweaknews
+        property: password

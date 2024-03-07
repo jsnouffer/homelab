@@ -58,6 +58,11 @@ ghReleaseImageUpdater:
       gitopsRepo:
         filePath: media/ombi/.argocd-source-ombi.yaml
         yamlPath: ".helm.parameters[1].value"
+    sabnzbd:
+      ghRepo: linuxserver/docker-sabnzbd
+      gitopsRepo:
+        filePath: media/sabnzbd/.argocd-source-sabnzbd.yaml
+        yamlPath: ".helm.parameters[1].value"
 
 scheduled:
   check-raid-status-daily:

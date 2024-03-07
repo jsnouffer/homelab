@@ -1,0 +1,8 @@
+helm:
+  parameters:
+  - name: sabnzbd.controllers.main.containers.main.image.repository
+    value: lscr.io/linuxserver/sabnzbd
+    forcestring: true
+  - name: sabnzbd.controllers.main.containers.main.image.tag
+    value: 4.2.2
+    forcestring: true

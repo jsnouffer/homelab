@@ -1,0 +1,5 @@
+{{- with $.Values.sabnzbd }}
+{{- if .enabled }}
+{{- include "common.all" $ -}}
+{{- end }}
+{{- end }}
