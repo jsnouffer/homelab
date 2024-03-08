@@ -31,7 +31,7 @@ external-dns-secondary:
           name: pihole-password
           key: pihole_password
   extraArgs:
-    - --pihole-server=http://barenas.jsnouff.net:9089
+    - --pihole-server=https://pihole2.jsnouff.net
   resources:
     limits:
       cpu: 50m
