@@ -6,7 +6,7 @@ qbittorrent:
     serverPort: 8080
 
 wireguard:
-  enabled: false
+  enabled: true
 
 common:
   resticBackups:

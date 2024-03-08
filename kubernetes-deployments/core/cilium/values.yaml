@@ -39,7 +39,7 @@ cilium:
     mode: cluster-pool
     operator:
       clusterPoolIPv4MaskSize: 24
-      clusterPoolIPv4PodCIDRList: ["172.30.0.0/20"]
+      clusterPoolIPv4PodCIDRList: ["10.42.0.0/16"]
   k8sServiceHost: 192.168.5.10
   k8sServicePort: 6443
   kubeProxyReplacement: true
