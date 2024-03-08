@@ -2,6 +2,8 @@ cloudflare-tunnel:
   enabled: true
   global:
     fullnameOverride: cloudflare-tunnel
+  defaultPodOptions:
+    dnsPolicy: Default
   controllers:
     main:
       containers:
