@@ -22,6 +22,21 @@ inputs = {
       ]
 
       usb = []
+    },
+    "melkor" = {
+      startup = ""
+      cores   = 2
+      memory  = 4096
+      ip      = "192.168.3.2"
+
+      disks = [
+        {
+          type = "scsi"
+          size = "150G"
+        }
+      ]
+
+      usb = []
     }
   }
 

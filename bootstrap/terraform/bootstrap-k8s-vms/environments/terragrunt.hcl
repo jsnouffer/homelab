@@ -18,7 +18,7 @@ inputs = {
   }
 
   pihole_primary   = "https://pihole.jsnouff.net"
-  pihole_secondary = "http://barenas.jsnouff.net:9089"
+  pihole_secondary = "https://pihole2.jsnouff.net"
 
   pihole_records_base_domain = "jsnouff.net"
 }
