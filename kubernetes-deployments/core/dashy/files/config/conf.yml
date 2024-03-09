@@ -192,7 +192,7 @@ sections:
         url: http://barenas.jsnouff.net:32400/
       - title: Qbittorrent
         icon: hl-qbittorrent
-        url: https://qbittorrent.jsnouff.net/
+        url: http://melkor.jsnouff.net:8080
       - title: Radarr
         icon: hl-radarr
         url: https://radarr.jsnouff.net/
