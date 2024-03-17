@@ -1,0 +1,32 @@
+plex-meta-manager:
+  enabled: true
+  global:
+    fullnameOverride: plex-meta-manager
+  controllers:
+    main:
+      type: cronjob
+      containers:
+        main:
+          image:
+            repository: meisnate12/plex-meta-manager
+            tag: v1.20.0
+          resources:
+            limits:
+              cpu: 100m
+              memory: 256Mi
+            requests:
+              cpu: 100m
+              memory: 125Mi
+      cronjob:
+        suspend: true
+        concurrencyPolicy: Forbid
+        timeZone: America/New_York
+        schedule: "*/15 * * * *"
+  service:
+    main:
+      enabled: false
+  persistence:
+    config:
+      enabled: true
+      accessMode: ReadWriteOnce
+      size: 128Mi
