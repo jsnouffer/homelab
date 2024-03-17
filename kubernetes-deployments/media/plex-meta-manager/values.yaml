@@ -10,18 +10,24 @@ plex-meta-manager:
           image:
             repository: meisnate12/plex-meta-manager
             tag: v1.20.0
+          args: [ "--run", "--read-only-config" ]
           resources:
             limits:
-              cpu: 100m
-              memory: 256Mi
+              cpu: 1000m
+              memory: 1Gi
             requests:
-              cpu: 100m
-              memory: 125Mi
+              cpu: 250m
+              memory: 256Mi
       cronjob:
         suspend: true
         concurrencyPolicy: Forbid
         timeZone: America/New_York
         schedule: "*/15 * * * *"
+      pod:
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+          fsGroup: 1000
   service:
     main:
       enabled: false
@@ -30,3 +36,26 @@ plex-meta-manager:
       enabled: true
       accessMode: ReadWriteOnce
       size: 128Mi
+    config-secret:
+      enabled: true
+      type: secret
+      name: pmm-config-secret
+      advancedMounts:
+        main:
+          main:
+            - name: config-secret
+              path: /config/config.yml
+              subPath: config.yml
+    libraries-config:
+      enabled: true
+      type: configMap
+      name: pmm-libraries-config
+      advancedMounts:
+        main:
+          main:
+            - name: pmm-libraries-config
+              path: /config/movies.yaml
+              subPath: movies.yaml
+            - name: pmm-libraries-config
+              path: /config/tv.yaml
+              subPath: tv.yaml
