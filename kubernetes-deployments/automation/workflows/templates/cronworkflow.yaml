@@ -15,4 +15,12 @@ spec:
   workflowSpec:
     workflowTemplateRef:
       name: {{ $value.workflowTemplate }}
+    {{- with .arguments }}
+    arguments:
+      parameters:
+        {{-  range $paramName, $paramValue := . }}
+        - name: {{ $paramName }}
+          value: {{ $paramValue }}
+        {{- end }}
+    {{- end }}
 {{- end }}

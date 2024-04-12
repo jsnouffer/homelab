@@ -83,6 +83,8 @@ scheduled:
   check-raid-status-daily:
     workflowTemplate: check-raid-status
     schedule: "0 12 * * *"
-  # scrape-youtube-streams-hourly:
-  #   workflowTemplate: scrape-youtube-streams
-  #   schedule: "0 * * * *"
+  gh-release-image-updater-daily:
+    workflowTemplate: gh-release-image-updater
+    schedule: "0 12 * * *"
+    arguments:
+      application: all
