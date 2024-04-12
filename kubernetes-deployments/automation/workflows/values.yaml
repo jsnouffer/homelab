@@ -58,10 +58,20 @@ ghReleaseImageUpdater:
       gitopsRepo:
         filePath: media/ombi/.argocd-source-ombi.yaml
         yamlPath: ".helm.parameters[1].value"
+    radarr:
+      ghRepo: linuxserver/docker-radarr
+      gitopsRepo:
+        filePath: media/radarr/.argocd-source-radarr.yaml
+        yamlPath: ".helm.parameters[1].value"
     sabnzbd:
       ghRepo: linuxserver/docker-sabnzbd
       gitopsRepo:
         filePath: media/sabnzbd/.argocd-source-sabnzbd.yaml
+        yamlPath: ".helm.parameters[1].value"
+    sonarr:
+      ghRepo: linuxserver/docker-sonarr
+      gitopsRepo:
+        filePath: media/sonarr/.argocd-source-sonarr.yaml
         yamlPath: ".helm.parameters[1].value"
 
 scheduled:

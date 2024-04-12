@@ -1,15 +1,109 @@
 radarr:
   enabled: true
-pvcName: radarr-pvc
+  global:
+    fullnameOverride: radarr
+  controllers:
+    main:
+      strategy: Recreate
+      containers:
+        main:
+          image:
+            repository: lscr.io/linuxserver/radarr
+            tag: latest # managed by ArgoCD Image Updater
+          env:
+            PUID: "1000"
+            PGID: "1000"
+            TZ: "America/New_York"
+          resources:
+            requests:
+              cpu: 10m
+              memory: 250Mi
+            limits:
+              cpu: 700m
+              memory: 600Mi
+          probes:
+            liveness: &lr-probe
+              enabled: true
+              type: &probe-type HTTP
+              path: &probe-path /
+              spec:
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                timeoutSeconds: 1
+                failureThreshold: 3
+            readiness: *lr-probe
+            startup:
+              enabled: true
+              type: *probe-type
+              path: *probe-path
+              spec:
+                initialDelaySeconds: 10
+                periodSeconds: 5
+                timeoutSeconds: 5
+                successThreshold: 1
+                failureThreshold: 30
+  service:
+    main:
+      controller: main
+      ports:
+        http:
+          port: &main-port 7878
+  ingress:
+    main:
+      enabled: true
+      hosts:
+        - host: &domain radarr.jsnouff.net
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: radarr
+                port: *main-port
+      tls:
+        - hosts:
+            - *domain
+          secretName: tls-secret
+      annotations:
+        cert-manager.io/cluster-issuer: lets-encrypt-production
+        ingress.kubernetes.io/force-ssl-redirect: "true"
+        ingress.kubernetes.io/protocol: http
+        kubernetes.io/ingress.class: traefik
+        kubernetes.io/tls-acme: "true"
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls: "true"
+
+  persistence:
+    config:
+      enabled: true
+      accessMode: ReadWriteOnce
+      size: 2Gi
+    downloads:
+      enabled: true
+      existingClaim: radarr-nfs-downloads
+      advancedMounts:
+        main:
+          main:
+            - path: /downloads
+    completed:
+      enabled: true
+      existingClaim: radarr-nfs-completed
+      advancedMounts:
+        main:
+          main:
+            - path: /completed
 
 common:
   resticBackups:
     enabled: true
     targets:
       radarr:
-        pvcName: radarr-pvc
+        pvcName: radarr-config
         bucket: "b2:jsnouff-radarr"
         restoreVersion: latest
+        tags:
+          - "{{ $.Values.radarr.controllers.main.containers.main.image.repository }}:{{ $.Values.radarr.controllers.main.containers.main.image.tag }}"
         affinity:
           podAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:

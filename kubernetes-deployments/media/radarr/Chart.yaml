@@ -3,6 +3,11 @@ name: radarr
 version: 1.0.0
 appVersion: 5.3.6
 dependencies:
+  - name: app-template
+    version: 3.0.4
+    repository: https://bjw-s.github.io/helm-charts
+    alias: radarr
+    condition: radarr.enabled
   - name: common
     version: ">0.0.0"
     repository: "file://../../../charts/common/"

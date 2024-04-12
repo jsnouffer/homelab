@@ -20,11 +20,33 @@ sonarr:
             limits:
               cpu: 700m
               memory: 1200Mi
+          probes:
+            liveness: &lr-probe
+              enabled: true
+              type: &probe-type HTTP
+              path: &probe-path /
+              spec:
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                timeoutSeconds: 1
+                failureThreshold: 3
+            readiness: *lr-probe
+            startup:
+              enabled: true
+              type: *probe-type
+              path: *probe-path
+              spec:
+                initialDelaySeconds: 10
+                periodSeconds: 5
+                timeoutSeconds: 5
+                successThreshold: 1
+                failureThreshold: 30
   service:
     main:
+      controller: main
       ports:
         http:
-          port: 8989
+          port: &main-port 8989
   ingress:
     main:
       enabled: true
@@ -34,7 +56,8 @@ sonarr:
             - path: /
               pathType: Prefix
               service:
-                name: main
+                name: sonarr
+                port: *main-port
       tls:
         - hosts:
             - *domain
@@ -77,6 +100,8 @@ common:
         pvcName: sonarr-config
         bucket: "b2:jsnouff-sonarr"
         restoreVersion: latest
+        tags:
+          - "{{ $.Values.sonarr.controllers.main.containers.main.image.repository }}:{{ $.Values.sonarr.controllers.main.containers.main.image.tag }}"
         affinity:
           podAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:

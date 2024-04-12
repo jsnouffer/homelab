@@ -1,0 +1,8 @@
+helm:
+  parameters:
+    - name: radarr.controllers.main.containers.main.image.repository
+      value: linuxserver/radarr
+      forcestring: true
+    - name: radarr.controllers.main.containers.main.image.tag
+      value: 5.3.6
+      forcestring: true
