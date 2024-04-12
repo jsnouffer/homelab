@@ -1,7 +1,7 @@
 overseerr:
   enabled: true
   global:
-    fullnameOverride: overseerr
+    fullnameOverride: &name overseerr
   controllers:
     main:
       containers:
@@ -56,7 +56,7 @@ overseerr:
             - path: /
               pathType: Prefix
               service:
-                name: overseerr
+                name: *name
                 port: *main-port
       tls:
         - hosts:
@@ -99,5 +99,5 @@ common:
                   - key: app.kubernetes.io/name
                     operator: In
                     values:
-                    - overseerr
+                    - *name
                 topologyKey: kubernetes.io/hostname

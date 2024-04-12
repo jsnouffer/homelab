@@ -1,7 +1,7 @@
 radarr:
   enabled: true
   global:
-    fullnameOverride: radarr
+    fullnameOverride: &name radarr
   controllers:
     main:
       strategy: Recreate
@@ -57,7 +57,7 @@ radarr:
             - path: /
               pathType: Prefix
               service:
-                name: radarr
+                name: *name
                 port: *main-port
       tls:
         - hosts:
@@ -114,5 +114,5 @@ common:
                   - key: app.kubernetes.io/name
                     operator: In
                     values:
-                    - radarr
+                    - *name
                 topologyKey: kubernetes.io/hostname

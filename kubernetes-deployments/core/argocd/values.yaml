@@ -194,6 +194,19 @@ argocd-apps:
         labels: {}
         annotations:
           argocd.argoproj.io/manifest-generate-paths: .
+
+          argocd-image-updater.argoproj.io/write-back-method: git
+          argocd-image-updater.argoproj.io/git-branch: main:image-updater-{{`{{.SHA256}}`}}
+          argocd-image-updater.argoproj.io/image-list: >-
+            changedetection=dgtlmoon/changedetection.io,
+            playwrightchrome=browserless/chrome
+
+          argocd-image-updater.argoproj.io/changedetection.helm.image-name: changedetection.controllers.main.containers.main.image.repository
+          argocd-image-updater.argoproj.io/changedetection.helm.image-tag: changedetection.controllers.main.containers.main.image.tag
+
+          argocd-image-updater.argoproj.io/playwrightchrome.helm.image-name: changedetection.controllers.main.containers.playwright-chrome.image.repository
+          argocd-image-updater.argoproj.io/playwrightchrome.helm.image-tag: changedetection.controllers.main.containers.playwright-chrome.image.tag
+          argocd-image-updater.argoproj.io/playwrightchrome.allow-tags: regexp:-chrome-stable$
       spec:
         project: automation
         source:

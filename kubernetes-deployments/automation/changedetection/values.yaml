@@ -1,14 +1,14 @@
 changedetection:
   enabled: true
   global:
-    fullnameOverride: changedetection
+    fullnameOverride: &name changedetection
   controllers:
     main:
       containers:
         main:
           image:
             repository: dgtlmoon/changedetection.io
-            tag: 0.45.14
+            tag: latest # managed by ArgoCD Image Updater
           env:
             PUID: "1000"
             PGID: "1000"
@@ -21,10 +21,31 @@ changedetection:
             limits:
               cpu: 150m
               memory: 500Mi
+          probes:
+            liveness: &main-lr-probe
+              enabled: true
+              type: &probe-type HTTP
+              path: &probe-path /
+              spec: &lr-probe-spec
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                timeoutSeconds: 1
+                failureThreshold: 3
+            readiness: *main-lr-probe
+            startup:
+              enabled: true
+              type: *probe-type
+              path: *probe-path
+              spec: &startup-probe-spec
+                initialDelaySeconds: 10
+                periodSeconds: 5
+                timeoutSeconds: 5
+                successThreshold: 1
+                failureThreshold: 30
         playwright-chrome:
           image:
             repository: browserless/chrome
-            tag: 1.61-chrome-stable
+            tag: latest # managed by ArgoCD Image Updater
           env:
             SCREEN_WIDTH: "1920"
             SCREEN_HEIGHT: "1024"
@@ -44,13 +65,29 @@ changedetection:
             limits:
               cpu: 500m
               memory: 1750Mi
+          probes:
+            liveness: &playwright-lr-probe
+              enabled: true
+              port: &playwright-chrome-port 3000
+              type: *probe-type
+              path: *probe-path
+              spec: *lr-probe-spec
+            readiness: *playwright-lr-probe
+            startup:
+              enabled: true
+              port: *playwright-chrome-port
+              type: *probe-type
+              path: *probe-path
+              spec: *startup-probe-spec
   service:
     main:
+      controller: main
       ports:
         http:
-          port: 5000
-        chrome:
-          port: 3000
+          port: &main-port 5000
+          primary: true
+        playwright-chrome:
+          port: *playwright-chrome-port
   ingress:
     main:
       enabled: true
@@ -60,7 +97,8 @@ changedetection:
             - path: /
               pathType: Prefix
               service:
-                name: main
+                name: *name
+                port: *main-port
       tls:
         - hosts:
             - *domain
@@ -94,6 +132,8 @@ common:
         pvcName: changedetection-datastore
         bucket: changedetection-backup
         restoreVersion: latest
+        tags:
+          - "{{ $.Values.changedetection.controllers.main.containers.main.image.repository }}:{{ $.Values.changedetection.controllers.main.containers.main.image.tag }}"
         affinity:
           podAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:
@@ -104,5 +144,5 @@ common:
                   - key: app.kubernetes.io/name
                     operator: In
                     values:
-                    - changedetection
+                    - *name
                 topologyKey: kubernetes.io/hostname
