@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - 'image-updater-**'
-      # - 'workflow-image-updater-**'
+      - 'workflow-image-updater-**'
   # pull_request:
   #   types: [closed]
 

@@ -7,7 +7,7 @@ sonarr:
       containers:
         main:
           image:
-            repository: linuxserver/sonarr
+            repository: lscr.io/linuxserver/sonarr
             tag: latest # managed by ArgoCD Image Updater
           env:
             PUID: "1000"

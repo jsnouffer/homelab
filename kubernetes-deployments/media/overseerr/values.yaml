@@ -7,8 +7,8 @@ overseerr:
       containers:
         main:
           image:
-            repository: linuxserver/overseerr
-            tag: 1.33.2
+            repository: lscr.io/linuxserver/overseerr
+            tag: latest # managed by ArgoCD Image Updater
           env:
             PUID: "1000"
             PGID: "1000"
@@ -20,11 +20,33 @@ overseerr:
             limits:
               cpu: 500m
               memory: 500Mi
+          probes:
+            liveness: &lr-probe
+              enabled: true
+              type: &probe-type HTTP
+              path: &probe-path /
+              spec:
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                timeoutSeconds: 1
+                failureThreshold: 3
+            readiness: *lr-probe
+            startup:
+              enabled: true
+              type: *probe-type
+              path: *probe-path
+              spec:
+                initialDelaySeconds: 10
+                periodSeconds: 5
+                timeoutSeconds: 5
+                successThreshold: 1
+                failureThreshold: 30
   service:
     main:
+      controller: main
       ports:
         http:
-          port: 5055
+          port: &main-port 5055
   ingress:
     main:
       enabled: true
@@ -34,7 +56,8 @@ overseerr:
             - path: /
               pathType: Prefix
               service:
-                name: main
+                name: overseerr
+                port: *main-port
       tls:
         - hosts:
             - *domain
@@ -64,6 +87,8 @@ common:
         pvcName: overseerr-config
         bucket: "b2:jsnouff-overseerr"
         restoreVersion: latest
+        tags:
+          - "{{ $.Values.overseerr.controllers.main.containers.main.image.repository }}:{{ $.Values.overseerr.controllers.main.containers.main.image.tag }}"
         affinity:
           podAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:
