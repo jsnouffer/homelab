@@ -1,14 +1,14 @@
 helm:
   parameters:
-    - name: changedetection.controllers.main.containers.main.image.repository
-      value: dgtlmoon/changedetection.io
-      forcestring: true
-    - name: changedetection.controllers.main.containers.main.image.tag
-      value: 0.45.14
-      forcestring: true
-    - name: changedetection.controllers.main.containers.playwright-chrome.image.repository
-      value: browserless/chrome
-      forcestring: true
-    - name: changedetection.controllers.main.containers.playwright-chrome.image.tag
-      value: 1.60.1-chrome-stable
-      forcestring: true
+  - name: changedetection.controllers.main.containers.main.image.repository
+    value: dgtlmoon/changedetection.io
+    forcestring: true
+  - name: changedetection.controllers.main.containers.main.image.tag
+    value: 0.45.17
+    forcestring: true
+  - name: changedetection.controllers.main.containers.playwright-chrome.image.repository
+    value: browserless/chrome
+    forcestring: true
+  - name: changedetection.controllers.main.containers.playwright-chrome.image.tag
+    value: 1.61.1-chrome-stable
+    forcestring: true
