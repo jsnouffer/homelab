@@ -1,0 +1,43 @@
+{{- with (index .Values "argo-workflows") }}
+{{- if .enabled }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: workflow-execute
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - get
+  - watch
+  - patch
+- apiGroups:
+  - ""
+  resources:
+  - pods/log
+  verbs:
+  - get
+  - watch
+{{- with (.controller | default dict).workflowNamespaces }}
+{{- range . }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: workflow-execute-rb
+  namespace: {{ . }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: workflow-execute
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: {{ . }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}

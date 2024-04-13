@@ -4,6 +4,14 @@ argo-workflows:
     extraArgs:
       - --auth-mode=server
 
+    resources:
+      requests:
+        cpu: 5m
+        memory: 24Mi
+      limits:
+        cpu: 50m
+        memory: 64Mi
+
     ingress:
       enabled: true
       annotations:
@@ -23,3 +31,15 @@ argo-workflows:
         - secretName: tls-secret
           hosts:
             - workflows.jsnouff.net
+
+  controller:
+    workflowNamespaces:
+      - default
+      - workflows
+    resources:
+      requests:
+        cpu: 25m
+        memory: 24Mi
+      limits:
+        cpu: 100m
+        memory: 64Mi
