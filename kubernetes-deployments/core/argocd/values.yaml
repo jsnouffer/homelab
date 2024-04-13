@@ -83,7 +83,7 @@ argo-cd:
 argocd-apps:
   enabled: true
   projects:
-    - name: applications
+    applications:
       description: Generic project for applications
       finalizers: &app-projects-finalizers
         - resources-finalizer.argocd.argoproj.io
@@ -98,28 +98,28 @@ argocd-apps:
       namespaceResourceWhitelist: &app-projects-ns-resource-whitelist
         - group: '*'
           kind: '*'
-    - name: automation
+    automation:
       description: Project for automation deployments
       finalizers: *app-projects-finalizers
       sourceRepos: *app-projects-source-repos
       destinations: *app-projects-destinations
       clusterResourceWhitelist: *app-projects-cluster-resource-whitelist
       namespaceResourceWhitelist: *app-projects-ns-resource-whitelist
-    - name: core
+    core:
       description: Project for core services
       finalizers: *app-projects-finalizers
       sourceRepos: *app-projects-source-repos
       destinations: *app-projects-destinations
       clusterResourceWhitelist: *app-projects-cluster-resource-whitelist
       namespaceResourceWhitelist: *app-projects-ns-resource-whitelist
-    - name: media
+    media:
       description: Project for media services
       finalizers: *app-projects-finalizers
       sourceRepos: *app-projects-source-repos
       destinations: *app-projects-destinations
       clusterResourceWhitelist: *app-projects-cluster-resource-whitelist
       namespaceResourceWhitelist: *app-projects-ns-resource-whitelist
-    - name: storage
+    storage:
       description: Project for storage services
       finalizers: []
       sourceRepos: *app-projects-source-repos
@@ -127,206 +127,206 @@ argocd-apps:
       clusterResourceWhitelist: *app-projects-cluster-resource-whitelist
       namespaceResourceWhitelist: *app-projects-ns-resource-whitelist
   applicationsets:
-  - name: applications
-    goTemplate: true
-    generators:
-    - git:
-        repoURL: &gitops-repo-url git@github.com:jsnouffer/homelab.git
-        revision: &gitops-repo-revision HEAD
-        directories:
-        - path: kubernetes-deployments/applications/*
-    template:
-      metadata:
-        name: '{{ base .path.path }}'
-        labels: {}
-        annotations:
-          argocd.argoproj.io/manifest-generate-paths: .
+    applications:
+      goTemplate: true
+      generators:
+      - git:
+          repoURL: &gitops-repo-url git@github.com:jsnouffer/homelab.git
+          revision: &gitops-repo-revision HEAD
+          directories:
+          - path: kubernetes-deployments/applications/*
+      template:
+        metadata:
+          name: '{{ base .path.path }}'
+          labels: {}
+          annotations:
+            argocd.argoproj.io/manifest-generate-paths: .
 
-          argocd-image-updater.argoproj.io/write-back-method: git
-          argocd-image-updater.argoproj.io/git-branch: main:image-updater-{{`{{.SHA256}}`}}
-          argocd-image-updater.argoproj.io/image-list: >-
-            bitwarden=vaultwarden/server,
-            freshrss=freshrss/freshrss,
-            linkding=sissbruecker/linkding
+            argocd-image-updater.argoproj.io/write-back-method: git
+            argocd-image-updater.argoproj.io/git-branch: main:image-updater-{{`{{.SHA256}}`}}
+            argocd-image-updater.argoproj.io/image-list: >-
+              bitwarden=vaultwarden/server,
+              freshrss=freshrss/freshrss,
+              linkding=sissbruecker/linkding
 
-          argocd-image-updater.argoproj.io/bitwarden.helm.image-name: bitwarden.controllers.main.containers.main.image.repository
-          argocd-image-updater.argoproj.io/bitwarden.helm.image-tag: bitwarden.controllers.main.containers.main.image.tag
+            argocd-image-updater.argoproj.io/bitwarden.helm.image-name: bitwarden.controllers.main.containers.main.image.repository
+            argocd-image-updater.argoproj.io/bitwarden.helm.image-tag: bitwarden.controllers.main.containers.main.image.tag
 
-          argocd-image-updater.argoproj.io/freshrss.helm.image-name: freshrss.controllers.main.containers.main.image.repository
-          argocd-image-updater.argoproj.io/freshrss.helm.image-tag: freshrss.controllers.main.containers.main.image.tag
+            argocd-image-updater.argoproj.io/freshrss.helm.image-name: freshrss.controllers.main.containers.main.image.repository
+            argocd-image-updater.argoproj.io/freshrss.helm.image-tag: freshrss.controllers.main.containers.main.image.tag
 
-          argocd-image-updater.argoproj.io/linkding.helm.image-name: linkding.controllers.main.containers.main.image.repository
-          argocd-image-updater.argoproj.io/linkding.helm.image-tag: linkding.controllers.main.containers.main.image.tag
-      spec:
-        project: applications
-        source:
+            argocd-image-updater.argoproj.io/linkding.helm.image-name: linkding.controllers.main.containers.main.image.repository
+            argocd-image-updater.argoproj.io/linkding.helm.image-tag: linkding.controllers.main.containers.main.image.tag
+        spec:
+          project: applications
+          source:
+            repoURL: *gitops-repo-url
+            targetRevision: *gitops-repo-revision
+            path: '{{ .path.path }}'
+            helm: &appsets-helm
+              valueFiles:
+                - values.yaml
+          destination: &appsets-destination
+            server: https://kubernetes.default.svc
+            namespace: '{{ base .path.path }}'
+          revisionHistoryLimit: 5
+          syncPolicy:
+            syncOptions: &appsets-sync-options
+              - ApplyOutOfSyncOnly=true
+              - CreateNamespace=true
+              - RespectIgnoreDifferences=true
+              - PruneLast=true
+          ignoreDifferences: []
+      syncPolicy:
+        preserveResourcesOnDeletion: true
+        applicationsSync: sync
+    automation:
+      goTemplate: true
+      generators:
+      - git:
           repoURL: *gitops-repo-url
-          targetRevision: *gitops-repo-revision
-          path: '{{ .path.path }}'
-          helm: &appsets-helm
-            valueFiles:
-              - values.yaml
-        destination: &appsets-destination
-          server: https://kubernetes.default.svc
-          namespace: '{{ base .path.path }}'
-        revisionHistoryLimit: 5
-        syncPolicy:
-          syncOptions: &appsets-sync-options
-            - ApplyOutOfSyncOnly=true
-            - CreateNamespace=true
-            - RespectIgnoreDifferences=true
-            - PruneLast=true
-        ignoreDifferences: []
-    syncPolicy:
-      preserveResourcesOnDeletion: true
-      applicationsSync: sync
-  - name: automation
-    goTemplate: true
-    generators:
-    - git:
-        repoURL: *gitops-repo-url
-        revision: *gitops-repo-revision
-        directories:
-        - path: kubernetes-deployments/automation/*
-    template:
-      metadata:
-        name: '{{ base .path.path }}'
-        labels: {}
-        annotations:
-          argocd.argoproj.io/manifest-generate-paths: .
+          revision: *gitops-repo-revision
+          directories:
+          - path: kubernetes-deployments/automation/*
+      template:
+        metadata:
+          name: '{{ base .path.path }}'
+          labels: {}
+          annotations:
+            argocd.argoproj.io/manifest-generate-paths: .
 
-          argocd-image-updater.argoproj.io/write-back-method: git
-          argocd-image-updater.argoproj.io/git-branch: main:image-updater-{{`{{.SHA256}}`}}
-          argocd-image-updater.argoproj.io/image-list: >-
-            changedetection=dgtlmoon/changedetection.io,
-            playwrightchrome=browserless/chrome
+            argocd-image-updater.argoproj.io/write-back-method: git
+            argocd-image-updater.argoproj.io/git-branch: main:image-updater-{{`{{.SHA256}}`}}
+            argocd-image-updater.argoproj.io/image-list: >-
+              changedetection=dgtlmoon/changedetection.io,
+              playwrightchrome=browserless/chrome
 
-          argocd-image-updater.argoproj.io/changedetection.helm.image-name: changedetection.controllers.main.containers.main.image.repository
-          argocd-image-updater.argoproj.io/changedetection.helm.image-tag: changedetection.controllers.main.containers.main.image.tag
+            argocd-image-updater.argoproj.io/changedetection.helm.image-name: changedetection.controllers.main.containers.main.image.repository
+            argocd-image-updater.argoproj.io/changedetection.helm.image-tag: changedetection.controllers.main.containers.main.image.tag
 
-          argocd-image-updater.argoproj.io/playwrightchrome.helm.image-name: changedetection.controllers.main.containers.playwright-chrome.image.repository
-          argocd-image-updater.argoproj.io/playwrightchrome.helm.image-tag: changedetection.controllers.main.containers.playwright-chrome.image.tag
-          argocd-image-updater.argoproj.io/playwrightchrome.allow-tags: regexp:-chrome-stable$
-      spec:
-        project: automation
-        source:
+            argocd-image-updater.argoproj.io/playwrightchrome.helm.image-name: changedetection.controllers.main.containers.playwright-chrome.image.repository
+            argocd-image-updater.argoproj.io/playwrightchrome.helm.image-tag: changedetection.controllers.main.containers.playwright-chrome.image.tag
+            argocd-image-updater.argoproj.io/playwrightchrome.allow-tags: regexp:-chrome-stable$
+        spec:
+          project: automation
+          source:
+            repoURL: *gitops-repo-url
+            targetRevision: *gitops-repo-revision
+            path: '{{ .path.path }}'
+            helm: *appsets-helm
+          destination: *appsets-destination
+          revisionHistoryLimit: 5
+          syncPolicy:
+            syncOptions: *appsets-sync-options
+          ignoreDifferences: []
+      syncPolicy:
+        preserveResourcesOnDeletion: true
+        applicationsSync: sync
+    core:
+      goTemplate: true
+      generators:
+      - git:
           repoURL: *gitops-repo-url
-          targetRevision: *gitops-repo-revision
-          path: '{{ .path.path }}'
-          helm: *appsets-helm
-        destination: *appsets-destination
-        revisionHistoryLimit: 5
-        syncPolicy:
-          syncOptions: *appsets-sync-options
-        ignoreDifferences: []
-    syncPolicy:
-      preserveResourcesOnDeletion: true
-      applicationsSync: sync
-  - name: core
-    goTemplate: true
-    generators:
-    - git:
-        repoURL: *gitops-repo-url
-        revision: *gitops-repo-revision
-        directories:
-        - path: kubernetes-deployments/core/*
-    template:
-      metadata:
-        name: '{{ base .path.path }}'
-        labels: {}
-        annotations:
-          argocd.argoproj.io/manifest-generate-paths: .
+          revision: *gitops-repo-revision
+          directories:
+          - path: kubernetes-deployments/core/*
+      template:
+        metadata:
+          name: '{{ base .path.path }}'
+          labels: {}
+          annotations:
+            argocd.argoproj.io/manifest-generate-paths: .
 
-          argocd-image-updater.argoproj.io/write-back-method: git
-          argocd-image-updater.argoproj.io/git-branch: main:image-updater-{{`{{.SHA256}}`}}
-          argocd-image-updater.argoproj.io/image-list: cf=cloudflare/cloudflared
+            argocd-image-updater.argoproj.io/write-back-method: git
+            argocd-image-updater.argoproj.io/git-branch: main:image-updater-{{`{{.SHA256}}`}}
+            argocd-image-updater.argoproj.io/image-list: cf=cloudflare/cloudflared
 
-          argocd-image-updater.argoproj.io/cf.helm.image-name: cloudflare-tunnel.controllers.main.containers.main.image.repository
-          argocd-image-updater.argoproj.io/cf.helm.image-tag: cloudflare-tunnel.controllers.main.containers.main.image.tag
-      spec:
-        project: core
-        source:
+            argocd-image-updater.argoproj.io/cf.helm.image-name: cloudflare-tunnel.controllers.main.containers.main.image.repository
+            argocd-image-updater.argoproj.io/cf.helm.image-tag: cloudflare-tunnel.controllers.main.containers.main.image.tag
+        spec:
+          project: core
+          source:
+            repoURL: *gitops-repo-url
+            targetRevision: *gitops-repo-revision
+            path: '{{ .path.path }}'
+            helm: *appsets-helm
+          destination: *appsets-destination
+          revisionHistoryLimit: 5
+          syncPolicy:
+            syncOptions: *appsets-sync-options
+            # automated:
+            #   prune: false
+            #   selfHeal: true
+          ignoreDifferences: []
+      syncPolicy:
+        preserveResourcesOnDeletion: true
+        applicationsSync: sync
+    media:
+      goTemplate: true
+      generators:
+      - git:
           repoURL: *gitops-repo-url
-          targetRevision: *gitops-repo-revision
-          path: '{{ .path.path }}'
-          helm: *appsets-helm
-        destination: *appsets-destination
-        revisionHistoryLimit: 5
-        syncPolicy:
-          syncOptions: *appsets-sync-options
-          # automated:
-          #   prune: false
-          #   selfHeal: true
-        ignoreDifferences: []
-    syncPolicy:
-      preserveResourcesOnDeletion: true
-      applicationsSync: sync
-  - name: media
-    goTemplate: true
-    generators:
-    - git:
-        repoURL: *gitops-repo-url
-        revision: *gitops-repo-revision
-        directories:
-        - path: kubernetes-deployments/media/*
-    template:
-      metadata:
-        name: '{{ base .path.path }}'
-        labels: {}
-        annotations:
-          argocd.argoproj.io/manifest-generate-paths: .
+          revision: *gitops-repo-revision
+          directories:
+          - path: kubernetes-deployments/media/*
+      template:
+        metadata:
+          name: '{{ base .path.path }}'
+          labels: {}
+          annotations:
+            argocd.argoproj.io/manifest-generate-paths: .
 
-          argocd-image-updater.argoproj.io/write-back-method: git
-          argocd-image-updater.argoproj.io/git-branch: main:image-updater-{{`{{.SHA256}}`}}
-          argocd-image-updater.argoproj.io/image-list: >-
-            audiobookshelf=advplyr/audiobookshelf
+            argocd-image-updater.argoproj.io/write-back-method: git
+            argocd-image-updater.argoproj.io/git-branch: main:image-updater-{{`{{.SHA256}}`}}
+            argocd-image-updater.argoproj.io/image-list: >-
+              audiobookshelf=advplyr/audiobookshelf
 
-          argocd-image-updater.argoproj.io/audiobookshelf.helm.image-name: audiobookshelf.controllers.main.containers.main.image.repository
-          argocd-image-updater.argoproj.io/audiobookshelf.helm.image-tag: audiobookshelf.controllers.main.containers.main.image.tag
-      spec:
-        project: media
-        source:
+            argocd-image-updater.argoproj.io/audiobookshelf.helm.image-name: audiobookshelf.controllers.main.containers.main.image.repository
+            argocd-image-updater.argoproj.io/audiobookshelf.helm.image-tag: audiobookshelf.controllers.main.containers.main.image.tag
+        spec:
+          project: media
+          source:
+            repoURL: *gitops-repo-url
+            targetRevision: *gitops-repo-revision
+            path: '{{ .path.path }}'
+            helm: *appsets-helm
+          destination: *appsets-destination
+          revisionHistoryLimit: 5
+          syncPolicy:
+            syncOptions: *appsets-sync-options
+          ignoreDifferences: []
+      syncPolicy:
+        preserveResourcesOnDeletion: true
+        applicationsSync: sync
+    storage:
+      goTemplate: true
+      generators:
+      - git:
           repoURL: *gitops-repo-url
-          targetRevision: *gitops-repo-revision
-          path: '{{ .path.path }}'
-          helm: *appsets-helm
-        destination: *appsets-destination
-        revisionHistoryLimit: 5
-        syncPolicy:
-          syncOptions: *appsets-sync-options
-        ignoreDifferences: []
-    syncPolicy:
-      preserveResourcesOnDeletion: true
-      applicationsSync: sync
-  - name: storage
-    goTemplate: true
-    generators:
-    - git:
-        repoURL: *gitops-repo-url
-        revision: *gitops-repo-revision
-        directories:
-        - path: kubernetes-deployments/storage/*
-    template:
-      metadata:
-        name: '{{ base .path.path }}'
-        labels: {}
-        annotations:
-          argocd.argoproj.io/manifest-generate-paths: .
-      spec:
-        project: storage
-        source:
-          repoURL: *gitops-repo-url
-          targetRevision: *gitops-repo-revision
-          path: '{{ .path.path }}'
-          helm: *appsets-helm
-        destination: *appsets-destination
-        revisionHistoryLimit: 5
-        syncPolicy:
-          syncOptions: *appsets-sync-options
-        ignoreDifferences: []
-    syncPolicy:
-      preserveResourcesOnDeletion: true
-      applicationsSync: create-update
+          revision: *gitops-repo-revision
+          directories:
+          - path: kubernetes-deployments/storage/*
+      template:
+        metadata:
+          name: '{{ base .path.path }}'
+          labels: {}
+          annotations:
+            argocd.argoproj.io/manifest-generate-paths: .
+        spec:
+          project: storage
+          source:
+            repoURL: *gitops-repo-url
+            targetRevision: *gitops-repo-revision
+            path: '{{ .path.path }}'
+            helm: *appsets-helm
+          destination: *appsets-destination
+          revisionHistoryLimit: 5
+          syncPolicy:
+            syncOptions: *appsets-sync-options
+          ignoreDifferences: []
+      syncPolicy:
+        preserveResourcesOnDeletion: true
+        applicationsSync: create-update
 
 argocd-image-updater:
   enabled: true
