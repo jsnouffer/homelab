@@ -254,9 +254,9 @@ argocd-apps:
         revisionHistoryLimit: 5
         syncPolicy:
           syncOptions: *appsets-sync-options
-          automated:
-            prune: false
-            selfHeal: true
+          # automated:
+          #   prune: false
+          #   selfHeal: true
         ignoreDifferences: []
     syncPolicy:
       preserveResourcesOnDeletion: true
