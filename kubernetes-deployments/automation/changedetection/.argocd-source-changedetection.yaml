@@ -6,9 +6,3 @@ helm:
   - name: changedetection.controllers.main.containers.main.image.tag
     value: 0.45.18
     forcestring: true
-  - name: changedetection.controllers.main.containers.playwright-chrome.image.repository
-    value: browserless/chrome
-    forcestring: true
-  - name: changedetection.controllers.main.containers.playwright-chrome.image.tag
-    value: 1.61.1-chrome-stable
-    forcestring: true
