@@ -4,11 +4,11 @@ helm:
       value: lscr.io/linuxserver/calibre
       forcestring: true
     - name: calibre.controllers.main.containers.main.image.tag
-      value: v7.8.0-ls276
+      value: v7.8.0-ls277
       forcestring: true
     - name: calibre.controllers.main.containers.web.image.repository
       value: lscr.io/linuxserver/calibre-web
       forcestring: true
     - name: calibre.controllers.main.containers.web.image.tag
-      value: 0.6.21-ls262
+      value: 0.6.21-ls263
       forcestring: true
