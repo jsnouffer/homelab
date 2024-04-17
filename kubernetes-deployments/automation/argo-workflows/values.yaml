@@ -33,6 +33,8 @@ argo-workflows:
             - workflows.jsnouff.net
 
   controller:
+    logging:
+      level: debug
     workflowNamespaces:
       - default
       - workflows
