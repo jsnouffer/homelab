@@ -45,7 +45,7 @@ rook-ceph-cluster:
       mgr:
         limits:
           cpu: "500m"
-          memory: "1Gi"
+          memory: 1250Mi
         requests:
           cpu: "125m"
           memory: "512Mi"
