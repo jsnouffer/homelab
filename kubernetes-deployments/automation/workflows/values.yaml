@@ -85,6 +85,6 @@ scheduled:
     schedule: "0 12 * * *"
   gh-release-image-updater-daily:
     workflowTemplate: gh-release-image-updater
-    schedule: "0 12 * * *"
+    schedule: "30 12 * * 0"
     arguments:
       application: all
