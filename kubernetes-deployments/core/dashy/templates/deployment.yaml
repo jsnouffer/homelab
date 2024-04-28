@@ -20,44 +20,47 @@ spec:
           imagePullPolicy: Always
           ports:
             - name: http
-              containerPort: 80
+              containerPort: 8080
               protocol: TCP
           livenessProbe:
             failureThreshold: 3
             periodSeconds: 10
             successThreshold: 1
-            tcpSocket:
-              port: 80
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
             timeoutSeconds: 1
           readinessProbe:
             failureThreshold: 3
             periodSeconds: 10
             successThreshold: 1
-            tcpSocket:
-              port: 80
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
             timeoutSeconds: 1
           startupProbe:
             failureThreshold: 30
             periodSeconds: 5
             successThreshold: 1
-            tcpSocket:
-              port: 80
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
             timeoutSeconds: 1
-          securityContext:
-            runAsGroup: 1000
-            runAsNonRoot: true
-            runAsUser: 1000
+          securityContext: {}
           volumeMounts:
             - name: config
-              mountPath: /app/public/conf.yml
+              mountPath: /app/user-data/conf.yml
               subPath: conf.yml
           resources:
-            limits:
-              cpu: 250m
-              memory: 128Mi
+            # limits:
+            #   cpu: 2000m
+            #   memory: 1500Mi
             requests:
-              cpu: 10m
-              memory: 48Mi
+              cpu: 25m
+              memory: 128Mi
       volumes:
         - name: config
           configMap:
