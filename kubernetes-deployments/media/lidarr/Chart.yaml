@@ -1,8 +1,12 @@
 apiVersion: v2
 name: lidarr
 version: 1.0.0
-appVersion: 2.1.7
 dependencies:
+  - name: app-template
+    version: 3.0.4
+    repository: https://bjw-s.github.io/helm-charts
+    alias: lidarr
+    condition: lidarr.enabled
   - name: common
     version: ">0.0.0"
     repository: "file://../../../charts/common/"

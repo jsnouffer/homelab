@@ -53,6 +53,11 @@ ghReleaseImageUpdater:
       gitopsRepo:
         filePath: applications/calibre/.argocd-source-calibre.yaml
         yamlPath: ".helm.parameters[3].value"
+    lidarr:
+      ghRepo: linuxserver/docker-lidarr
+      gitopsRepo:
+        filePath: media/lidarr/.argocd-source-lidarr.yaml
+        yamlPath: ".helm.parameters[1].value"
     ombi:
       ghRepo: linuxserver/docker-ombi
       gitopsRepo:
