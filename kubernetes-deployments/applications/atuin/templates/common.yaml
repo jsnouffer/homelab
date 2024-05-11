@@ -1,5 +1,0 @@
-{{- with $.Values.atuin }}
-{{- if .enabled }}
-{{- include "common.all" $ -}}
-{{- end }}
-{{- end }}
