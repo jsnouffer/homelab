@@ -1,0 +1,8 @@
+helm:
+  parameters:
+    - name: atuin.controllers.main.containers.main.image.repository
+      value: ghcr.io/atuinsh/atuin
+      forcestring: true
+    - name: atuin.controllers.main.containers.main.image.tag
+      value: v18.2.0
+      forcestring: true
