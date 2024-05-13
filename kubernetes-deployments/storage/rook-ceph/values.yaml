@@ -1,5 +1,10 @@
 rook-ceph:
   enabled: true
+  csi:
+    pluginTolerations:
+      - key: gpu-only
+        operator: Exists
+        effect: NoSchedule
 rook-ceph-cluster:
   enabled: true
   toolbox:
