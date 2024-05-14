@@ -1,7 +1,7 @@
 helm:
   parameters:
     - name: radarr.controllers.main.containers.main.image.repository
-      value: linuxserver/radarr
+      value: lscr.io/linuxserver/radarr
       forcestring: true
     - name: radarr.controllers.main.containers.main.image.tag
       value: 5.4.6.8723-ls216

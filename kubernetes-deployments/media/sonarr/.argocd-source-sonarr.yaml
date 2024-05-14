@@ -1,7 +1,7 @@
 helm:
   parameters:
     - name: sonarr.controllers.main.containers.main.image.repository
-      value: linuxserver/sonarr
+      value: lscr.io/linuxserver/sonarr
       forcestring: true
     - name: sonarr.controllers.main.containers.main.image.tag
       value: 4.0.4.1491-ls238
