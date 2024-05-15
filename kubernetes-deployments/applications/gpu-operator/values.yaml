@@ -1,0 +1,32 @@
+gpu-operator:
+  enabled: true
+  node-feature-discovery:
+    fullnameOverride: node-feature-discovery
+    master:
+      resources:
+        requests:
+          cpu: 5m
+          memory: 24Mi
+        limits:
+          cpu: 25m
+          memory: 48Mi
+    worker:
+      resources:
+        requests:
+          cpu: 5m
+          memory: 16Mi
+        limits:
+          cpu: 25m
+          memory: 64Mi
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Exists
+          effect: NoSchedule
+    gc:
+      resources:
+        requests:
+          cpu: 5m
+          memory: 16Mi
+        limits:
+          cpu: 25m
+          memory: 32Mi

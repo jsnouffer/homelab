@@ -2,7 +2,7 @@ rook-ceph:
   enabled: true
   csi:
     pluginTolerations:
-      - key: gpu-only
+      - key: nvidia.com/gpu
         operator: Exists
         effect: NoSchedule
 rook-ceph-cluster:
