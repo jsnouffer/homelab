@@ -1,0 +1,6 @@
+k8up:
+  enabled: true
+  fullnameOverride: k8up
+  k8up:
+    timezone: America/New_York
+    skipWithoutAnnotation: true
