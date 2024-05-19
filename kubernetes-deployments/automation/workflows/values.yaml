@@ -83,6 +83,11 @@ ghReleaseImageUpdater:
       gitopsRepo:
         filePath: media/sonarr/.argocd-source-sonarr.yaml
         yamlPath: ".helm.parameters[1].value"
+    tautulli:
+      ghRepo: tautulli/tautulli
+      gitopsRepo:
+        filePath: media/tautulli/.argocd-source-tautulli.yaml
+        yamlPath: ".helm.parameters[1].value"
 
 scheduled:
   check-raid-status-daily:

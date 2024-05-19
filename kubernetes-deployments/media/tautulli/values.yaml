@@ -8,7 +8,7 @@ tautulli:
         main:
           image:
             repository: tautulli/tautulli
-            tag: v2.13.4
+            tag: latest # managed by ArgoCD Image Updater
           env:
             PUID: "1000"
             PGID: "1000"
@@ -64,6 +64,8 @@ common:
         pvcName: tautulli-config
         bucket: "b2:jsnouff-tautulli"
         restoreVersion: latest
+        tags:
+          - "{{ $.Values.tautulli.controllers.main.containers.main.image.repository }}:{{ $.Values.tautulli.controllers.main.containers.main.image.tag }}"
         affinity:
           podAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:
