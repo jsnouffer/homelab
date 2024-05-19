@@ -51,6 +51,7 @@ alias h="history"
 alias k="kubectl"
 
 export PATH=$PATH:/home/jason/.local/bin
+export PATH=$PATH:/usr/local/go/bin
 
 [[ $commands[kubectl] ]] && source <(kubectl completion zsh)
 source <(helm completion zsh)
