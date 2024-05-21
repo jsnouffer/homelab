@@ -30,7 +30,7 @@ llama:
         main:
           image:
             repository: ghcr.io/ggerganov/llama.cpp
-            tag: "full-cuda--b1-917dc8c"
+            tag: server-cuda--b1-917dc8c
             pullPolicy: IfNotPresent
           args: ["--host", "0.0.0.0","-hfr","microsoft/Phi-3-mini-4k-instruct-gguf","-hff","Phi-3-mini-4k-instruct-fp16.gguf","-n","512", "-ngl","99", "-c", "8192", "-t", "8","--timeout", "900", "--log-disable", "--mlock"]
           env:
