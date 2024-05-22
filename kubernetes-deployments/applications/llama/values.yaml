@@ -8,9 +8,9 @@ llama:
       options:
         - name: ndots
           value: "3"
-    securityContext:
-      seccompProfile:
-        type: RuntimeDefault
+    # securityContext:
+    #   seccompProfile:
+    #     type: RuntimeDefault
     tolerations:
       - key: nvidia.com/gpu
         effect: NoSchedule
@@ -19,32 +19,33 @@ llama:
   controllers:
     llama:
       type: deployment
-      initContainers:
-        model-init:
-          image:
-            repository: "quay.io/prometheus/busybox"
-            tag: "latest"
-            pullPolicy: IfNotPresent
-          command: ["sh", "-c", "chown 1234:1234 /app/models -Rf && ls -lsatr /app/models/"]
+      # initContainers:
+      #   model-init:
+      #     image:
+      #       repository: "quay.io/prometheus/busybox"
+      #       tag: "latest"
+      #       pullPolicy: IfNotPresent
+      #     command: ["sh", "-c", "chown 1234:1234 /app/models -Rf && ls -lsatr /app/models/"]
+      #     # command: ["sh", "-c", "wget --no-clobber -P /app/models https://huggingface.co/microsoft/Phi-3-mini-4k-instruct-gguf/resolve/main/Phi-3-mini-4k-instruct-fp16.gguf && chown 1234:1234 /app/modesl/ -Rf && ls -al /app/models/"]
       containers:
         main:
           image:
             repository: ghcr.io/ggerganov/llama.cpp
             tag: server-cuda--b1-917dc8c
             pullPolicy: IfNotPresent
-          args: ["--host", "0.0.0.0","-hfr","microsoft/Phi-3-mini-4k-instruct-gguf","-hff","Phi-3-mini-4k-instruct-fp16.gguf","-n","512", "-ngl","99", "-c", "8192", "-t", "8","--timeout", "900", "--log-disable", "--mlock"]
+          args: ["--host", "0.0.0.0", "--port", "8000", "-m","/app/models/Phi-3-mini-4k-instruct-fp16.gguf","-n","512", "-ngl","99","--timeout", "900", "--log-disable", "--mlock"]
           env:
             TZ: "America/New_York"
             LLAMA_CUDA_KQUANTS_ITER: 1
           resources:
             limits:
-              cpu: "8"
+              cpu: "6"
               memory: 12Gi
-              nvidia.com/gpu: 1
+              nvidia.com/gpu: 4
             requests:
               cpu: "1"
               memory: 2Gi
-              nvidia.com/gpu: 1
+              nvidia.com/gpu: 4
           probes:
             liveness: &lr-probe
               enabled: true
@@ -67,10 +68,11 @@ llama:
                 successThreshold: 1
                 failureThreshold: 30
           securityContext:
-            allowPrivilegeEscalation: false
+            # allowPrivilegeEscalation: false
             capabilities:
-              drop:
-              - ALL
+              add:
+                - IPC_LOCK
+                - SYS_RESOURCE
   service:
     main:
       controller: llama
@@ -78,7 +80,7 @@ llama:
         traefik.ingress.kubernetes.io/service.serversscheme: http
       ports:
         http:
-          port: &main-port 8080
+          port: &main-port 8000
   ingress:
     main:
       enabled: true
@@ -105,13 +107,22 @@ llama:
         traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
         traefik.ingress.kubernetes.io/router.tls: "true"
   persistence:
-    data:
+    # data:
+    #   enabled: true
+    #   accessMode: ReadWriteOnce
+    #   size: "30Gi"
+    #   advancedMounts:
+    #     llama:
+    #       main:
+    #         - path: /app/models
+    #       model-init:
+    #         - path: /app/models
+    models:
       enabled: true
-      accessMode: ReadWriteOnce
-      size: "30Gi"
+      type: hostPath
+      hostPath: /opt/nvme/llm
+      hostPathType: Directory
       advancedMounts:
         llama:
           main:
-            - path: /app/models
-          model-init:
             - path: /app/models
