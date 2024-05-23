@@ -23,7 +23,7 @@ gpu-operator:
           sharing:
             timeSlicing:
               renameByDefault: false
-              failRequestsGreaterThanOne: false
+              failRequestsGreaterThanOne: true
               resources:
                 - name: nvidia.com/gpu
                   replicas: 4

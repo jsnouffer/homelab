@@ -41,11 +41,11 @@ llama:
             limits:
               cpu: "6"
               memory: 12Gi
-              nvidia.com/gpu: 4
+              nvidia.com/gpu: 1
             requests:
               cpu: "1"
               memory: 2Gi
-              nvidia.com/gpu: 4
+              nvidia.com/gpu: 1
           probes:
             liveness: &lr-probe
               enabled: true
