@@ -8,32 +8,34 @@ llama:
       options:
         - name: ndots
           value: "3"
-    # securityContext:
-    #   seccompProfile:
-    #     type: RuntimeDefault
-    tolerations:
-      - key: nvidia.com/gpu
-        effect: NoSchedule
-        operator: Exists
-    runtimeClassName: nvidia
   controllers:
-    llama:
+    backend:
       type: deployment
-      # initContainers:
-      #   model-init:
-      #     image:
-      #       repository: "quay.io/prometheus/busybox"
-      #       tag: "latest"
-      #       pullPolicy: IfNotPresent
-      #     command: ["sh", "-c", "chown 1234:1234 /app/models -Rf && ls -lsatr /app/models/"]
-      #     # command: ["sh", "-c", "wget --no-clobber -P /app/models https://huggingface.co/microsoft/Phi-3-mini-4k-instruct-gguf/resolve/main/Phi-3-mini-4k-instruct-fp16.gguf && chown 1234:1234 /app/modesl/ -Rf && ls -al /app/models/"]
+      pod:
+        runtimeClassName: nvidia
+        tolerations:
+          - key: nvidia.com/gpu
+            effect: NoSchedule
+            operator: Exists
       containers:
         main:
           image:
             repository: ghcr.io/ggerganov/llama.cpp
             tag: server-cuda--b1-917dc8c
             pullPolicy: IfNotPresent
-          args: ["--host", "0.0.0.0", "--port", "8000", "-m","/app/models/Phi-3-mini-4k-instruct-fp16.gguf","-n","512", "-ngl","99","--timeout", "900", "--log-disable", "--mlock"]
+          args:
+            - "--host"
+            - "0.0.0.0"
+            - "--port"
+            - "8080"
+            - "-m"
+            - "/app/models/Phi-3-mini-4k-instruct-fp16.gguf"
+            - "-ngl"
+            - "99"
+            - "--timeout"
+            - "900"
+            - "--log-disable"
+            - "--mlock"
           env:
             TZ: "America/New_York"
             LLAMA_CUDA_KQUANTS_ITER: 1
@@ -46,7 +48,7 @@ llama:
               cpu: "1"
               memory: 2Gi
               nvidia.com/gpu: 1
-          probes:
+          probes: &probes
             liveness: &lr-probe
               enabled: true
               type: &probe-type HTTP
@@ -68,35 +70,69 @@ llama:
                 successThreshold: 1
                 failureThreshold: 30
           securityContext:
-            # allowPrivilegeEscalation: false
             capabilities:
               add:
                 - IPC_LOCK
                 - SYS_RESOURCE
+    webui:
+      type: deployment
+      containers:
+        main:
+          image:
+            repository: ghcr.io/open-webui/open-webui
+            tag: "main"
+            pullPolicy: IfNotPresent
+          env:
+            TZ: "America/New_York"
+            OPENAI_API_BASE_URL: http://llama-backend:8080/v1
+            OPENAI_API_KEYS: "none"
+            WEBUI_AUTH: "false"
+            WEBUI_URL: https://openwebui.jsnouff.net
+            ENABLE_LITELLM: "false"
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 150m
+              memory: 256Mi
+          probes: *probes
   service:
-    main:
-      controller: llama
+    backend:
+      controller: backend
       annotations:
         traefik.ingress.kubernetes.io/service.serversscheme: http
       ports:
         http:
-          port: &main-port 8000
+          port: &backend-port 8080
+    webui:
+      controller: webui
+      annotations:
+        traefik.ingress.kubernetes.io/service.serversscheme: http
+      ports:
+        http:
+          port: &webui-port 8080
   ingress:
-    main:
+    backend:
       enabled: true
       hosts:
-        - host: &domain llama.jsnouff.net
+        - host: &backend-domain llama-cpp.jsnouff.net
           paths:
             - path: /
               pathType: Prefix
               service:
-                name: *name
-                port: *main-port
+                name: llama-backend
+                port: *backend-port
       tls:
         - hosts:
-            - *domain
-          secretName: tls-secret
-      annotations:
+            - *backend-domain
+          secretName: backend-tls-secret
+      annotations: &ingress-annotations
         cert-manager.io/cluster-issuer: lets-encrypt-production
         ingress.kubernetes.io/force-ssl-redirect: "true"
         ingress.kubernetes.io/protocol: http
@@ -106,23 +142,27 @@ llama:
         traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
         traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
         traefik.ingress.kubernetes.io/router.tls: "true"
+    webui:
+      enabled: true
+      hosts:
+        - host: &webui-domain openwebui.jsnouff.net
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: llama-webui
+                port: *webui-port
+      tls:
+        - hosts:
+            - *webui-domain
+          secretName: webui-tls-secret
+      annotations: *ingress-annotations
   persistence:
-    # data:
-    #   enabled: true
-    #   accessMode: ReadWriteOnce
-    #   size: "30Gi"
-    #   advancedMounts:
-    #     llama:
-    #       main:
-    #         - path: /app/models
-    #       model-init:
-    #         - path: /app/models
     models:
       enabled: true
-      type: hostPath
-      hostPath: /opt/nvme/llm
-      hostPathType: Directory
+      existingClaim: llm-nfs
       advancedMounts:
-        llama:
+        backend:
           main:
             - path: /app/models
+              subPath: llm

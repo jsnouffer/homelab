@@ -220,3 +220,12 @@ sections:
       - title: Calibre Web
         icon: hl-calibre-web
         url: https://calibre-web.jsnouff.net/
+  - name: AI/ML
+    icon: fas fa-brain
+    items:
+      - title: Open WebUI
+        icon: hl-open-webui
+        url: https://openwebui.jsnouff.net
+      - title: llama.cpp
+        icon: hl-anything-llm-dark
+        url: https://llama-cpp.jsnouff.net/
