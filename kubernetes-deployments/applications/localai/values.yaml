@@ -1,0 +1,119 @@
+localai:
+  enabled: true
+  global:
+    fullnameOverride: localai
+  defaultPodOptions:
+    automountServiceAccountToken: false
+    dnsConfig:
+      options:
+        - name: ndots
+          value: "3"
+  controllers:
+    localai:
+      type: deployment
+      pod:
+        runtimeClassName: nvidia
+        tolerations:
+          - key: nvidia.com/gpu
+            effect: NoSchedule
+            operator: Exists
+      containers:
+        main:
+          image:
+            repository: ghcr.io/jsnouffer/stable-diffusion-webui-docker/automatic1111
+            tag: 0.1
+            pullPolicy: IfNotPresent
+          # args:
+          #   - "--host"
+          #   - "0.0.0.0"
+          #   - "--port"
+          #   - "8080"
+          #   - "-m"
+          #   - "/app/models/Phi-3-mini-4k-instruct-fp16.gguf"
+          #   - "-ngl"
+          #   - "99"
+          #   - "--timeout"
+          #   - "900"
+          #   - "--log-disable"
+          #   - "--mlock"
+          env:
+            TZ: "America/New_York"
+            CLI_ARGS: "--allow-code --medvram --xformers --enable-insecure-extension-access --api"
+          # resources:
+          #   limits:
+          #     cpu: "6"
+          #     memory: 12Gi
+          #     nvidia.com/gpu: 1
+          #   requests:
+          #     cpu: "1"
+          #     memory: 2Gi
+          #     nvidia.com/gpu: 1
+          # probes: &probes
+          #   liveness: &lr-probe
+          #     enabled: true
+          #     type: &probe-type HTTP
+          #     path: &probe-path /health
+          #     spec:
+          #       initialDelaySeconds: 0
+          #       periodSeconds: 10
+          #       timeoutSeconds: 1
+          #       failureThreshold: 3
+          #   readiness: *lr-probe
+          #   startup:
+          #     enabled: true
+          #     type: *probe-type
+          #     path: *probe-path
+          #     spec:
+          #       initialDelaySeconds: 20
+          #       periodSeconds: 10
+          #       timeoutSeconds: 5
+          #       successThreshold: 1
+          #       failureThreshold: 30
+          # securityContext:
+          #   capabilities:
+          #     add:
+          #       - IPC_LOCK
+          #       - SYS_RESOURCE
+
+  service:
+    localai:
+      controller: localai
+      annotations:
+        traefik.ingress.kubernetes.io/service.serversscheme: http
+      ports:
+        http:
+          port: &localai-port 7860
+  ingress:
+    localai:
+      enabled: true
+      hosts:
+        - host: &localai-domain localai.jsnouff.net
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: localai
+                port: *localai-port
+      tls:
+        - hosts:
+            - *localai-domain
+          secretName: localai-tls-secret
+      annotations: &ingress-annotations
+        cert-manager.io/cluster-issuer: lets-encrypt-production
+        ingress.kubernetes.io/force-ssl-redirect: "true"
+        ingress.kubernetes.io/protocol: http
+        kubernetes.io/ingress.class: traefik
+        kubernetes.io/tls-acme: "true"
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls: "true"
+  # persistence:
+  #   models:
+  #     enabled: true
+  #     existingClaim: llm-nfs
+  #     advancedMounts:
+  #       localai:
+  #         main:
+  #           - path: /app/models
+  #             subPath: llm
