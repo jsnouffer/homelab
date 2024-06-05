@@ -2,7 +2,7 @@ traefik:
   enabled: true
   fullnameOverride: traefik
   deployment:
-    kind: DaemonSet
+    replicas: 2
   env:
     - name: TZ
       value: America/New_York

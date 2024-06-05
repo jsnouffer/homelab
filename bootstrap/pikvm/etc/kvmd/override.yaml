@@ -18,6 +18,9 @@ kvmd:
             wol_davros:
                 type: wol
                 mac: 40:b0:34:f7:17:08
+            wol_calcula:
+                type: wol
+                mac: c0:18:03:82:d9:7f
             reboot:
                 type: cmd
                 cmd: [/usr/bin/sudo, reboot]
@@ -79,6 +82,11 @@ kvmd:
                 pin: 2
                 mode: output
                 switch: false
+            wol_calcula:
+                driver: wol_calcula
+                pin: 3
+                mode: output
+                switch: false
             reboot_button:
                 driver: reboot
                 pin: 0
@@ -95,4 +103,4 @@ kvmd:
                 - ["#oswin", ch0_led, ch0_button, "wol_oswin | WoL"]
                 - ["#barenas", ch1_led, ch1_button, "wol_barenas | WoL"]
                 - ["#davros", ch2_led, ch2_button, "wol_davros | WoL"]
-                - ["#Input 4", ch3_led, ch3_button]
+                - ["#calcula", ch3_led, ch3_button, "wol_calcula | WoL"]

@@ -1,0 +1,43 @@
+nfd:
+  enabled: true
+
+labeller:
+  enabled: true
+
+dp:
+  image:
+    repository: rocm/k8s-device-plugin
+    tag: "1.25.2.7"
+  resources:
+    requests:
+      cpu: 10m
+      memory: 8Mi
+    limits:
+      cpu: 25m
+      memory: 24Mi
+
+lbl:
+  image:
+    repository: rocm/k8s-device-plugin
+    tag: "labeller-1.25.2.7"
+  resources:
+    requests:
+      cpu: 10m
+      memory: 16Mi
+    limits:
+      cpu: 125m
+      memory: 24Mi
+
+imagePullSecrets: []
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+
+tolerations: []
+
+node_selector:
+  feature.node.kubernetes.io/pci-1002.present: "true"
+  kubernetes.io/arch: amd64

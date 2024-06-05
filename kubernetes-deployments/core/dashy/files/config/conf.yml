@@ -43,9 +43,6 @@ sections:
       - title: Uptime Kuma
         icon: hl-uptime-kuma
         url: https://uptime.jsnouff.net
-      - title: Ubuntu VM
-        icon: hl-ubuntu
-        url: https://barenas.jsnouff.net/vm/display/18/vnc.html?path=vm%2Fdisplay%2F18%2F&autoconnect=1
   - name: Networking
     icon: fas fa-network-wired
     items:

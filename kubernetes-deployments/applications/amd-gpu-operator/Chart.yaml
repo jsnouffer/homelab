@@ -1,0 +1,15 @@
+apiVersion: v2
+name: amd-gpu-operator
+description: A Helm chart for deploying Kubernetes AMD GPU device plugin
+type: application
+home: https://github.com/RadeonOpenCompute/k8s-device-plugin
+sources:
+  - https://github.com/RadeonOpenCompute/k8s-device-plugin
+icon: https://raw.githubusercontent.com/RadeonOpenCompute/k8s-device-plugin/master/helm/logo.png
+keywords:
+  - kubernetes
+  - cluster
+  - hardware
+  - gpu
+kubeVersion: ">= 1.18.0"
+version: 0.2.0
