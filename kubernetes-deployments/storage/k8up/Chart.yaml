@@ -1,8 +1,0 @@
-apiVersion: v2
-name: k8up
-version: 4.7.0
-dependencies:
-  - name: k8up
-    version: 4.7.0 # Update CRDs when upgrading - update-crds.sh
-    repository: https://k8up-io.github.io/k8up
-    condition: k8up.enabled
