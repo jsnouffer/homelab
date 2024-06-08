@@ -1,15 +1,18 @@
 netbox:
   enabled: true
 
+  image:
+    tag: v4.0.5-2.9.1
+
   existingSecret: netbox-credentials
 
   resources:
     requests:
-      cpu: 20m
+      cpu: 100m
       memory: 350Mi
     limits:
       cpu: 1000m
-      memory: 650Mi
+      memory: 750Mi
 
   affinity:
     podAffinity:
@@ -146,6 +149,9 @@ common:
         pvcName: netbox-media
         bucket: netbox-media-backup
         restoreVersion: latest
+        tags:
+          - "netbox-image:{{ default $.Subcharts.netbox.Chart.AppVersion $.Values.netbox.image.tag }}"
+          - "netbox-chart:{{ $.Subcharts.netbox.Chart.Version }}"
         affinity:
           podAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:
@@ -162,6 +168,9 @@ common:
         pvcName: data-postgresql-0
         bucket: netbox-db-backup
         restoreVersion: latest
+        tags:
+          - "postgresql-image:{{ default $.Subcharts.postgresql.Chart.AppVersion ($.Subcharts.postgresql.Values.image.tag) }}"
+          - "postgresql-chart:{{ $.Subcharts.postgresql.Chart.Version }}"
         affinity:
           podAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:
