@@ -49,6 +49,8 @@ alias tf="terraform"
 alias tg="terragrunt"
 alias h="history"
 alias k="kubectl"
+alias skaro="kubectl config use-context skaro"
+alias lorien="kubectl config use-context lorien"
 
 export PATH=$PATH:/home/jason/.local/bin
 export PATH=$PATH:/usr/local/go/bin

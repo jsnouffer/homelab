@@ -1,0 +1,48 @@
+gpu-operator:
+  enabled: true
+  toolkit:
+    env:
+      - name: CONTAINERD_CONFIG
+        value: /var/lib/rancher/k3s/agent/etc/containerd/config.toml
+      - name: CONTAINERD_SOCKET
+        value: /run/k3s/containerd/containerd.sock
+      - name: CONTAINERD_RUNTIME_CLASS
+        value: nvidia
+      - name: CONTAINERD_SET_AS_DEFAULT
+        value: "true"
+  validator:
+    driver:
+      env:
+        - name: DISABLE_DEV_CHAR_SYMLINK_CREATION
+          value: "true"
+
+  node-feature-discovery:
+    fullnameOverride: node-feature-discovery
+    master:
+      resources:
+        requests:
+          cpu: 5m
+          memory: 24Mi
+        limits:
+          cpu: 25m
+          memory: 48Mi
+    worker:
+      resources:
+        requests:
+          cpu: 5m
+          memory: 16Mi
+        limits:
+          cpu: 25m
+          memory: 64Mi
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Exists
+          effect: NoSchedule
+    gc:
+      resources:
+        requests:
+          cpu: 5m
+          memory: 16Mi
+        limits:
+          cpu: 25m
+          memory: 32Mi

@@ -1,0 +1,59 @@
+startup=0
+gpu_passthrough_intel=0
+gpu_passthrough_nvidia=1
+seccomp=0
+
+systemd_nspawn_user_args=--network-bridge=br0
+    --resolv-conf=bind-host
+    --system-call-filter='add_key keyctl bpf'
+    --bind=/dev/kmsg
+
+distro=ubuntu
+release=jammy
+
+initial_setup=#!/usr/bin/bash
+    set -euo pipefail
+    sudo apt-get update
+    sudo apt-get -y install htop curl openssh-server jq
+
+    # configure Ansible user
+    sudo adduser --disabled-password --gecos "" cloud-user
+    sudo usermod -aG sudo cloud-user
+    sudo sed -i "s/%sudo.*/%sudo ALL=(ALL:ALL) NOPASSWD: ALL/g" /etc/sudoers
+
+    # configure ssh access
+    sudo sed -i "s/#PubkeyAuthentication/PubkeyAuthentication/" /etc/ssh/sshd_config
+    sudo systemctl restart ssh
+    sudo -u cloud-user mkdir -p /home/cloud-user/.ssh
+    sudo chmod 700 /home/cloud-user/.ssh
+    sudo curl -L -s https://api.github.com/users/jsnouffer/keys | jq '.[0].key' | tr -d '"' > /home/cloud-user/.ssh/authorized_keys
+    sudo chown cloud-user:cloud-user /home/cloud-user/.ssh/authorized_keys
+
+    # configure static IP
+    sudo cat > /etc/systemd/network/80-container-host0.network<< EOF
+    [Match]
+    Virtualization=container
+    Name=host0
+
+    [Network]
+    DHCP=false
+    Address=192.168.5.8/16
+    Gateway=192.168.1.1
+    LinkLocalAddressing=no
+    LLDP=yes
+    EmitLLDP=customer-bridge
+    EOF
+    systemctl restart systemd-networkd
+    systemctl status systemd-networkd
+
+    # configure k3s
+    curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server" sh -s - --disable=traefik --tls-san=dalek-jast.jsnouff.net
+
+systemd_run_default_args=--property=KillMode=mixed
+    --property=Type=notify
+    --property=RestartForceExitStatus=133
+    --property=SuccessExitStatus=133
+    --property=Delegate=yes
+    --property=TasksMax=infinity
+    --collect
+    --setenv=SYSTEMD_NSPAWN_LOCK=0
