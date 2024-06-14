@@ -35,6 +35,7 @@ rook-ceph-cluster:
       devices:
         - name: /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi1
         - name: /dev/disk/by-id/scsi-SATA_PNY_CS900_500GB_PNY2350231211010034B
+        - name: /dev/disk/by-id/scsi-SATA_PNY_CS900_500GB_PNY24152404080100184
     mon:
       count: 3
     mgr:
