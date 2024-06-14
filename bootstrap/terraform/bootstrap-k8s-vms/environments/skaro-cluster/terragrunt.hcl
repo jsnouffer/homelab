@@ -8,25 +8,6 @@ inputs = {
   vm_template_name = "ubuntu-server-template"
 
   node_configs = {
-    "dalek-sec" = {
-      startup = ""
-      cores   = 8
-      memory  = 32768
-      ip      = "192.168.5.15"
-
-      disks = [
-        {
-          type = "scsi"
-          size = "150G"
-        },
-        {
-          type = "scsi"
-          size = "200G"
-        }
-      ]
-
-      usb = []
-    },
     "dalek-caan" = {
       startup = ""
       cores   = 8

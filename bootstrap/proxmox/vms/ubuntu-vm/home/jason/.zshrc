@@ -54,6 +54,7 @@ alias lorien="kubectl config use-context lorien"
 
 export PATH=$PATH:/home/jason/.local/bin
 export PATH=$PATH:/usr/local/go/bin
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 
 [[ $commands[kubectl] ]] && source <(kubectl completion zsh)
 source <(helm completion zsh)
