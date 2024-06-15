@@ -16,10 +16,10 @@ bazarr:
           resources:
             requests:
               cpu: 100m
-              memory: 250Mi
+              memory: 300Mi
             limits:
               cpu: 700m
-              memory: 500Mi
+              memory: 600Mi
   service:
     main:
       ports:

@@ -17,10 +17,10 @@ ombi:
           resources:
             requests:
               cpu: 25m
-              memory: 300Mi
+              memory: 400Mi
             limits:
               cpu: 750m
-              memory: 600Mi
+              memory: 800Mi
   service:
     main:
       ports:
