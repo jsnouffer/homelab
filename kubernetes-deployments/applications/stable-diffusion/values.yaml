@@ -31,66 +31,38 @@ stable-diffusion:
               --xformers
               --enable-insecure-extension-access
               --api
-              --ckpt /app/models/arthemyComicsXL_v10.safetensors
+              --ckpt-dir /app/models
               --no-download-sd-model
           resources:
             limits:
-              # cpu: "6"
-              # memory: 12Gi
+              cpu: "2"
+              memory: 12Gi
               nvidia.com/gpu: 1
             requests:
-              # cpu: "1"
-              # memory: 2Gi
+              cpu: "1"
+              memory: 12Gi
               nvidia.com/gpu: 1
-          # probes: &probes
-          #   liveness: &lr-probe
-          #     enabled: true
-          #     type: &probe-type HTTP
-          #     path: &probe-path /health
-          #     spec:
-          #       initialDelaySeconds: 0
-          #       periodSeconds: 10
-          #       timeoutSeconds: 1
-          #       failureThreshold: 3
-          #   readiness: *lr-probe
-          #   startup:
-          #     enabled: true
-          #     type: *probe-type
-          #     path: *probe-path
-          #     spec:
-          #       initialDelaySeconds: 20
-          #       periodSeconds: 10
-          #       timeoutSeconds: 5
-          #       successThreshold: 1
-          #       failureThreshold: 30
-    invokeai:
-      type: deployment
-      pod:
-        runtimeClassName: nvidia
-        tolerations:
-          - key: nvidia.com/gpu
-            effect: NoSchedule
-            operator: Exists
-      containers:
-        main:
-          image:
-            repository: ghcr.io/jsnouffer/stable-diffusion-webui-docker/invokeai
-            tag: 0.1
-            pullPolicy: IfNotPresent
-          env:
-            PRELOAD: "true"
-            CLI_ARGS: |
-              --xformers
-          resources:
-            limits:
-              # cpu: "6"
-              # memory: 12Gi
-              nvidia.com/gpu: 1
-            requests:
-              # cpu: "1"
-              # memory: 2Gi
-              nvidia.com/gpu: 1
-
+          probes: &probes
+            liveness: &lr-probe
+              enabled: true
+              type: &probe-type HTTP
+              path: &probe-path /
+              spec:
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                timeoutSeconds: 1
+                failureThreshold: 3
+            readiness: *lr-probe
+            startup:
+              enabled: true
+              type: *probe-type
+              path: *probe-path
+              spec:
+                initialDelaySeconds: 10
+                periodSeconds: 5
+                timeoutSeconds: 5
+                successThreshold: 1
+                failureThreshold: 60
   service:
     automatic1111:
       controller: automatic1111
@@ -98,30 +70,23 @@ stable-diffusion:
         traefik.ingress.kubernetes.io/service.serversscheme: http
       ports:
         http:
-          port: &automatic1111-port 7860
-    invokeai:
-      controller: invokeai
-      annotations:
-        traefik.ingress.kubernetes.io/service.serversscheme: http
-      ports:
-        http:
-          port: &invokeai-port 7860
+          port: &port 7860
   ingress:
     automatic1111:
       enabled: true
       hosts:
-        - host: &automatic1111-domain stable-diffusion.jsnouff.net
+        - host: &domain stable-diffusion.jsnouff.net
           paths:
             - path: /
               pathType: Prefix
               service:
-                name: stable-diffusion-automatic1111
-                port: *automatic1111-port
+                name: stable-diffusion
+                port: *port
       tls:
         - hosts:
-            - *automatic1111-domain
-          secretName: automatic1111-tls-secret
-      annotations: &ingress-annotations
+            - *domain
+          secretName: tls-secret
+      annotations:
         cert-manager.io/cluster-issuer: lets-encrypt-production
         ingress.kubernetes.io/force-ssl-redirect: "true"
         ingress.kubernetes.io/protocol: http
@@ -131,23 +96,20 @@ stable-diffusion:
         traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
         traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
         traefik.ingress.kubernetes.io/router.tls: "true"
-    invokeai:
-      enabled: true
-      hosts:
-        - host: &invokeai-domain invokeai.jsnouff.net
-          paths:
-            - path: /
-              pathType: Prefix
-              service:
-                name: stable-diffusion-invokeai
-                port: *invokeai-port
-      tls:
-        - hosts:
-            - *invokeai-domain
-          secretName: invokeai-tls-secret
-      annotations: *ingress-annotations
   persistence:
-    main:
+    output:
+      enabled: true
+      accessMode: ReadWriteOnce
+      size: 2Gi
+    extensions:
+      enabled: true
+      accessMode: ReadWriteOnce
+      size: 2Gi
+      advancedMounts:
+        automatic1111:
+          main:
+            - path: /data/config/auto/extensions
+    models:
       enabled: true
       existingClaim: stable-diffusion-nfs
       advancedMounts:
@@ -155,3 +117,13 @@ stable-diffusion:
           main:
             - path: /app/models
               subPath: stable-diffusion
+    startup-script-cm:
+      enabled: true
+      type: configMap
+      name: startup-script
+      defaultMode: 0777
+      advancedMounts:
+        automatic1111:
+          main:
+            - path: /data/config/auto/startup.sh
+              subPath: startup.sh

@@ -220,9 +220,9 @@ sections:
   - name: AI/ML
     icon: fas fa-brain
     items:
-      - title: Open WebUI
-        icon: hl-open-webui
-        url: https://openwebui.jsnouff.net
       - title: llama.cpp
         icon: hl-anything-llm-dark
         url: https://llama-cpp.jsnouff.net/
+      - title: Stable Diffusion
+        icon: hl-hugging-face
+        url: https://stable-diffusion.jsnouff.net
