@@ -8,6 +8,7 @@ stable-diffusion:
       options:
         - name: ndots
           value: "3"
+    terminationGracePeriodSeconds: 10
   controllers:
     automatic1111:
       type: deployment
@@ -17,12 +18,22 @@ stable-diffusion:
           - key: nvidia.com/gpu
             effect: NoSchedule
             operator: Exists
-      containers:
-        main:
-          image:
+      initContainers:
+        init-extensions:
+          image: &main-container
             repository: ghcr.io/jsnouffer/stable-diffusion-webui-docker/automatic1111
             tag: 0.1
             pullPolicy: IfNotPresent
+          command:
+            - bash
+            - -c
+            - |
+              cd /extensions
+              git -C stable-diffusion-webui-state pull || git clone https://github.com/ilian6806/stable-diffusion-webui-state.git
+              git -C sd-webui-prompt-all-in-one pull || git clone https://github.com/Physton/sd-webui-prompt-all-in-one.git
+      containers:
+        main:
+          image: *main-container
           env:
             TZ: "America/New_York"
             CLI_ARGS: |
@@ -97,18 +108,20 @@ stable-diffusion:
         traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
         traefik.ingress.kubernetes.io/router.tls: "true"
   persistence:
-    output:
-      enabled: true
-      accessMode: ReadWriteOnce
-      size: 2Gi
-    extensions:
+    data:
       enabled: true
       accessMode: ReadWriteOnce
       size: 2Gi
       advancedMounts:
         automatic1111:
           main:
+            - path: /output
+              subPath: output
             - path: /data/config/auto/extensions
+              subPath: extensions
+          init-extensions:
+            - path: /extensions
+              subPath: extensions
     models:
       enabled: true
       existingClaim: stable-diffusion-nfs
@@ -117,13 +130,15 @@ stable-diffusion:
           main:
             - path: /app/models
               subPath: stable-diffusion
-    startup-script-cm:
+    stable-diffusion-config:
       enabled: true
       type: configMap
-      name: startup-script
+      name: stable-diffusion-config
       defaultMode: 0777
       advancedMounts:
         automatic1111:
           main:
+            - path: /data/config/auto/default-config.json
+              subPath: config.json
             - path: /data/config/auto/startup.sh
               subPath: startup.sh
