@@ -153,6 +153,9 @@ sections:
       - title: Netbox
         icon: hl-netbox
         url: https://netbox.jsnouff.net/
+      - title: SearXNG
+        icon: hl-searxng
+        url: https://search.jsnouff.net/
       - title: Tandoor Recipes
         icon: hl-tandoor
         url: https://recipes.jsnouff.net/

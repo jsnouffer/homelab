@@ -1,0 +1,13 @@
+apiVersion: v2
+name: searxng
+version: 1.0.0
+dependencies:
+  - name: app-template
+    version: 3.2.1
+    repository: https://bjw-s.github.io/helm-charts
+    alias: searxng
+    condition: searxng.enabled
+  - name: redis
+    version: 19.6.1
+    repository: oci://registry-1.docker.io/bitnamicharts
+    condition: searxng.enabled

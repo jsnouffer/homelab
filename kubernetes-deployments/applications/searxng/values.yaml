@@ -1,0 +1,128 @@
+searxng:
+  enabled: true
+  global:
+    fullnameOverride: searxng
+  defaultPodOptions:
+    automountServiceAccountToken: false
+    dnsConfig:
+      options:
+        - name: ndots
+          value: "3"
+  controllers:
+    searxng:
+      type: deployment
+      initContainers:
+        copy-configs:
+          image:
+            repository: busybox
+            tag: latest
+            pullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - |
+              cp /config-files/limiter.toml /config
+              cp /config-files/settings.yml /config
+      containers:
+        main:
+          image:
+            repository: searxng/searxng
+            tag: latest
+            pullPolicy: IfNotPresent
+          env:
+            SEARXNG_BASE_URL: https://search.jsnouff.net/
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 2Gi
+            requests:
+              cpu: 100m
+              memory: 512Mi
+          probes:
+            liveness: &lr-probe
+              enabled: true
+              type: &probe-type HTTP
+              path: &probe-path /
+              spec:
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                timeoutSeconds: 1
+                failureThreshold: 3
+            readiness: *lr-probe
+            startup:
+              enabled: true
+              type: *probe-type
+              path: *probe-path
+              spec:
+                initialDelaySeconds: 10
+                periodSeconds: 5
+                timeoutSeconds: 5
+                successThreshold: 1
+                failureThreshold: 60
+  service:
+    searxng:
+      controller: searxng
+      annotations:
+        traefik.ingress.kubernetes.io/service.serversscheme: http
+      ports:
+        http:
+          port: &port 8080
+  ingress:
+    searxng:
+      enabled: true
+      hosts:
+        - host: &domain search.jsnouff.net
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: searxng
+                port: *port
+      tls:
+        - hosts:
+            - *domain
+          secretName: tls-secret
+      annotations:
+        cert-manager.io/cluster-issuer: lets-encrypt-production
+        ingress.kubernetes.io/force-ssl-redirect: "true"
+        ingress.kubernetes.io/protocol: http
+        kubernetes.io/ingress.class: traefik
+        kubernetes.io/tls-acme: "true"
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls: "true"
+  persistence:
+    data:
+      enabled: true
+      type: emptyDir
+      advancedMounts:
+        searxng:
+          copy-configs:
+            - path: /config
+          main:
+            - path: /etc/searxng
+    searxng-config-files:
+      enabled: true
+      type: secret
+      name: searxng-config
+      advancedMounts:
+        searxng:
+          copy-configs:
+            - path: /config-files
+
+redis:
+  fullnameOverride: redis
+  architecture: standalone
+  auth:
+    enabled: false
+  pdb:
+    create: false
+  master:
+    resources:
+      requests:
+        cpu: 25m
+        memory: 16Mi
+      limits:
+        cpu: 100m
+        memory: 64Mi
