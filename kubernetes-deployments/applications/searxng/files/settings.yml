@@ -1,11 +1,14 @@
 # see https://docs.searxng.org/admin/settings/settings.html#settings-use-default-settings
 use_default_settings: true
 server:
-  secret_key: "{{ `{{ .secret_key }}` }}"
   limiter: false
   image_proxy: true
+search:
+  safe_search: 0
+  autocomplete: google
 ui:
   static_use_hash: true
+  infinite_scroll: true
 redis:
   url: redis://redis-master:6379/0
 
@@ -16,3 +19,32 @@ enabled_plugins:
   - 'Ahmia blacklist'
   - 'Basic Calculator'
   - 'Open Access DOI rewrite'
+
+categories_as_tabs:
+  general:
+  images:
+  videos:
+  news:
+  map:
+  music:
+  it:
+  science:
+  social media:
+  books:
+
+engines:
+  - name: goodreads
+    engine: goodreads
+    shortcut: good
+    timeout: 4.0
+    disabled: false
+    categories: ["books"]
+
+  - name: hoogle
+    disabled: true
+  - name: gentoo
+    disabled: true
+  - name: chefkoch
+    disabled: true
+  - name: soundcloud
+    inactive: true

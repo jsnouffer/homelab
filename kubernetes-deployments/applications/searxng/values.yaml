@@ -8,9 +8,23 @@ searxng:
       options:
         - name: ndots
           value: "3"
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                - searxng
+            topologyKey: kubernetes.io/hostname
   controllers:
     searxng:
       type: deployment
+      replicas: 2
+      strategy: RollingUpdate
       initContainers:
         copy-configs:
           image:
@@ -31,12 +45,17 @@ searxng:
             pullPolicy: IfNotPresent
           env:
             SEARXNG_BASE_URL: https://search.jsnouff.net/
+            SEARXNG_SECRET:
+              valueFrom:
+                secretKeyRef:
+                  key: key
+                  name: searxng-secret-key
           resources:
             limits:
-              cpu: 1000m
+              cpu: 2000m
               memory: 2Gi
             requests:
-              cpu: 100m
+              cpu: 250m
               memory: 512Mi
           probes:
             liveness: &lr-probe
@@ -104,7 +123,7 @@ searxng:
             - path: /etc/searxng
     searxng-config-files:
       enabled: true
-      type: secret
+      type: configMap
       name: searxng-config
       advancedMounts:
         searxng:
