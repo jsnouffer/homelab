@@ -147,6 +147,9 @@ sections:
       - title: FreshRSS
         icon: hl-freshrss
         url: https://freshrss.jsnouff.net/
+      - title: Hoarder
+        icon: hl-hoarder
+        url: https://hoarder.jsnouff.net/
       - title: Linkding
         icon: hl-linkding
         url: https://linkding.jsnouff.net/

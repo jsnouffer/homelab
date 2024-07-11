@@ -1,0 +1,251 @@
+hoarder:
+  enabled: true
+  global:
+    fullnameOverride: hoarder
+  defaultPodOptions:
+    automountServiceAccountToken: false
+    dnsConfig:
+      options:
+        - name: ndots
+          value: "3"
+  controllers:
+    hoarder:
+      type: deployment
+      containers:
+        main:
+          image:
+            repository: ghcr.io/hoarder-app/hoarder-web
+            tag: latest # managed by ArgoCD Image Updater
+            pullPolicy: IfNotPresent
+          env:
+            REDIS_HOST: redis-master
+            NEXTAUTH_URL: https://hoarder.jsnouff.net
+            MEILI_ADDR: http://hoarder-meilisearch:7700
+            DATA_DIR: /data
+            NEXTAUTH_SECRET:
+              valueFrom:
+                secretKeyRef:
+                  key: nextauth-secret
+                  name: hoarder-secret-keys
+            MEILI_MASTER_KEY:
+              valueFrom:
+                secretKeyRef:
+                  key: meili-master-key
+                  name: hoarder-secret-keys
+          resources:
+            limits:
+              cpu: 300m
+              memory: 256Mi
+            requests:
+              cpu: 25m
+              memory: 64Mi
+          probes:
+            liveness: &tcp-probe
+              enabled: true
+              type: TCP
+              spec:
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                timeoutSeconds: 1
+                failureThreshold: 3
+            readiness: *tcp-probe
+        workers:
+          image:
+            repository: ghcr.io/hoarder-app/hoarder-workers
+            tag: latest # managed by ArgoCD Image Updater
+            pullPolicy: IfNotPresent
+          env:
+            REDIS_HOST: redis-master
+            MEILI_ADDR: http://hoarder-meilisearch:7700
+            BROWSER_WEB_URL: http://hoarder-chrome:9222
+            DATA_DIR: /data
+            MEILI_MASTER_KEY:
+              valueFrom:
+                secretKeyRef:
+                  key: meili-master-key
+                  name: hoarder-secret-keys
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+    chrome:
+      type: deployment
+      containers:
+        main:
+          image:
+            repository: gcr.io/zenika-hub/alpine-chrome
+            tag: latest # managed by ArgoCD Image Updater
+            pullPolicy: IfNotPresent
+          args:
+            - --no-sandbox
+            - --disable-gpu
+            - --disable-dev-shm-usage
+            - --remote-debugging-address=0.0.0.0
+            - --remote-debugging-port=9222
+            - --hide-scrollbars
+          probes: &http-probes
+            liveness: &http-probe
+              enabled: true
+              type: HTTP
+              path: /
+              spec:
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                timeoutSeconds: 1
+                failureThreshold: 3
+            readiness: *http-probe
+          resources:
+            limits:
+              cpu: 500m
+              memory: 256Mi
+            requests:
+              cpu: 25m
+              memory: 64Mi
+    meilisearch:
+      type: deployment
+      containers:
+        main:
+          image:
+            repository: getmeili/meilisearch
+            tag: latest # managed by ArgoCD Image Updater
+            pullPolicy: IfNotPresent
+          env:
+            MEILI_NO_ANALYTICS: "true"
+            MEILI_MASTER_KEY:
+              valueFrom:
+                secretKeyRef:
+                  key: meili-master-key
+                  name: hoarder-secret-keys
+          probes: *http-probes
+          resources:
+            limits:
+              cpu: 50m
+              memory: 48Mi
+            requests:
+              cpu: 5m
+              memory: 24Mi
+  service:
+    hoarder:
+      controller: hoarder
+      annotations:
+        traefik.ingress.kubernetes.io/service.serversscheme: http
+      ports:
+        http:
+          port: &port 3000
+    chrome:
+      controller: chrome
+      ports:
+        http:
+          port: 9222
+    meilisearch:
+      controller: meilisearch
+      ports:
+        http:
+          port: 7700
+  ingress:
+    hoarder:
+      enabled: true
+      hosts:
+        - host: &domain hoarder.jsnouff.net
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: hoarder
+                port: *port
+      tls:
+        - hosts:
+            - *domain
+          secretName: tls-secret
+      annotations:
+        cert-manager.io/cluster-issuer: lets-encrypt-production
+        ingress.kubernetes.io/force-ssl-redirect: "true"
+        ingress.kubernetes.io/protocol: http
+        kubernetes.io/ingress.class: traefik
+        kubernetes.io/tls-acme: "true"
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls: "true"
+  persistence:
+    data:
+      enabled: true
+      accessMode: ReadWriteOnce
+      size: 64Mi
+      advancedMounts:
+        hoarder:
+          main:
+            - path: /data
+          workers:
+            - path: /data
+    meilisearch-data:
+      enabled: true
+      accessMode: ReadWriteOnce
+      size: 64Mi
+      advancedMounts:
+        meilisearch:
+          main:
+            - path: /meili_data
+
+redis:
+  fullnameOverride: redis
+  architecture: standalone
+  auth:
+    enabled: false
+  pdb:
+    create: false
+  master:
+    resources:
+      requests:
+        cpu: 25m
+        memory: 16Mi
+      limits:
+        cpu: 250m
+        memory: 64Mi
+    persistence:
+      size: 1Gi
+
+common:
+  resticBackups:
+    enabled: true
+    targets:
+      hoarder-data:
+        pvcName: hoarder-data
+        bucket: hoarder-backup
+        restoreVersion: latest
+        tags:
+          - "{{ $.Values.hoarder.controllers.hoarder.containers.main.image.repository }}:{{ $.Values.hoarder.controllers.hoarder.containers.main.image.tag }}"
+          - "{{ $.Values.hoarder.controllers.hoarder.containers.workers.image.repository }}:{{ $.Values.hoarder.controllers.hoarder.containers.workers.image.tag }}"
+        affinity:
+          podAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/component
+                    operator: In
+                    values:
+                    - hoarder
+                topologyKey: kubernetes.io/hostname
+      hoarder-meilisearch-data:
+        pvcName: hoarder-meilisearch-data
+        bucket: hoarder-meilisearch-backup
+        restoreVersion: latest
+        tags:
+          - "{{ $.Values.hoarder.controllers.meilisearch.containers.main.image.repository }}:{{ $.Values.hoarder.controllers.meilisearch.containers.main.image.tag }}"
+        affinity:
+          podAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/component
+                    operator: In
+                    values:
+                    - meilisearch
+                topologyKey: kubernetes.io/hostname
