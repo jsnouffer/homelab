@@ -1,0 +1,246 @@
+archivebox:
+  enabled: true
+  global:
+    fullnameOverride: archivebox
+  defaultPodOptions:
+    automountServiceAccountToken: false
+    dnsConfig:
+      options:
+        - name: ndots
+          value: "3"
+  controllers:
+    archivebox:
+      type: deployment
+      containers:
+        main:
+          image: &archivebox-image
+            repository: archivebox/archivebox
+            tag: latest # overriden by ArgoCD helm parameters file
+            pullPolicy: IfNotPresent
+          env:
+            PUID: "911"
+            PGID: "911"
+            TIMEOUT: "60"
+            ALLOWED_HOSTS: "*"
+            PUBLIC_INDEX: "True"
+            PUBLIC_SNAPSHOTS: "True"
+            PUBLIC_ADD_VIEW: "False"
+            CHECK_SSL_VALIDITY: "False"
+            SAVE_ARCHIVE_DOT_ORG: "False"
+            MEDIA_MAX_SIZE: 750m
+            SEARCH_BACKEND_ENGINE: sonic
+            SEARCH_BACKEND_HOST_NAME: archivebox-sonic
+            SEARCH_BACKEND_PASSWORD:
+              valueFrom:
+                secretKeyRef:
+                  key: backend-password
+                  name: archivebox-sonic-credentials
+            ADMIN_USERNAME:
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: archivebox-admin-credentials
+            ADMIN_PASSWORD:
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: archivebox-admin-credentials
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 512Mi
+            requests:
+              cpu: 50m
+              memory: 128Mi
+          probes:
+            liveness: &http-probe
+              enabled: true
+              type: HTTP
+              path: /
+              spec:
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                timeoutSeconds: 1
+                failureThreshold: 3
+            readiness: *http-probe
+        scheduler:
+          image: *archivebox-image
+          args:
+            - schedule
+            - --foreground
+            - --update
+            - --every=day
+          env:
+            PUID: "911"
+            PGID: "911"
+            TIMEOUT: "120"  # use a higher timeout than the main container to give slow tasks more time when retrying
+    sonic:
+      type: deployment
+      initContainers:
+        copy-configs:
+          image:
+            repository: busybox
+            tag: latest
+            pullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - |
+              cp /cm/sonic.cfg /config
+      containers:
+        main:
+          image:
+            repository: valeriansaliou/sonic
+            tag: latest # overriden by ArgoCD helm parameters file
+            pullPolicy: IfNotPresent
+          command:
+            - sonic
+            - -c
+            - /config/sonic.cfg
+          env:
+            SEARCH_BACKEND_PASSWORD:
+              valueFrom:
+                secretKeyRef:
+                  key: backend-password
+                  name: archivebox-sonic-credentials
+          probes:
+            liveness: &tcp-probe
+              enabled: true
+              type: TCP
+              spec:
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                timeoutSeconds: 1
+                failureThreshold: 3
+            readiness: *tcp-probe
+        debug:
+          image:
+            repository: busybox
+            tag: latest
+            pullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - |
+              sleep infinity
+          resources:
+            limits:
+              cpu: 10m
+              memory: 16Mi
+            requests:
+              cpu: 1m
+              memory: 6Mi
+  service:
+    archivebox:
+      controller: archivebox
+      annotations:
+        traefik.ingress.kubernetes.io/service.serversscheme: http
+      ports:
+        http:
+          port: &port 8000
+    sonic:
+      controller: sonic
+      ports:
+        http:
+          port: 1491
+  ingress:
+    archivebox:
+      enabled: true
+      hosts:
+        - host: &domain archivebox.jsnouff.net
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: archivebox
+                port: *port
+      tls:
+        - hosts:
+            - *domain
+          secretName: tls-secret
+      annotations:
+        cert-manager.io/cluster-issuer: lets-encrypt-production
+        ingress.kubernetes.io/force-ssl-redirect: "true"
+        ingress.kubernetes.io/protocol: http
+        kubernetes.io/ingress.class: traefik
+        kubernetes.io/tls-acme: "true"
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls: "true"
+  persistence:
+    data:
+      enabled: true
+      accessMode: ReadWriteOnce
+      size: 5Gi
+      advancedMounts:
+        archivebox:
+          main:
+            - path: /data
+          scheduler:
+            - path: /data
+    sonic-data:
+      enabled: true
+      accessMode: ReadWriteOnce
+      size: 64Mi
+      advancedMounts:
+        sonic:
+          copy-configs:
+            - path: /config
+              subPath: config
+          main:
+            - path: /var/lib/sonic/store
+              subPath: store
+            - path: /config
+              subPath: config
+          debug:
+            - path: /data
+    sonic-config:
+      enabled: true
+      type: configMap
+      name: archivebox-sonic-config
+      advancedMounts:
+        sonic:
+          copy-configs:
+            - path: /cm
+
+common:
+  resticBackups:
+    enabled: true
+    targets:
+      archivebox-data:
+        pvcName: archivebox-data
+        bucket: archivebox-backup
+        restoreVersion: latest
+        tags:
+          - "{{ $.Values.archivebox.controllers.archivebox.containers.main.image.repository }}:{{ $.Values.archivebox.controllers.archivebox.containers.main.image.tag }}"
+        affinity:
+          podAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/component
+                    operator: In
+                    values:
+                    - archivebox
+                topologyKey: kubernetes.io/hostname
+      archivebox-sonic-data:
+        pvcName: archivebox-sonic-data
+        bucket: archivebox-sonic-backup
+        restoreVersion: latest
+        tags:
+          - "{{ $.Values.archivebox.controllers.sonic.containers.main.image.repository }}:{{ $.Values.archivebox.controllers.sonic.containers.main.image.tag }}"
+        affinity:
+          podAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/component
+                    operator: In
+                    values:
+                    - sonic
+                topologyKey: kubernetes.io/hostname

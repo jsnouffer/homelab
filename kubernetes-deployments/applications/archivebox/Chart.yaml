@@ -1,17 +1,13 @@
 apiVersion: v2
-name: hoarder
+name: archivebox
 version: 1.0.0
 dependencies:
   - name: app-template
     version: 3.2.1
     repository: https://bjw-s.github.io/helm-charts
-    alias: hoarder
-    condition: hoarder.enabled
-  - name: redis
-    version: 19.6.1
-    repository: oci://registry-1.docker.io/bitnamicharts
-    condition: hoarder.enabled
+    alias: archivebox
+    condition: archivebox.enabled
   - name: common
     version: ">0.0.0"
     repository: "file://../../../charts/common/"
-    condition: freshrss.enabled
+    condition: archivebox.enabled

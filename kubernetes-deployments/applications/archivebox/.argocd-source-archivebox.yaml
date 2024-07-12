@@ -1,0 +1,20 @@
+helm:
+  parameters:
+    - name: archivebox.controllers.archivebox.containers.main.image.repository
+      value: archivebox/archivebox
+      forcestring: true
+    - name: archivebox.controllers.archivebox.containers.main.image.tag
+      value: latest
+      forcestring: true
+    - name: archivebox.controllers.archivebox.containers.scheduler.image.repository
+      value: archivebox/archivebox
+      forcestring: true
+    - name: archivebox.controllers.archivebox.containers.scheduler.image.tag
+      value: latest
+      forcestring: true
+    - name: archivebox.controllers.sonic.containers.main.image.repository
+      value: valeriansaliou/sonic
+      forcestring: true
+    - name: archivebox.controllers.sonic.containers.main.image.tag
+      value: latest
+      forcestring: true

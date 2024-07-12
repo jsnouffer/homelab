@@ -1,0 +1,12 @@
+{{- with $.Values.archivebox }}
+{{- if .enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: archivebox-sonic-config
+data:
+  sonic.cfg: |
+{{ $.Files.Get "files/sonic.cfg" | indent 4 }}
+{{- end }}
+{{- end }}

@@ -135,6 +135,9 @@ sections:
   - name: Applications
     icon: fas fa-laptop
     items:
+      - title: ArchiveBox
+        icon: hl-archivebox
+        url: https://archivebox.jsnouff.net/
       - title: Argo Workflows
         icon: hl-argocd
         url: https://workflows.jsnouff.net/
@@ -147,9 +150,6 @@ sections:
       - title: FreshRSS
         icon: hl-freshrss
         url: https://freshrss.jsnouff.net/
-      - title: Hoarder
-        icon: hl-hoarder
-        url: https://hoarder.jsnouff.net/
       - title: Linkding
         icon: hl-linkding
         url: https://linkding.jsnouff.net/

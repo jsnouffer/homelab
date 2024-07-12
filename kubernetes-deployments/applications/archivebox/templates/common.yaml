@@ -1,4 +1,4 @@
-{{- with $.Values.hoarder }}
+{{- with $.Values.archivebox }}
 {{- if .enabled }}
 {{- include "common.all" $ -}}
 {{- end }}
