@@ -30,7 +30,7 @@ secret-stores:
     spec:
       provider:
         webhook:
-          url: "{{ .Values.infisical.url }}/api/v3/secrets/raw/{{`{{ .remoteRef.property }}`}}?environment={{ .Values.infisical.environment }}&secretPath={{`{{ .remoteRef.key }}`}}&workspaceId={{ .Values.infisical.workspaceId }}"
+          url: "{{$.Values.infisical.url}}/api/v3/secrets/raw/{{`{{ .remoteRef.property }}`}}?environment={{ .Values.infisical.environment }}&secretPath={{`{{ .remoteRef.key }}`}}&workspaceId={{ .Values.infisical.workspaceId }}"
           result:
             jsonPath: "$.secret.secretValue"
           headers:
@@ -39,9 +39,27 @@ secret-stores:
           secrets:
           - name: auth
             secretRef:
-              name: infisical-api-token
+              name: infisical-auth-token
+              namespace: "{{ $.Release.Namespace }}"
+  - name: infisical-login
+    kind: ClusterSecretStore
+    spec:
+      provider:
+        webhook:
+          method: POST
+          body: |
+            {{`{"clientId": "{{ .auth.clientId }}", "clientSecret": "{{ .auth.clientSecret }}"}`}}
+          headers:
+            Content-Type: application/json
+          result:
+            jsonPath: $.accessToken
+          url: "{{$.Values.infisical.url}}/api/v1/auth/universal-auth/login"
+          secrets:
+          - name: auth
+            secretRef:
+              name: infisical-universal-auth-credentials
               namespace: "{{ $.Release.Namespace }}"
 infisical:
   url: https://infisical.jsnouff.net
-  workspaceId: 65c90ea492aa91c0f3476280
+  workspaceId: 82fa305c-1602-47fa-b85e-a88cb6af8ed9
   environment: common

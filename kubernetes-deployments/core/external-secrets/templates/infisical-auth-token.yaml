@@ -1,0 +1,26 @@
+{{- with (index .Values "external-secrets") }}
+{{- if .enabled }}
+{{- if not .initialInstall }}
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: infisical-auth-token
+  namespace: {{ $.Release.Namespace }}
+spec:
+  data:
+  - remoteRef:
+      conversionStrategy: Default
+      decodingStrategy: None
+      key: token
+    secretKey: token
+  refreshInterval: 30m
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: infisical-login
+  target:
+    creationPolicy: Owner
+    deletionPolicy: Delete
+{{- end }}
+{{- end }}
+{{- end }}
