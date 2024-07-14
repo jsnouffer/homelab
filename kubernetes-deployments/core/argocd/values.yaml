@@ -126,13 +126,6 @@ argocd-apps:
       destinations: *app-projects-destinations
       clusterResourceWhitelist: *app-projects-cluster-resource-whitelist
       namespaceResourceWhitelist: *app-projects-ns-resource-whitelist
-    k3s:
-      description: Project for storage services
-      finalizers: []
-      sourceRepos: *app-projects-source-repos
-      destinations: *app-projects-destinations
-      clusterResourceWhitelist: *app-projects-cluster-resource-whitelist
-      namespaceResourceWhitelist: *app-projects-ns-resource-whitelist
   applicationsets:
     applications:
       goTemplate: true
@@ -339,38 +332,6 @@ argocd-apps:
       syncPolicy:
         preserveResourcesOnDeletion: true
         applicationsSync: create-update
-
-    k3s:
-      goTemplate: true
-      generators:
-      - git:
-          repoURL: &gitops-repo-url git@github.com:jsnouffer/homelab.git
-          revision: &gitops-repo-revision HEAD
-          directories:
-          - path: kubernetes-deployments/k3s/*
-      template:
-        metadata:
-          name: 'k3s-{{ base .path.path }}'
-          labels: {}
-          annotations:
-            argocd.argoproj.io/manifest-generate-paths: .
-        spec:
-          project: k3s
-          source:
-            repoURL: *gitops-repo-url
-            targetRevision: *gitops-repo-revision
-            path: '{{ .path.path }}'
-            helm: *appsets-helm
-          destination:
-            name: k3s
-            namespace: '{{ base .path.path }}'
-          revisionHistoryLimit: 5
-          syncPolicy:
-            syncOptions: *appsets-sync-options
-          ignoreDifferences: []
-      syncPolicy:
-        preserveResourcesOnDeletion: true
-        applicationsSync: sync
 
 argocd-image-updater:
   enabled: true
