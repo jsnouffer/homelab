@@ -16,10 +16,10 @@ tautulli:
           resources:
             requests:
               cpu: 25m
-              memory: 200Mi
+              memory: 300Mi
             limits:
               cpu: 250m
-              memory: 500Mi
+              memory: 650Mi
   service:
     main:
       ports:
