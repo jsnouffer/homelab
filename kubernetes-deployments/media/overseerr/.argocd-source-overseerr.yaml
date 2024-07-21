@@ -4,5 +4,5 @@ helm:
       value: lscr.io/linuxserver/overseerr
       forcestring: true
     - name: overseerr.controllers.main.containers.main.image.tag
-      value: v1.33.2-ls112
+      value: v1.33.2-ls113
       forcestring: true
