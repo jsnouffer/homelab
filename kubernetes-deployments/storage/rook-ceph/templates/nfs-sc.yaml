@@ -1,0 +1,37 @@
+{{- with (index .Values "rook-ceph") }}
+{{- if .enabled }}
+{{- with $.Values.cephNFS }}
+{{- if .enabled }}
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: ceph-nfs
+provisioner: rook-ceph.nfs.csi.ceph.com
+parameters:
+  nfsCluster: {{ .name }}
+  server: {{ $.Release.Namespace }}-nfs-{{ .name }}-a
+  clusterID: {{ $.Release.Namespace }}
+
+  {{- with (index $.Values "rook-ceph-cluster").cephFileSystems }}
+  {{- $fs := . | first }}
+  fsName: {{ $fs.name }}
+  pool: {{ $fs.name }}-{{ ($fs.spec.dataPools | first).name }}
+  {{- end }}
+
+  csi.storage.k8s.io/provisioner-secret-name: rook-csi-cephfs-provisioner
+  csi.storage.k8s.io/provisioner-secret-namespace: {{ $.Release.Namespace }}
+  csi.storage.k8s.io/controller-expand-secret-name: rook-csi-cephfs-provisioner
+  csi.storage.k8s.io/controller-expand-secret-namespace: {{ $.Release.Namespace }}
+  csi.storage.k8s.io/node-stage-secret-name: rook-csi-cephfs-node
+  csi.storage.k8s.io/node-stage-secret-namespace: {{ $.Release.Namespace }}
+
+reclaimPolicy: Delete
+allowVolumeExpansion: true
+mountOptions:
+  # uncomment the following line for debugging
+  #- debug
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}

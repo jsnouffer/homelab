@@ -1,0 +1,27 @@
+{{- with (index .Values "rook-ceph") }}
+{{- if .enabled }}
+{{- with $.Values.cephNFS }}
+{{- if .enabled }}
+---
+apiVersion: ceph.rook.io/v1
+kind: CephNFS
+metadata:
+  name: {{ .name }}
+  namespace: {{ $.Release.Namespace }}
+spec:
+  server:
+    active: 1
+
+    # resources:
+    #   limits:
+    #     cpu: "1"
+    #     memory: "2Gi"
+    #   requests:
+    #     cpu: 100m
+    #     memory: "1Gi"
+
+    logLevel: NIV_INFO
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}

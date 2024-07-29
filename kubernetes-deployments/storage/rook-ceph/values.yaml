@@ -5,6 +5,8 @@ rook-ceph:
       - key: nvidia.com/gpu
         operator: Exists
         effect: NoSchedule
+    nfs:
+      enabled: true
 rook-ceph-cluster:
   enabled: true
   toolbox:
@@ -172,3 +174,7 @@ rook-ceph-cluster:
           csi.storage.k8s.io/node-stage-secret-namespace: "{{ .Release.Namespace }}"
           csi.storage.k8s.io/fstype: ext4
   cephObjectStores: {}
+
+cephNFS:
+  enabled: true
+  name: ceph-nfs
