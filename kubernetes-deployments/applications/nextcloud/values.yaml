@@ -1,0 +1,148 @@
+nextcloud:
+  enabled: true
+  nextcloud:
+    host: &host nextcloud.jsnouff.net
+    existingSecret:
+      enabled: true
+      secretName: nextcloud-admin-credentials
+      usernameKey: username
+      passwordKey: password
+    extraEnv:
+      - name: OVERWRITEHOST
+        value: *host
+      - name: TRUSTED_PROXIES
+        value: *host
+      - name: OVERWRITECLIURL
+        value: https://nextcloud.jsnouff.net
+  persistence:
+    enabled: true
+    size: 2Gi
+  startupProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    failureThreshold: 30
+  ingress:
+    enabled: true
+    annotations:
+      cert-manager.io/cluster-issuer: lets-encrypt-production
+      ingress.kubernetes.io/force-ssl-redirect: "true"
+      ingress.kubernetes.io/protocol: http
+      kubernetes.io/ingress.class: traefik
+      kubernetes.io/tls-acme: "true"
+      traefik.ingress.kubernetes.io/router.entrypoints: websecure
+      traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+      traefik.ingress.kubernetes.io/router.tls: "true"
+      traefik.ingress.kubernetes.io/custom-response-headers: "Access-Control-Allow-Origin:*||Access-Control-Allow-Methods:GET,POST,OPTIONS||Access-Control-Allow-Headers:DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range||Access-Control-Expose-Headers:Content-Length,Content-Range"
+      traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
+    tls:
+      - hosts:
+          - *host
+        secretName: tls-secret
+
+  internalDatabase:
+    enabled: false
+  externalDatabase:
+    enabled: true
+    type: postgresql
+    host: nextcloud-postgresql:5432
+    existingSecret:
+      enabled: true
+      secretName: &db-secret postgres-credentials
+      usernameKey: username
+      passwordKey: password
+
+  phpClientHttpsFix:
+    enabled: true
+
+  trustedDomains:
+    - *host
+
+  postgresql:
+    enabled: true
+    global:
+      postgresql:
+        auth:
+          username: nextcloud
+          existingSecret: *db-secret
+          secretKeys:
+            adminPasswordKey: postgres-password
+            userPasswordKey: password
+            replicationPasswordKey: replication-password
+    primary:
+      resources:
+        requests:
+          cpu: 20m
+          memory: 32Mi
+        limits:
+          cpu: 250m
+          memory: 300Mi
+      persistence:
+        enabled: true
+        size: 1Gi
+      pdb:
+        create: false
+    serviceAccount:
+      create: false
+  redis:
+    enabled: true
+    auth:
+      existingSecret: redis-credentials
+      existingSecretPasswordKey: password
+    architecture: standalone
+    master:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 16Mi
+        limits:
+          cpu: 100m
+          memory: 64Mi
+      persistence:
+        size: 2Gi
+      pdb:
+        create: false
+
+common:
+  resticBackups:
+    enabled: true
+    cron:
+      enabled: true
+      schedule: "0 * * * *" # Every hour
+    targets:
+      nextcloud-data:
+        pvcName: nextcloud-nextcloud
+        bucket: nextcloud-data-backup
+        restoreVersion: latest
+        tags:
+          - "nextcloud:{{ $.Subcharts.nextcloud.Chart.AppVersion }}"
+        affinity:
+          podAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - nextcloud
+                topologyKey: kubernetes.io/hostname
+      nextcloud-db:
+        pvcName: data-nextcloud-postgresql-0
+        bucket: nextcloud-db-backup
+        restoreVersion: latest
+        tags:
+          - "postgresql:{{ $.Subcharts.nextcloud.Subcharts.postgresql.Chart.AppVersion }}"
+        affinity:
+          podAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: statefulset.kubernetes.io/pod-name
+                    operator: In
+                    values:
+                    - nextcloud-postgresql-0
+                topologyKey: kubernetes.io/hostname
