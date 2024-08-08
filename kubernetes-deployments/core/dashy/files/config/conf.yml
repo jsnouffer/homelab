@@ -153,6 +153,9 @@ sections:
       - title: Linkding
         icon: hl-linkding
         url: https://linkding.jsnouff.net/
+      - title: Nextcloud
+        icon: hl-nextcloud
+        url: https://nextcloud.jsnouff.net/
       - title: Netbox
         icon: hl-netbox
         url: https://netbox.jsnouff.net/
