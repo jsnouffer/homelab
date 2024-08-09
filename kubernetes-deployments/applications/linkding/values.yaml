@@ -19,11 +19,30 @@ linkding:
             limits:
               cpu: 250m
               memory: 400Mi
+          probes:
+            liveness: &lr-probe
+              enabled: true
+              type: &probe-type TCP
+              spec:
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                timeoutSeconds: 1
+                failureThreshold: 3
+            readiness: *lr-probe
+            startup:
+              enabled: true
+              type: *probe-type
+              spec:
+                periodSeconds: 5
+                timeoutSeconds: 1
+                successThreshold: 1
+                failureThreshold: 30
   service:
     main:
+      controller: main
       ports:
         http:
-          port: 9090
+          port: &port 9090
   ingress:
     main:
       enabled: true
@@ -33,7 +52,8 @@ linkding:
             - path: /
               pathType: Prefix
               service:
-                name: main
+                name: linkding
+                port: *port
       tls:
         - hosts:
             - *domain

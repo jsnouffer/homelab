@@ -23,6 +23,7 @@ calibre:
           probes:
             liveness: &lr-probe
               enabled: true
+              port: &server-port 8080
               type: &probe-type HTTP
               path: &probe-path /
               spec: &lr-probe-spec
@@ -33,6 +34,7 @@ calibre:
             readiness: *lr-probe
             startup:
               enabled: true
+              port: *server-port
               type: *probe-type
               path: *probe-path
               spec: &startup-probe-spec
@@ -76,9 +78,10 @@ calibre:
           fsGroup: 1000
   service:
     main:
+      controller: main
       ports:
         http:
-          port: 8080
+          port: *server-port
         web:
           port: *web-port
   ingress:
@@ -90,14 +93,15 @@ calibre:
             - path: /
               pathType: Prefix
               service:
-                name: main
+                name: calibre
+                port: *server-port
         - host: &web-domain calibre-web.jsnouff.net
           paths:
             - path: /
               pathType: Prefix
               service:
-                name: main
-                port: web
+                name: calibre
+                port: *web-port
       tls:
         - hosts:
             - *backend-domain

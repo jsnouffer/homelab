@@ -28,9 +28,6 @@ plex-meta-manager:
           runAsUser: 1000
           runAsGroup: 1000
           fsGroup: 1000
-  service:
-    main:
-      enabled: false
   persistence:
     config:
       enabled: true
@@ -43,8 +40,7 @@ plex-meta-manager:
       advancedMounts:
         main:
           main:
-            - name: config-secret
-              path: /config/config.yml
+            - path: /config/config.yml
               subPath: config.yml
     libraries-config:
       enabled: true
@@ -53,9 +49,7 @@ plex-meta-manager:
       advancedMounts:
         main:
           main:
-            - name: pmm-libraries-config
-              path: /config/movies.yaml
+            - path: /config/movies.yaml
               subPath: movies.yaml
-            - name: pmm-libraries-config
-              path: /config/tv.yaml
+            - path: /config/tv.yaml
               subPath: tv.yaml

@@ -5,9 +5,9 @@ icon: https://argoproj.github.io/argo-workflows/assets/logo.png
 sources:
   - https://github.com/argoproj/argo-helm/tree/main/charts/argo-workflows
   - https://github.com/argoproj/argo-workflows
-version: 3.5.5
+version: 3.5.10
 dependencies:
   - name: argo-workflows
-    version: 0.41.1
+    version: 0.41.14
     repository: https://argoproj.github.io/argo-helm
     condition: argo-workflows.enabled

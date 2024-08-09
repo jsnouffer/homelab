@@ -22,10 +22,12 @@ wikijs:
                   name: &db-secret db-credentials
           probes:
             liveness: &lr-probe
+              enabled: true
               type: &probe-type HTTP
               path: &probe-path /healthz
             readiness: *lr-probe
             startup:
+              enabled: true
               type: *probe-type
               path: *probe-path
               spec:
@@ -36,9 +38,10 @@ wikijs:
                 failureThreshold: 60
   service:
     main:
+      controller: main
       ports:
         http:
-          port: 3000
+          port: &port 3000
   ingress:
     main:
       enabled: true
@@ -48,7 +51,8 @@ wikijs:
             - path: /
               pathType: Prefix
               service:
-                name: main
+                name: wikijs
+                port: *port
       tls:
         - hosts:
             - *domain

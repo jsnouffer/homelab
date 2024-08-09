@@ -7,7 +7,7 @@ labeller:
 dp:
   image:
     repository: rocm/k8s-device-plugin
-    tag: "1.25.2.7"
+    tag: "1.25.2.8"
   resources:
     requests:
       cpu: 10m
@@ -19,7 +19,7 @@ dp:
 lbl:
   image:
     repository: rocm/k8s-device-plugin
-    tag: "labeller-1.25.2.7"
+    tag: "labeller-1.25.2.8"
   resources:
     requests:
       cpu: 10m

@@ -21,6 +21,10 @@ spec:
   target:
     creationPolicy: Owner
     deletionPolicy: Delete
+    template:
+      metadata:
+        labels:
+          external-secrets.io/type: webhook
 {{- end }}
 {{- end }}
 {{- end }}

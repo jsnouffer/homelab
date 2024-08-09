@@ -28,11 +28,30 @@ sabnzbd:
             requests:
               cpu: 500m
               memory: 1Gi
+          probes:
+            liveness: &lr-probe
+              enabled: true
+              type: &probe-type TCP
+              spec:
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                timeoutSeconds: 1
+                failureThreshold: 3
+            readiness: *lr-probe
+            startup:
+              enabled: true
+              type: *probe-type
+              spec:
+                periodSeconds: 5
+                timeoutSeconds: 1
+                successThreshold: 1
+                failureThreshold: 30
   service:
     main:
+      controller: main
       ports:
         http:
-          port: 8080
+          port: &port 8080
   ingress:
     main:
       enabled: true
@@ -42,7 +61,8 @@ sabnzbd:
             - path: /
               pathType: Prefix
               service:
-                name: main
+                name: sabnzbd
+                port: *port
       tls:
         - hosts:
             - *domain
@@ -70,8 +90,7 @@ sabnzbd:
       advancedMounts:
         main:
           copy-configs:
-            - name: config-secret
-              path: /cm/sabnzbd.ini
+            - path: /cm/sabnzbd.ini
               subPath: sabnzbd.ini
     downloads:
       enabled: true

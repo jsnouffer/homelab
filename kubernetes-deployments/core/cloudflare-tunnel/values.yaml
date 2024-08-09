@@ -28,8 +28,3 @@ cloudflare-tunnel:
             limits:
               cpu: 100m
               memory: 100Mi
-  service:
-    main:
-      enabled: false
-
-

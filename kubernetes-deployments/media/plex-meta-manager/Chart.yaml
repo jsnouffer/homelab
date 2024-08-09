@@ -3,7 +3,7 @@ name: plex-meta-manager
 version: 1.0.0
 dependencies:
   - name: app-template
-    version: 2.6.0
+    version: 3.3.2
     repository: https://bjw-s.github.io/helm-charts
     alias: plex-meta-manager
     condition: plex-meta-manager.enabled

@@ -20,11 +20,30 @@ bazarr:
             limits:
               cpu: 700m
               memory: 600Mi
+          probes:
+            liveness: &lr-probe
+              enabled: true
+              type: &probe-type TCP
+              spec:
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                timeoutSeconds: 1
+                failureThreshold: 3
+            readiness: *lr-probe
+            startup:
+              enabled: true
+              type: *probe-type
+              spec:
+                periodSeconds: 5
+                timeoutSeconds: 1
+                successThreshold: 1
+                failureThreshold: 30
   service:
     main:
+      controller: main
       ports:
         http:
-          port: 6767
+          port: &port 6767
   ingress:
     main:
       enabled: true
@@ -34,7 +53,8 @@ bazarr:
             - path: /
               pathType: Prefix
               service:
-                name: main
+                name: bazarr
+                port: *port
       tls:
         - hosts:
             - *domain
