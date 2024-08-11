@@ -1,0 +1,8 @@
+helm:
+  parameters:
+    - name: nzbhydra2.controllers.main.containers.main.image.repository
+      value: lscr.io/linuxserver/nzbhydra2
+      forcestring: true
+    - name: nzbhydra2.controllers.main.containers.main.image.tag
+      value: 5.3.8
+      forcestring: true

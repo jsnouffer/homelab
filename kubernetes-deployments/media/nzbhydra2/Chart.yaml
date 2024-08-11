@@ -1,8 +1,12 @@
 apiVersion: v2
 name: nzbhydra2
 version: 1.0.0
-appVersion: 5.3.8
 dependencies:
+  - name: app-template
+    version: 3.3.2
+    repository: https://bjw-s.github.io/helm-charts
+    alias: nzbhydra2
+    condition: nzbhydra2.enabled
   - name: common
     version: ">0.0.0"
     repository: "file://../../../charts/common/"

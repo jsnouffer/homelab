@@ -58,6 +58,11 @@ ghReleaseImageUpdater:
       gitopsRepo:
         filePath: media/lidarr/.argocd-source-lidarr.yaml
         yamlPath: ".helm.parameters[1].value"
+    nzbhydra2:
+      ghRepo: linuxserver/docker-nzbhydra2
+      gitopsRepo:
+        filePath: media/nzbhydra2/.argocd-source-nzbhydra2.yaml
+        yamlPath: ".helm.parameters[1].value"
     ombi:
       ghRepo: linuxserver/docker-ombi
       gitopsRepo:
