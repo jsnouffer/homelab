@@ -4,5 +4,5 @@ helm:
       value: lscr.io/linuxserver/ombi
       forcestring: true
     - name: ombi.controllers.main.containers.main.image.tag
-      value: v4.44.1-ls197
+      value: v4.44.1-ls198
       forcestring: true
