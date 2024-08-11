@@ -31,6 +31,7 @@ stable-diffusion:
               cd /extensions
               git -C stable-diffusion-webui-state pull || git clone https://github.com/ilian6806/stable-diffusion-webui-state.git
               git -C sd-webui-prompt-all-in-one pull || git clone https://github.com/Physton/sd-webui-prompt-all-in-one.git
+              git -C sd-webui-animatediff pull || git clone https://github.com/continue-revolution/sd-webui-animatediff.git
       containers:
         main:
           image: *main-container
@@ -130,6 +131,8 @@ stable-diffusion:
           main:
             - path: /app/models
               subPath: stable-diffusion
+            - path: /app/motion-modules
+              subPath: sd-animatediff
     stable-diffusion-config:
       enabled: true
       type: configMap
