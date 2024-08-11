@@ -7,8 +7,8 @@ bazarr:
       containers:
         main:
           image:
-            repository: linuxserver/bazarr
-            tag: 1.4.3-development
+            repository: lscr.io/linuxserver/bazarr
+            tag: latest # managed by ArgoCD Image Updater
           env:
             PUID: "1000"
             PGID: "1000"
@@ -94,6 +94,8 @@ common:
         pvcName: bazarr-config
         bucket: "b2:jsnouff-bazarr"
         restoreVersion: latest
+        tags:
+          - "{{ $.Values.bazarr.controllers.main.containers.main.image.repository }}:{{ $.Values.bazarr.controllers.main.containers.main.image.tag }}"
         affinity:
           podAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:

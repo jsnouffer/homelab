@@ -43,6 +43,11 @@ ghReleaseImageUpdater:
     basePath: kubernetes-deployments/
 
   applications:
+    bazarr:
+      ghRepo: linuxserver/docker-bazarr
+      gitopsRepo:
+        filePath: media/bazarr/.argocd-source-bazarr.yaml
+        yamlPath: ".helm.parameters[1].value"
     calibre:
       ghRepo: linuxserver/docker-calibre
       gitopsRepo:

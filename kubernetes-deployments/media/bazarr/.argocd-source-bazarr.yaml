@@ -1,0 +1,8 @@
+helm:
+  parameters:
+    - name: bazarr.controllers.main.containers.main.image.repository
+      value: lscr.io/linuxserver/bazarr
+      forcestring: true
+    - name: bazarr.controllers.main.containers.main.image.tag
+      value: 1.4.3-development
+      forcestring: true
