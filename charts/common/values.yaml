@@ -49,7 +49,7 @@ resticBackups:
     schedule: "0 0 * * 0" # At 00:00 on Sunday
     keepDaily: 14
     keepWeekly: 4
-    keepMonthly: 6
+    keepMonthly: 2
   cron:
     enabled: true
     schedule: "0 */12 * * *" # Every 12 hours
