@@ -129,6 +129,9 @@ sections:
       - title: Cilium Hubble
         icon: hl-cilium
         url: https://hubble.jsnouff.net/
+      - title: Grafana
+        icon: hl-grafana
+        url: https://grafana.jsnouff.net/
       - title: Traefik
         icon: hl-traefik
         url: https://traefik.jsnouff.net/dashboard

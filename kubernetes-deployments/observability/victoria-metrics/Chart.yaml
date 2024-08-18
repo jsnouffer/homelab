@@ -1,0 +1,13 @@
+apiVersion: v2
+name: victoria-metrics
+home: https://docs.victoriametrics.com
+icon: https://avatars.githubusercontent.com/u/43720803?s=200&v=4
+sources:
+  - https://github.com/VictoriaMetrics/helm-charts
+  - https://github.com/VictoriaMetrics/VictoriaMetrics
+version: v1.102.1
+dependencies:
+  - name: victoria-metrics-k8s-stack
+    version: 0.25.0
+    repository: https://victoriametrics.github.io/helm-charts/
+    condition: victoria-metrics-k8s-stack.enabled

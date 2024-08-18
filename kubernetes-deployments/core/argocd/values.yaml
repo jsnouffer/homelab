@@ -12,10 +12,10 @@ argo-cd:
         value: America/New_York
     resources:
       limits:
-        cpu: 100m
+        cpu: 250m
         memory: 128Mi
       requests:
-        cpu: 10m
+        cpu: 25m
         memory: 48Mi
     ingress:
       enabled: true
@@ -114,6 +114,13 @@ argocd-apps:
       namespaceResourceWhitelist: *app-projects-ns-resource-whitelist
     media:
       description: Project for media services
+      finalizers: *app-projects-finalizers
+      sourceRepos: *app-projects-source-repos
+      destinations: *app-projects-destinations
+      clusterResourceWhitelist: *app-projects-cluster-resource-whitelist
+      namespaceResourceWhitelist: *app-projects-ns-resource-whitelist
+    observability:
+      description: Project for observability services
       finalizers: *app-projects-finalizers
       sourceRepos: *app-projects-source-repos
       destinations: *app-projects-destinations
@@ -290,6 +297,35 @@ argocd-apps:
             argocd-image-updater.argoproj.io/audiobookshelf.helm.image-tag: audiobookshelf.controllers.main.containers.main.image.tag
         spec:
           project: media
+          source:
+            repoURL: *gitops-repo-url
+            targetRevision: *gitops-repo-revision
+            path: '{{ .path.path }}'
+            helm: *appsets-helm
+          destination: *appsets-destination
+          revisionHistoryLimit: 5
+          syncPolicy:
+            syncOptions: *appsets-sync-options
+          ignoreDifferences: []
+      syncPolicy:
+        preserveResourcesOnDeletion: true
+        applicationsSync: sync
+    observability:
+      goTemplate: true
+      generators:
+      - git:
+          repoURL: *gitops-repo-url
+          revision: *gitops-repo-revision
+          directories:
+          - path: kubernetes-deployments/observability/*
+      template:
+        metadata:
+          name: '{{ base .path.path }}'
+          labels: {}
+          annotations:
+            argocd.argoproj.io/manifest-generate-paths: .
+        spec:
+          project: observability
           source:
             repoURL: *gitops-repo-url
             targetRevision: *gitops-repo-revision
