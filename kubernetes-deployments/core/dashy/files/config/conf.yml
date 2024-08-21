@@ -220,15 +220,18 @@ sections:
       - title: Audiobookshelf
         icon: hl-audiobookshelf
         url: https://audiobookshelf.jsnouff.net/
-      - title: Readarr (Audiobooks)
-        icon: hl-readarr
-        url: https://readarr.jsnouff.net/
       - title: Calibre
         icon: hl-calibre
         url: https://calibre.jsnouff.net/
       - title: Calibre Web
         icon: hl-calibre-web
         url: https://calibre-web.jsnouff.net/
+      - title: LazyLibrarian
+        icon: hl-lazylibrarian
+        url: https://lazylibrarian.jsnouff.net/
+      - title: Readarr
+        icon: hl-readarr
+        url: https://readarr.jsnouff.net/
   - name: AI/ML
     icon: fas fa-brain
     items:

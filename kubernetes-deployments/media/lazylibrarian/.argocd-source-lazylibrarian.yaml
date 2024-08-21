@@ -1,0 +1,8 @@
+helm:
+  parameters:
+    - name: lazylibrarian.controllers.main.containers.main.image.repository
+      value: lscr.io/linuxserver/lazylibrarian
+      forcestring: true
+    - name: lazylibrarian.controllers.main.containers.main.image.tag
+      value: 9186f2c3-ls77
+      forcestring: true
