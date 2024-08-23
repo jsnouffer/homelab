@@ -226,9 +226,6 @@ sections:
       - title: Calibre Web
         icon: hl-calibre-web
         url: https://calibre-web.jsnouff.net/
-      - title: LazyLibrarian
-        icon: hl-lazylibrarian
-        url: https://lazylibrarian.jsnouff.net/
       - title: Readarr
         icon: hl-readarr
         url: https://readarr.jsnouff.net/
