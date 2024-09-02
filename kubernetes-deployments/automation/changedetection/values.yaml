@@ -13,11 +13,12 @@ changedetection:
             PUID: "1000"
             PGID: "1000"
             HIDE_REFERER: "true"
-            PLAYWRIGHT_DRIVER_URL: ws://changedetection:3000/?stealth=1&--disable-web-security=true
+            PLAYWRIGHT_DRIVER_URL: ws://localhost:3000
+            LOGGER_LEVEL: DEBUG
           resources:
             requests:
               cpu: 10m
-              memory: 300Mi
+              memory: 250Mi
             limits:
               cpu: 150m
               memory: 500Mi
@@ -42,42 +43,34 @@ changedetection:
                 timeoutSeconds: 5
                 successThreshold: 1
                 failureThreshold: 30
-        playwright-chrome:
+        sockpuppetbrowser:
           image:
-            repository: browserless/chrome
+            repository: dgtlmoon/sockpuppetbrowser
             tag: latest # managed by ArgoCD Image Updater
           env:
             SCREEN_WIDTH: "1920"
             SCREEN_HEIGHT: "1024"
             SCREEN_DEPTH: "16"
-            ENABLE_DEBUGGER: "false"
-            PREBOOT_CHROME: "true"
-            CONNECTION_TIMEOUT: "300000"
-            MAX_CONCURRENT_SESSIONS: "10"
-            CHROME_REFRESH_TIME: "600000"
-            DEFAULT_BLOCK_ADS: "true"
-            DEFAULT_STEALTH: "true"
-            DEFAULT_IGNORE_HTTPS_ERRORS: "true"
+            MAX_CONCURRENT_CHROME_PROCESSES: "10"
+            LOG_LEVEL: DEBUG
           resources:
             requests:
-              cpu: 25m
-              memory: 1Gi
+              cpu: 100m
+              memory: 512Mi
             limits:
-              cpu: 500m
-              memory: 1750Mi
+              cpu: 1500m
+              memory: 1Gi
           probes:
-            liveness: &playwright-lr-probe
+            liveness: &sockpuppetbrowser-lr-probe
               enabled: true
-              port: &playwright-chrome-port 3000
-              type: *probe-type
-              path: *probe-path
+              port: &sockpuppetbrowser-port 3000
+              type: TCP
               spec: *lr-probe-spec
-            readiness: *playwright-lr-probe
+            readiness: *sockpuppetbrowser-lr-probe
             startup:
               enabled: true
-              port: *playwright-chrome-port
-              type: *probe-type
-              path: *probe-path
+              port: *sockpuppetbrowser-port
+              type: TCP
               spec: *startup-probe-spec
   service:
     main:
@@ -86,8 +79,8 @@ changedetection:
         http:
           port: &main-port 5000
           primary: true
-        playwright-chrome:
-          port: *playwright-chrome-port
+        sockpuppetbrowser:
+          port: *sockpuppetbrowser-port
   ingress:
     main:
       enabled: true
