@@ -47,10 +47,10 @@ resticBackups:
   prune:
     enabled: true
     schedule: "0 0 * * 0" # At 00:00 on Sunday
-    keepDaily: 14
+    keepDaily: 7
     keepWeekly: 4
     keepMonthly: 2
   cron:
     enabled: true
-    schedule: "0 */12 * * *" # Every 12 hours
+    schedule: "0 0 * * *" # Every 12 hours
   minioUrl: s3:http://barenas.jsnouff.net:9000
