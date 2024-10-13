@@ -4,5 +4,5 @@ helm:
       value: tautulli/tautulli
       forcestring: true
     - name: tautulli.controllers.main.containers.main.image.tag
-      value: v2.14.5
+      value: v2.14.6
       forcestring: true
