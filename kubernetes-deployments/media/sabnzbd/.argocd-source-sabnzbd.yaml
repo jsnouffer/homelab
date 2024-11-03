@@ -4,5 +4,5 @@ helm:
       value: lscr.io/linuxserver/sabnzbd
       forcestring: true
     - name: sabnzbd.controllers.main.containers.main.image.tag
-      value: 4.3.3-ls187
+      value: 4.3.3-ls188
       forcestring: true
