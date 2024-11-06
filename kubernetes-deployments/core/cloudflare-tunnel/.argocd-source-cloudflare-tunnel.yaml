@@ -4,5 +4,5 @@ helm:
     value: cloudflare/cloudflared
     forcestring: true
   - name: cloudflare-tunnel.controllers.main.containers.main.image.tag
-    value: 2024.11.0-amd64
+    value: 2024.11.0
     forcestring: true
