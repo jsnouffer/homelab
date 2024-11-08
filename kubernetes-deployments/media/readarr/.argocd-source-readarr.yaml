@@ -4,5 +4,5 @@ helm:
       value: lscr.io/linuxserver/readarr
       forcestring: true
     - name: readarr.controllers.main.containers.main.image.tag
-      value: 0.3.32-develop
+      value: 0.4.3-develop
       forcestring: true
