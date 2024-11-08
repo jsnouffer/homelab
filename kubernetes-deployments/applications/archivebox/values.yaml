@@ -11,6 +11,19 @@ archivebox:
   controllers:
     archivebox:
       type: deployment
+      initContainers:
+        init-db:
+          image:
+            repository: archivebox/archivebox
+            tag: latest # overriden by ArgoCD helm parameters file
+            pullPolicy: IfNotPresent
+          args:
+            - archivebox
+            - init
+            - --setup
+          env:
+            PUID: "911"
+            PGID: "911"
       containers:
         main:
           image: &archivebox-image
@@ -22,6 +35,7 @@ archivebox:
             PGID: "911"
             TIMEOUT: "60"
             ALLOWED_HOSTS: "*"
+            CSRF_TRUSTED_ORIGINS: https://archivebox.jsnouff.net
             PUBLIC_INDEX: "True"
             PUBLIC_SNAPSHOTS: "True"
             PUBLIC_ADD_VIEW: "False"
@@ -47,15 +61,15 @@ archivebox:
                   name: archivebox-admin-credentials
           resources:
             limits:
-              cpu: 1000m
-              memory: 512Mi
+              cpu: 1500m
+              memory: 1Gi
             requests:
               cpu: 50m
-              memory: 128Mi
+              memory: 512Mi
           probes:
             liveness: &http-probe
               enabled: true
-              type: HTTP
+              type: &probe-type HTTP
               path: /
               spec:
                 initialDelaySeconds: 0
@@ -63,6 +77,16 @@ archivebox:
                 timeoutSeconds: 1
                 failureThreshold: 3
             readiness: *http-probe
+            startup:
+              enabled: true
+              type: *probe-type
+              path: /
+              spec:
+                initialDelaySeconds: 10
+                periodSeconds: 5
+                timeoutSeconds: 1
+                successThreshold: 1
+                failureThreshold: 30
         scheduler:
           image: *archivebox-image
           args:
@@ -74,6 +98,13 @@ archivebox:
             PUID: "911"
             PGID: "911"
             TIMEOUT: "120"  # use a higher timeout than the main container to give slow tasks more time when retrying
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 50m
+              memory: 128Mi
     sonic:
       type: deployment
       initContainers:
@@ -175,6 +206,8 @@ archivebox:
       size: 5Gi
       advancedMounts:
         archivebox:
+          init-db:
+            - path: /data
           main:
             - path: /data
           scheduler:

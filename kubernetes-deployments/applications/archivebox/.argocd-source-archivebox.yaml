@@ -1,20 +1,26 @@
 helm:
   parameters:
+    - name: archivebox.controllers.archivebox.initContainers.init-db.image.repository
+      value: archivebox/archivebox
+      forcestring: true
+    - name: archivebox.controllers.archivebox.initContainers.init-db.image.tag
+      value: 0.8.5rc51
+      forcestring: true
     - name: archivebox.controllers.archivebox.containers.main.image.repository
       value: archivebox/archivebox
       forcestring: true
     - name: archivebox.controllers.archivebox.containers.main.image.tag
-      value: dev
+      value: 0.8.5rc51
       forcestring: true
     - name: archivebox.controllers.archivebox.containers.scheduler.image.repository
       value: archivebox/archivebox
       forcestring: true
     - name: archivebox.controllers.archivebox.containers.scheduler.image.tag
-      value: dev
+      value: 0.8.5rc51
       forcestring: true
     - name: archivebox.controllers.sonic.containers.main.image.repository
-      value: valeriansaliou/sonic
+      value: archivebox/sonic
       forcestring: true
     - name: archivebox.controllers.sonic.containers.main.image.tag
-      value: latest
+      value: 1.4.9
       forcestring: true
