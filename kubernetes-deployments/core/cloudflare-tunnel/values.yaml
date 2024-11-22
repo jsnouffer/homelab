@@ -6,6 +6,7 @@ cloudflare-tunnel:
     dnsPolicy: Default
   controllers:
     main:
+      replicas: 2
       containers:
         main:
           image:

@@ -31,7 +31,7 @@ external-dns-secondary:
           name: pihole-password
           key: pihole_password
   extraArgs:
-    - --pihole-server=https://pihole2.jsnouff.net
+    - --pihole-server=https://pihole2-admin.jsnouff.net
   resources:
     limits:
       cpu: 50m

@@ -11,6 +11,7 @@ llama:
   controllers:
     backend:
       type: deployment
+      replicas: 0
       pod:
         runtimeClassName: nvidia
         tolerations:
@@ -76,6 +77,7 @@ llama:
                 - SYS_RESOURCE
     webui:
       type: deployment
+      replicas: 0
       containers:
         main:
           image:

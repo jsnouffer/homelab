@@ -20,9 +20,6 @@ sections:
         description: APCUPSD UPS Network Monitor
         icon: hl-apc
         url: http://pve1.jsnouff.net:8080/cgi-bin/apcupsd/multimon.cgi
-      - title: Dockge (mandos)
-        icon: https://raw.githubusercontent.com/louislam/dockge/master/frontend/public/icon.svg
-        url: https://dockge.mandos.jsnouff.net
       - title: Dockge (octavia)
         icon: https://raw.githubusercontent.com/louislam/dockge/master/frontend/public/icon.svg
         url: https://dockge.octavia.jsnouff.net
@@ -64,10 +61,7 @@ sections:
         url: https://pihole.jsnouff.net/
       - title: Pi-hole (2)
         icon: hl-pihole
-        url: https://pihole2.jsnouff.net/
-      - title: Traefik (mandos)
-        icon: hl-traefik
-        url: https://mandos.jsnouff.net/
+        url: https://pihole2-admin.jsnouff.net/
       - title: Traefik (octavia)
         icon: hl-traefik
         url: https://octavia.jsnouff.net/
