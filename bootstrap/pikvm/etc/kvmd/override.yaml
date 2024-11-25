@@ -15,7 +15,7 @@ kvmd:
             wol_barenas:
                 type: wol
                 mac: 04:7c:16:3d:d2:c9
-            wol_davros:
+            wol_yarvell:
                 type: wol
                 mac: 40:b0:34:f7:17:08
             wol_calcula:
@@ -77,8 +77,8 @@ kvmd:
                 pin: 1
                 mode: output
                 switch: false
-            wol_davros:
-                driver: wol_davros
+            wol_yarvell:
+                driver: wol_yarvell
                 pin: 2
                 mode: output
                 switch: false
@@ -102,5 +102,5 @@ kvmd:
                 - ["#PiKVM", "pikvm_led|green", "restart_service_button|confirm|Service", "reboot_button|confirm|Reboot"]
                 - ["#oswin", ch0_led, ch0_button, "wol_oswin | WoL"]
                 - ["#barenas", ch1_led, ch1_button, "wol_barenas | WoL"]
-                - ["#davros", ch2_led, ch2_button, "wol_davros | WoL"]
+                - ["#yarvell", ch2_led, ch2_button, "wol_yarvell | WoL"]
                 - ["#calcula", ch3_led, ch3_button, "wol_calcula | WoL"]

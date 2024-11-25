@@ -112,6 +112,13 @@ argocd-apps:
       destinations: *app-projects-destinations
       clusterResourceWhitelist: *app-projects-cluster-resource-whitelist
       namespaceResourceWhitelist: *app-projects-ns-resource-whitelist
+    infrastructure:
+      description: Project for non-core infrastructure services
+      finalizers: *app-projects-finalizers
+      sourceRepos: *app-projects-source-repos
+      destinations: *app-projects-destinations
+      clusterResourceWhitelist: *app-projects-cluster-resource-whitelist
+      namespaceResourceWhitelist: *app-projects-ns-resource-whitelist
     media:
       description: Project for media services
       finalizers: *app-projects-finalizers
@@ -238,13 +245,6 @@ argocd-apps:
           labels: {}
           annotations:
             argocd.argoproj.io/manifest-generate-paths: .
-
-            argocd-image-updater.argoproj.io/write-back-method: git
-            argocd-image-updater.argoproj.io/git-branch: main:image-updater-{{`{{.SHA256}}`}}
-            argocd-image-updater.argoproj.io/image-list: cf=cloudflare/cloudflared
-
-            argocd-image-updater.argoproj.io/cf.helm.image-name: cloudflare-tunnel.controllers.main.containers.main.image.repository
-            argocd-image-updater.argoproj.io/cf.helm.image-tag: cloudflare-tunnel.controllers.main.containers.main.image.tag
         spec:
           project: core
           source:
@@ -265,6 +265,44 @@ argocd-apps:
               name: bgppeers.metallb.io
               jsonPointers:
               - /spec/conversion/webhook/clientConfig/caBundle
+      syncPolicy:
+        preserveResourcesOnDeletion: true
+        applicationsSync: sync
+    infrastructure:
+      goTemplate: true
+      generators:
+      - git:
+          repoURL: *gitops-repo-url
+          revision: *gitops-repo-revision
+          directories:
+          - path: kubernetes-deployments/infrastructure/*
+      template:
+        metadata:
+          name: '{{ base .path.path }}'
+          labels: {}
+          annotations:
+            argocd.argoproj.io/manifest-generate-paths: .
+
+            argocd-image-updater.argoproj.io/write-back-method: git
+            argocd-image-updater.argoproj.io/git-branch: main:image-updater-{{`{{.SHA256}}`}}
+            argocd-image-updater.argoproj.io/image-list: cf=cloudflare/cloudflared
+
+            argocd-image-updater.argoproj.io/cf.helm.image-name: cloudflare-tunnel.controllers.main.containers.main.image.repository
+            argocd-image-updater.argoproj.io/cf.helm.image-tag: cloudflare-tunnel.controllers.main.containers.main.image.tag
+        spec:
+          project: infrastructure
+          source:
+            repoURL: *gitops-repo-url
+            targetRevision: *gitops-repo-revision
+            path: '{{ .path.path }}'
+            helm: *appsets-helm
+          destination: *appsets-destination
+          revisionHistoryLimit: 5
+          syncPolicy:
+            syncOptions: *appsets-sync-options
+            automated:
+              prune: false
+              selfHeal: true
       syncPolicy:
         preserveResourcesOnDeletion: true
         applicationsSync: sync
