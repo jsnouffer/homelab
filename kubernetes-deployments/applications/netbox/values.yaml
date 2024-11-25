@@ -11,8 +11,8 @@ netbox:
       cpu: 100m
       memory: 350Mi
     limits:
-      cpu: 1000m
-      memory: 750Mi
+      cpu: 1500m
+      memory: 1Gi
 
   affinity:
     podAffinity:
@@ -77,7 +77,7 @@ netbox:
         memory: 125Mi
       limits:
         cpu: 1000m
-        memory: 300Mi
+        memory: 400Mi
     affinity:
       podAffinity:
         preferredDuringSchedulingIgnoredDuringExecution:
