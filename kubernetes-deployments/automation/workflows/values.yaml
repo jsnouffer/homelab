@@ -1,5 +1,4 @@
 slackChannels:
-  - pve
   - workflows
 
 ttlStrategy:
@@ -9,33 +8,6 @@ ttlStrategy:
 podGC:
   strategy: OnWorkflowSuccess
   deleteDelayDuration: 2h
-
-images:
-  python: ghcr.io/jsnouffer/docker-containers/python-tools:latest
-
-wikijs:
-  url: https://wikijs.jsnouff.net
-  existingSecret:
-    name: wikijs-api-token
-    key: token
-
-youtube:
-  channelId: UCNKUkQV2R0JKakyE1vuC1lQ
-  piped:
-    api: pipedapi.jsnouff.net
-    frontend: piped.jsnouff.net
-
-arrImageUpdater:
-  radarr:
-    url: https://radarr.jsnouff.net/api/v3/update
-    existingSecret:
-      name: radarr-api-key
-      key: key
-  sonarr:
-    url: https://sonarr.jsnouff.net/api/v3/update
-    existingSecret:
-      name: sonarr-api-key
-      key: key
 
 ghReleaseImageUpdater:
   gitopsRepo:
@@ -100,9 +72,6 @@ ghReleaseImageUpdater:
         yamlPath: ".helm.parameters[1].value"
 
 scheduled:
-  check-raid-status-daily:
-    workflowTemplate: check-raid-status
-    schedule: "0 12 * * *"
   gh-release-image-updater-daily:
     workflowTemplate: gh-release-image-updater
     schedule: "30 12 * * 0"
