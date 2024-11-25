@@ -1,0 +1,315 @@
+{{- with $.Values.nodeBackups }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: cluster-node-backups
+spec:
+  serviceAccountName: workflows-sa
+
+  ttlStrategy: {{ toYaml $.Values.ttlStrategy | nindent 4 }}
+  podGC: {{ toYaml $.Values.podGC | nindent 4 }}
+  onExit: exit-handler
+  entrypoint: main
+
+  synchronization:
+    mutexes:
+      - name: cluster-node-backups
+
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteMany
+        storageClassName: ceph-filesystem
+        resources:
+          requests:
+            storage: 1Gi
+  volumes:
+    - name: etc-rancher
+      hostPath:
+        path: /etc/rancher
+        type: Directory
+    - name: var-lib-rancher
+      hostPath:
+        path: /var/lib/rancher
+        type: Directory
+    - name: var-lib-rook
+      hostPath:
+        path: /var/lib/rook
+        type: "" # Do not check if this directory exists
+    - name: usr-local-bin
+      hostPath:
+        path: /usr/local/bin
+        type: Directory
+    - name: tmp
+      hostPath:
+        path: /tmp
+        type: Directory
+
+  templates:
+    - name: main
+      dag:
+        tasks:
+          - name: discover-nodes
+            template: discover-nodes
+          - name: copy-files
+            template: copy-files
+            depends: discover-nodes
+            arguments:
+              parameters:
+              - name: node-name
+                value: "{{`{{item}}`}}"
+            withParam: "{{`{{tasks.discover-nodes.outputs.parameters.nodes}}`}}"
+          - name: etcd-snapshot
+            template: etcd-snapshot
+            depends: discover-nodes
+            arguments:
+              parameters:
+              - name: node-name
+                value: "{{`{{item}}`}}"
+            withParam: "{{`{{tasks.discover-nodes.outputs.parameters.cp-nodes}}`}}"
+          - name: restic-init
+            template: restic-init
+          - name: restic-backup
+            template: restic-backup
+            depends: restic-init && copy-files && etcd-snapshot
+            arguments:
+              parameters:
+              - name: k8s-version
+                value: "{{`{{tasks.discover-nodes.outputs.parameters.k8s-version}}`}}"
+          - name: restic-prune
+            template: restic-prune
+            depends: restic-backup
+          - name: save-snapshot-history
+            template: save-snapshot-history
+            depends: restic-prune
+            arguments:
+              parameters:
+              - name: snapshots
+                value: "{{`{{tasks.restic-prune.outputs.parameters.snapshots}}`}}"
+
+    - name: exit-handler
+      dag:
+        tasks:
+          - name: notify-failure
+            templateRef:
+              name: slack-notifier
+              template: main
+            arguments:
+              parameters:
+                - name: slack-channel
+                  value: workflows
+                - name: text
+                  value: "{{`Core nodes backup workflow {{workflow.name}} failed.`}}"
+            when: "{{`{{workflow.status}} != Succeeded`}}"
+
+    - name: discover-nodes
+      serviceAccountName: cluster-node-backups-workflow-sa
+      script:
+        image: {{ .kubectlImage }}
+        command: [bash]
+        source: |
+          set -ex
+          # get list of schedulable / reachable nodes
+          kubectl get nodes \
+            -o jsonpath="{range .items[*]}{.metadata.name} {.spec.taints[?(@.effect=='NoSchedule')]}{\"\n\"}{end}" | \
+            grep -v node.kubernetes.io/unschedulable | \
+            grep -v node.kubernetes.io/unreachable | \
+            grep -v node.cilium.io/agent-not-ready | \
+            awk '{print $1}' | jq -R | jq -s > /tmp/nodes.json
+
+          kubectl get nodes \
+            --selector=node-role.kubernetes.io/control-plane \
+            -o jsonpath="{range .items[*]}{.metadata.name} {.spec.taints[?(@.effect=='NoSchedule')]}{\"\n\"}{end}" | \
+            grep -v node.kubernetes.io/unschedulable | \
+            grep -v node.kubernetes.io/unreachable | \
+            grep -v node.cilium.io/agent-not-ready | \
+            awk '{print $1}' | jq -R | jq -s > /tmp/cp-nodes.json
+
+          kubectl version -o json | jq '.serverVersion.gitVersion' > /tmp/k8s-version.txt
+      outputs:
+        parameters:
+          - name: nodes
+            valueFrom:
+              path: /tmp/nodes.json
+          - name: cp-nodes
+            valueFrom:
+              path: /tmp/cp-nodes.json
+          - name: k8s-version
+            valueFrom:
+              path: /tmp/k8s-version.txt
+
+    - name: copy-files
+      inputs:
+        parameters:
+        - name: node-name
+      script:
+        image: linuxserver/rsnapshot:1.4.5
+        command: [bash]
+        source: |
+          set -ex
+          rsync -av --mkpath /etc/rancher /data/etc/rancher
+
+          rsync -av --mkpath \
+            --exclude=data \
+            --exclude=bin \
+            --exclude=agent/containerd \
+            --exclude=*etcd-old* \
+            --exclude=*etcd/member* \
+            --exclude=*db/snapshots* \
+            --exclude=agent/logs \
+            /var/lib/rancher/rke2/ /data/var/lib/rancher/rke2
+
+          rsync -av --mkpath \
+            --exclude=rook-ceph/crash \
+            /var/lib/rook/ /data/var/lib/rook
+        volumeMounts:
+          - name: etc-rancher
+            mountPath: /etc/rancher
+            readOnly: true
+          - name: var-lib-rancher
+            mountPath: /var/lib/rancher
+            readOnly: true
+          - name: var-lib-rook
+            mountPath: /var/lib/rook
+            readOnly: true
+          - name: data
+            mountPath: /data
+            subPath: "{{`{{inputs.parameters.node-name}}`}}"
+      nodeSelector:
+        kubernetes.io/hostname: "{{`{{inputs.parameters.node-name}}`}}"
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
+      securityContext:
+        runAsNonRoot: false
+        runAsUser: 0
+
+    - name: etcd-snapshot
+      inputs:
+        parameters:
+        - name: node-name
+      script:
+        image: busybox
+        command: [sh]
+        source: |
+          set -ex
+          rke2 etcd-snapshot save --etcd-server https://${NODE_IP}:9345 --dir /tmp
+          mkdir -p /data/etcd
+          mv /tmp/on-demand* /data/etcd
+        env:
+          - name: NODE_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.hostIP
+        volumeMounts:
+          - name: usr-local-bin
+            mountPath: /usr/local/bin/rke2
+            subPath: rke2
+            readOnly: true
+          - name: var-lib-rancher
+            mountPath: /var/lib/rancher
+            readOnly: true
+          - name: tmp
+            mountPath: /tmp
+          - name: data
+            mountPath: /data
+            subPath: "{{`{{inputs.parameters.node-name}}`}}"
+      nodeSelector:
+        kubernetes.io/hostname: "{{`{{inputs.parameters.node-name}}`}}"
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
+      securityContext:
+        runAsNonRoot: false
+        runAsUser: 0
+
+    - name: restic-init
+      script:
+        image: {{ .resticImage }}
+        command: [sh]
+        source: |
+          set -ex
+          restic init || echo "skipped"
+        env:
+          - name: RESTIC_REPOSITORY
+            value: {{ .s3Url }}/{{ .s3Bucket }}
+        envFrom:
+          - secretRef:
+              name: restic-backup-credentials
+
+    - name: restic-backup
+      inputs:
+        parameters:
+        - name: k8s-version
+      script:
+        image: {{ .resticImage }}
+        workingDir: /data
+        command: [sh]
+        source: |
+          set -ex
+          restic backup --host skaro \
+            --tag "k8s-version=${K8S_VERSION}" \
+            --tag "restic-version=$(restic version --json | jq '.version')" \
+            .
+        volumeMounts:
+          - name: data
+            mountPath: /data
+        env:
+          - name: K8S_VERSION
+            value: "{{`{{inputs.parameters.k8s-version}}`}}"
+          - name: RESTIC_REPOSITORY
+            value: {{ .s3Url }}/{{ .s3Bucket }}
+        envFrom:
+          - secretRef:
+              name: restic-backup-credentials
+      securityContext:
+        runAsNonRoot: false
+        runAsUser: 0
+
+    - name: restic-prune
+      script:
+        image: {{ .resticImage }}
+        command: [sh]
+        source: |
+          set -ex
+          restic forget \
+            --keep-last={{ .backupPruning.keepLast }} \
+            --keep-daily={{ .backupPruning.keepDaily }} \
+            --keep-weekly={{ .backupPruning.keepWeekly }} \
+            --prune
+          restic snapshots --json > /tmp/snapshots.json
+        env:
+          - name: RESTIC_REPOSITORY
+            value: {{ .s3Url }}/{{ .s3Bucket }}
+        envFrom:
+          - secretRef:
+              name: restic-backup-credentials
+      outputs:
+        parameters:
+          - name: snapshots
+            valueFrom:
+              path: /tmp/snapshots.json
+
+    - name: save-snapshot-history
+      serviceAccountName: cluster-node-backups-workflow-sa
+      inputs:
+        parameters:
+        - name: snapshots
+      script:
+        image: {{ .kubectlImage }}
+        command: [bash]
+        source: |
+          set -ex
+          echo $SNAPSHOTS | jq > /tmp/snapshots.json
+          {{- with .snapshotHistory }}
+          kubectl create configmap {{ .name }} --from-file=/tmp/snapshots.json --dry-run=client -o yaml | \
+            kubectl apply -n {{ .namespace }} -f -
+          kubectl label configmap -n {{ .namespace }} {{ .name }} restic.snapshots={{ .name }}
+          {{- end }}
+        env:
+          - name: SNAPSHOTS
+            value: "{{`{{inputs.parameters.snapshots}}`}}"
+{{- end }}

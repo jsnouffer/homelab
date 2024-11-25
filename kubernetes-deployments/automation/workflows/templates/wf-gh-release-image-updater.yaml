@@ -189,10 +189,10 @@ spec:
 
     - name: update-image-tag
       synchronization:
-        semaphore:
-          configMapKeyRef:
-            name: gh-release-image-updater-semaphore
-            key: limit
+        semaphores:
+          - configMapKeyRef:
+              name: gh-release-image-updater-semaphore
+              key: limit
       inputs:
         parameters:
           - name: gitops-repo-file-path

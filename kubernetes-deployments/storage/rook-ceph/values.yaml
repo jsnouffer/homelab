@@ -5,6 +5,8 @@ rook-ceph:
       - key: nvidia.com/gpu
         operator: Exists
         effect: NoSchedule
+      - effect: NoSchedule
+        operator: Exists
     nfs:
       enabled: true
 rook-ceph-cluster:

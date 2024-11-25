@@ -5,7 +5,8 @@ kind: CronWorkflow
 metadata:
   name: {{ $name }}
 spec:
-  schedule: {{ $value.schedule | quote }}
+  schedules:
+    - {{ $value.schedule | quote }}
   timezone: "America/New_York"
   startingDeadlineSeconds: 0
   concurrencyPolicy: "Replace"

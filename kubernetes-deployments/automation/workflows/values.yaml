@@ -2,12 +2,25 @@ slackChannels:
   - workflows
 
 ttlStrategy:
-  secondsAfterCompletion: 86400
-  secondsAfterSuccess: 86400
+  secondsAfterCompletion: 7200
+  secondsAfterSuccess: 7200
   secondsAfterFailure: 172800
 podGC:
-  strategy: OnWorkflowSuccess
-  deleteDelayDuration: 2h
+  strategy: OnPodSuccess
+  deleteDelayDuration: 30m
+
+nodeBackups:
+  resticImage: restic/restic:latest
+  kubectlImage: bitnami/kubectl:1.31.3
+  s3Url: s3:http://barenas.jsnouff.net:9000
+  s3Bucket: skaro-rke2-node-backups
+  backupPruning:
+    keepDaily: 14
+    keepWeekly: 1
+    keepLast: 18
+  snapshotHistory:
+    name: restic-backups-snapshots-rke2-node
+    namespace: kube-system
 
 ghReleaseImageUpdater:
   gitopsRepo:
@@ -72,7 +85,10 @@ ghReleaseImageUpdater:
         yamlPath: ".helm.parameters[1].value"
 
 scheduled:
-  gh-release-image-updater-daily:
+  cluster-node-backups-nightly:
+    workflowTemplate: cluster-node-backups
+    schedule: "0 0 * * *"
+  gh-release-image-updater-weekly:
     workflowTemplate: gh-release-image-updater
     schedule: "30 12 * * 0"
     arguments:
