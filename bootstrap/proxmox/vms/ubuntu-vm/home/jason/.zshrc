@@ -49,8 +49,7 @@ alias tf="terraform"
 alias tg="terragrunt"
 alias h="history"
 alias k="kubectl"
-alias skaro="kubectl config use-context skaro"
-alias lorien="kubectl config use-context lorien"
+alias co="code"
 
 export PATH=$PATH:/home/jason/.local/bin
 export PATH=$PATH:/usr/local/go/bin
@@ -65,6 +64,5 @@ source <(helm completion zsh)
 export BUN_INSTALL="$HOME/.local/share/reflex/bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
-source /etc/profile.d/maven.sh
 fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
 zstyle ':completion:*:mvn:*' show-all-phases true
