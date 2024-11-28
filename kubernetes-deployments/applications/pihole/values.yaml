@@ -52,6 +52,12 @@ pihole:
   persistentVolumeClaim:
     enabled: true
     size: 2Gi
+    subPath: pihole
+
+  extraVolumeMounts:
+    config:
+      mountPath: /etc/dnsmasq.d
+      subPath: dnsmasq.d
 
   resources:
     limits:
