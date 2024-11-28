@@ -20,7 +20,7 @@ radarr:
               memory: 250Mi
             limits:
               cpu: 700m
-              memory: 600Mi
+              # memory: 600Mi
           probes:
             liveness: &lr-probe
               enabled: true
