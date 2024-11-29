@@ -30,10 +30,10 @@ sections:
       - title: PiKVM
         icon: hl-pikvm
         url: https://pikvm.jsnouff.net
-      - title: Proxmox PVE1
-        description: Dell Poweredge R710
-        icon: hl-proxmox
-        url: https://pve1.jsnouff.net
+      # - title: Proxmox PVE1
+      #   description: Dell Poweredge R710
+      #   icon: hl-proxmox
+      #   url: https://pve1.jsnouff.net
       - title: UPS NMC
         icon: hl-apc
         url: https://apc.jsnouff.net
@@ -195,7 +195,7 @@ sections:
         url: http://barenas.jsnouff.net:32400/
       - title: Qbittorrent
         icon: hl-qbittorrent
-        url: http://melkor.jsnouff.net:8080
+        url: http://qbittorrent.jsnouff.net:8080
       - title: Radarr
         icon: hl-radarr
         url: https://radarr.jsnouff.net/
