@@ -7,10 +7,10 @@ argo-workflows:
     resources:
       requests:
         cpu: 5m
-        memory: 24Mi
+        memory: 32Mi
       limits:
         cpu: 50m
-        memory: 64Mi
+        memory: 128Mi
 
     ingress:
       enabled: true
@@ -41,7 +41,7 @@ argo-workflows:
     resources:
       requests:
         cpu: 25m
-        memory: 24Mi
+        memory: 32Mi
       limits:
         cpu: 100m
-        memory: 64Mi
+        memory: 128Mi

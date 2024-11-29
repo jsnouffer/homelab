@@ -1,6 +1,9 @@
 slackChannels:
   - workflows
 
+kumaMonitors:
+  - node-backups
+
 ttlStrategy:
   secondsAfterCompletion: 7200
   secondsAfterSuccess: 7200

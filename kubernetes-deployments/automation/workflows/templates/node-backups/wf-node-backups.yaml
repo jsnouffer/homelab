@@ -93,6 +93,9 @@ spec:
     - name: exit-handler
       dag:
         tasks:
+          - name: notify-success
+            template: notify-kuma
+            when: "{{`{{workflow.status}} == Succeeded`}}"
           - name: notify-failure
             templateRef:
               name: slack-notifier
@@ -312,4 +315,14 @@ spec:
         env:
           - name: SNAPSHOTS
             value: "{{`{{inputs.parameters.snapshots}}`}}"
+
+    - name: notify-kuma
+      container:
+        image: curlimages/curl:8.5.0
+        command: [sh, -c]
+        args:
+          - curl ${KUMA_MONITOR_NODE_BACKUPS}
+        envFrom:
+          - secretRef:
+              name: kuma-webhook-secrets
 {{- end }}
