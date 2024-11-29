@@ -1,0 +1,22 @@
+collections:
+  Christmas Movies:
+    sync_mode: sync
+    builder_level: movie
+    imdb_list:
+        - https://www.imdb.com/list/ls000096828
+        - https://www.imdb.com/list/ls025976544/
+        - https://www.imdb.com/list/ls003863000/
+        - https://www.imdb.com/list/ls027454200/
+        - https://www.imdb.com/list/ls027886673/
+        - https://www.imdb.com/list/ls097998599/
+        - https://www.imdb.com/list/ls000096828/
+    plex_search:
+      type: movie
+      sort_by: audience_rating.desc
+      limit: 1000
+      any:
+        title:
+          - christmas
+          - santa
+          - nutcracker
+    visible_home: range(11/20-12/31)

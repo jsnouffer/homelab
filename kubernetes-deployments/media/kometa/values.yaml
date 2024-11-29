@@ -1,0 +1,39 @@
+kometa:
+  enabled: true
+  global:
+    fullnameOverride: &name kometa
+  controllers:
+    main:
+      type: cronjob
+      containers:
+        main:
+          image:
+            repository: kometateam/kometa
+            tag: latest
+          args:
+            - --run
+            - --read-only-config
+      cronjob:
+        suspend: false
+        concurrencyPolicy: Forbid
+        timeZone: America/New_York
+        schedule: "*/15 * * * *"
+        ttlSecondsAfterFinished: 60
+  persistence:
+    config:
+      enabled: true
+      accessMode: ReadWriteOnce
+      size: 128Mi
+    config-secret:
+      enabled: true
+      type: secret
+      name: kometa-config-secret
+      advancedMounts:
+        main:
+          main:
+            - path: /config/config.yml
+              subPath: config.yml
+            - path: /config/movies.yaml
+              subPath: movies.yaml
+            - path: /config/tv.yaml
+              subPath: tv.yaml
