@@ -48,3 +48,5 @@ engines:
     disabled: true
   - name: soundcloud
     inactive: true
+  - name: qwant
+    disabled: true

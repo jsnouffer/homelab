@@ -20,6 +20,12 @@ searxng:
                 values:
                 - searxng
             topologyKey: kubernetes.io/hostname
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 977
+      fsGroup: 977
+      seccompProfile:
+        type: RuntimeDefault
   controllers:
     searxng:
       type: deployment
@@ -45,6 +51,7 @@ searxng:
             pullPolicy: IfNotPresent
           env:
             SEARXNG_BASE_URL: https://search.jsnouff.net/
+            SEARXNG_REDIS_URL: redis://redis-master:6379/0
             SEARXNG_SECRET:
               valueFrom:
                 secretKeyRef:
@@ -78,6 +85,16 @@ searxng:
                 timeoutSeconds: 5
                 successThreshold: 1
                 failureThreshold: 60
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+              add:
+              - CHOWN
+              - SETGID
+              - SETUID
+              - DAC_OVERRIDE
   service:
     searxng:
       controller: searxng
