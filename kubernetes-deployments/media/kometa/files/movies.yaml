@@ -2,6 +2,7 @@ collections:
   Christmas Movies:
     sync_mode: sync
     builder_level: movie
+    url_poster: https://raw.githubusercontent.com/Kometa-Team/Default-Images/refs/heads/master/seasonal/christmas.jpg
     imdb_list:
         - https://www.imdb.com/list/ls000096828
         - https://www.imdb.com/list/ls025976544/

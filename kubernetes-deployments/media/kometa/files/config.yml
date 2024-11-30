@@ -5,12 +5,23 @@ libraries:
     remove_overlays: false
     collection_files:
       - file: config/movies.yaml
-
+      - default: decade
+        template_variables:
+          name_format: <<key_name>> Movies
+          summary_format: Movies of <<key_name>>
+          limit: 1000
+          sort_by: year.asc
+      - default: studio
+        template_variables:
+          use_separator: false
+          include:
+            - Marvel Studios
+          sort_by: year.asc
+          run_definition: show
   TV Shows:
     remove_overlays: false
-    # collection_files:
-    #   - file: config/tv.yaml
     collection_files:
+      # - file: config/tv.yaml
       - default: country
         template_variables:
           use_other: false
@@ -20,6 +31,20 @@ libraries:
             - gb
           sort_by: title.asc
           run_definition: show
+      - default: network
+        template_variables:
+          use_other: false
+          use_separator: false
+          include:
+            - Apple TV+
+          sort_by: title.asc
+          run_definition: show
+      - default: decade
+        template_variables:
+          name_format: <<key_name>> Shows
+          summary_format: Shows of <<key_name>>
+          limit: 1000
+          sort_by: year.asc
 #   Music:
 #     collection_files:
 #       - file: config/Music.yml       # This is a local file THAT YOU MIGHT CREATE
