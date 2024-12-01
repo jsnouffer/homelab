@@ -1,0 +1,90 @@
+mongodb:
+  enabled: true
+  fullnameOverride: mongodb
+
+  pdb:
+    create: false
+  serviceAccount:
+    create: false
+  networkPolicy:
+    enabled: false
+
+  persistence:
+    size: 1Gi
+
+  auth:
+    existingSecret: &mongo-secret mongodb-credentials
+
+express:
+  global:
+    fullnameOverride: mongo-express
+  defaultPodOptions:
+    automountServiceAccountToken: false
+    dnsConfig:
+      options:
+        - name: ndots
+          value: "3"
+  controllers:
+    mongo-express:
+      type: deployment
+      replicas: 1
+      strategy: RollingUpdate
+      containers:
+        main:
+          image:
+            repository: mongo-express
+            tag: 1.0-20-alpine3.19
+            pullPolicy: IfNotPresent
+          env:
+            ME_CONFIG_BASICAUTH_USERNAME:
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: mongo-express-credentials
+            ME_CONFIG_BASICAUTH_PASSWORD:
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: mongo-express-credentials
+            ME_CONFIG_MONGODB_ADMINUSERNAME:
+              valueFrom:
+                secretKeyRef:
+                  key: mongodb-root-user
+                  name: *mongo-secret
+            ME_CONFIG_MONGODB_ADMINPASSWORD:
+              valueFrom:
+                secretKeyRef:
+                  key: mongodb-root-password
+                  name: *mongo-secret
+            ME_CONFIG_MONGODB_SERVER: mongodb
+  service:
+    mongo-express:
+      controller: mongo-express
+      ports:
+        http:
+          port: &port 8081
+  ingress:
+    mongo-express:
+      enabled: true
+      hosts:
+        - host: &domain mongo.jsnouff.net
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: mongo-express
+                port: *port
+      tls:
+        - hosts:
+            - *domain
+          secretName: tls-secret
+      annotations:
+        cert-manager.io/cluster-issuer: lets-encrypt-production
+        ingress.kubernetes.io/force-ssl-redirect: "true"
+        ingress.kubernetes.io/protocol: http
+        kubernetes.io/ingress.class: traefik
+        kubernetes.io/tls-acme: "true"
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls: "true"

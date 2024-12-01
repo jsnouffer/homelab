@@ -42,5 +42,12 @@ traefik:
   ingressRoute:
     dashboard:
       enabled: false
+  ports:
+    mongodb:
+      port: 27017
+      exposedPort: 27017
+      expose:
+        default: true
+      protocol: TCP
 
 ingressDomain: traefik.jsnouff.net

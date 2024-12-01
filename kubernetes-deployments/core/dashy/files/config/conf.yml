@@ -23,10 +23,10 @@ sections:
       - title: Dockge (octavia)
         icon: https://raw.githubusercontent.com/louislam/dockge/master/frontend/public/icon.svg
         url: https://dockge.octavia.jsnouff.net
-      - title: iDRAC 6
-        description: Dell Poweredge R710
-        icon: hl-idrac
-        url: https://idrac.jsnouff.net
+      # - title: iDRAC 6
+      #   description: Dell Poweredge R710
+      #   icon: hl-idrac
+      #   url: https://idrac.jsnouff.net
       - title: PiKVM
         icon: hl-pikvm
         url: https://pikvm.jsnouff.net
@@ -150,6 +150,9 @@ sections:
       - title: Linkding
         icon: hl-linkding
         url: https://linkding.jsnouff.net/
+      - title: MongoDB
+        icon: hl-mongodb
+        url: https://mongo.jsnouff.net
       - title: Nextcloud
         icon: hl-nextcloud
         url: https://nextcloud.jsnouff.net/
