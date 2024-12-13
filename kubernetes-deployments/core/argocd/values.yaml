@@ -39,10 +39,10 @@ argo-cd:
     resources:
       limits:
         cpu: 1250m
-        memory: 1024Mi
+        memory: 1500Mi
       requests:
-        cpu: 250m
-        memory: 256Mi
+        cpu: 300m
+        memory: 350Mi
   repoServer:
     env:
       - name: TZ
