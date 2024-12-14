@@ -158,6 +158,18 @@ rook-ceph-cluster:
               cpu: "1000m"
               memory: "4Gi"
           priorityClassName: system-cluster-critical
+          placement:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                    - key:  app.kubernetes.io/part-of
+                      operator: In
+                      values:
+                      - ceph-filesystem
+                  topologyKey: kubernetes.io/hostname
       storageClass:
         enabled: true
         isDefault: false

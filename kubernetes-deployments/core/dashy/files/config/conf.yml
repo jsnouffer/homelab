@@ -159,6 +159,9 @@ sections:
       - title: Netbox
         icon: hl-netbox
         url: https://netbox.jsnouff.net/
+      - title: RCON
+        icon: hl-minecraft
+        url: https://rcon.jsnouff.net/
       - title: SearXNG
         icon: hl-searxng
         url: https://search.jsnouff.net/

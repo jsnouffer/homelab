@@ -1,0 +1,105 @@
+atm10:
+  enabled: true
+  nameOverride: atm10
+  image:
+    tag: java21@sha256:00a04e62407bc4a88f61b4b694d1051d1ed4be26109ac3b2530df6fc0aeb4093
+    pullPolicy: IfNotPresent
+  minecraftServer:
+    eula: "true"
+    difficulty: normal
+    type: AUTO_CURSEFORGE
+    memory: 10240M
+    onlineMode: true
+    motd: All The Mods 10
+    autoCurseForge:
+      pageUrl: https://www.curseforge.com/minecraft/modpacks/all-the-mods-10/files/5990858
+      apiKey:
+          existingSecret: curseforge-api-key
+          secretKey: key
+    rcon:
+      enabled: true
+      existingSecret: minecraft-admin-password
+      secretKey: password
+    serviceType: LoadBalancer
+  mcbackup:
+    enabled: true
+    initialDelay: 10m
+    backupInterval: 12h
+    backupMethod: restic
+    rconRetries: -1
+    rconRetryInterval: 30s
+    resticRepository: s3:http://barenas.jsnouff.net:9000/minecraft-backups-atm10
+    extraEnv:
+      RESTIC_PASSWORD:
+        valueFrom:
+          secretKeyRef:
+            name: restic-backup-credentials
+            key: resticKey
+      AWS_ACCESS_KEY_ID:
+        valueFrom:
+          secretKeyRef:
+            name: restic-backup-credentials
+            key: s3AccessKey
+      AWS_SECRET_ACCESS_KEY:
+        valueFrom:
+          secretKeyRef:
+            name: restic-backup-credentials
+            key: s3SecretKey
+  startupProbe:
+    enabled: true
+    failureThreshold: 50
+    periodSeconds: 20
+  resources:
+    requests:
+      memory: 12Gi
+      cpu: "2"
+    limits:
+      memory: 18Gi
+      cpu: "4"
+  persistence:
+    dataDir:
+      enabled: true
+      Size: 10Gi
+  nodeSelector:
+    feature.node.kubernetes.io/cpu-model.vendor_id: AMD
+  extraPodSpec:
+    priorityClassName: minecraft-priority
+  serviceAnnotations:
+    metallb.universe.tf/ip-allocated-from-pool: ip-address-pool-100
+    metallb.universe.tf/loadBalancerIPs: 192.168.30.105
+    external-dns.alpha.kubernetes.io/hostname: minecraft.jsnouff.net
+
+rcon-web-admin:
+  rconWeb:
+    isAdmin: true
+    passwordExistingSecret: minecraft-admin-password
+    passwordKey: password
+    rconPasswordExistingSecret: minecraft-admin-password
+    rconPasswordKey: password
+    serverName: ATM10
+    rconHost: minecraft-atm10-rcon
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 10m
+      memory: 32Mi
+  ingress:
+    enabled: true
+    className: &ingress-class traefik
+    host: &domain rcon.jsnouff.net
+    tls:
+      - hosts:
+          - *domain
+        secretName: tls-secret
+    annotations: &ingress_annotations
+      cert-manager.io/cluster-issuer: lets-encrypt-production
+      ingress.kubernetes.io/force-ssl-redirect: "true"
+      ingress.kubernetes.io/protocol: http
+      kubernetes.io/ingress.class: *ingress-class
+      kubernetes.io/tls-acme: "true"
+      traefik.ingress.kubernetes.io/router.entrypoints: websecure
+      traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
+      traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+      traefik.ingress.kubernetes.io/router.tls: "true"
