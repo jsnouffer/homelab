@@ -59,7 +59,7 @@ atm10:
   persistence:
     dataDir:
       enabled: true
-      Size: 10Gi
+      Size: 15Gi
   nodeSelector:
     feature.node.kubernetes.io/cpu-model.vendor_id: AMD
   extraPodSpec:
