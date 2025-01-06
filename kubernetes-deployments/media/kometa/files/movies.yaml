@@ -21,3 +21,13 @@ collections:
           - santa
           - nutcracker
     visible_home: range(11/20-12/31)
+  Pixar:
+    sync_mode: sync
+    builder_level: movie
+    url_poster: https://raw.githubusercontent.com/Kometa-Team/Default-Images/refs/heads/master/genre/Pixar.jpg
+    imdb_list:
+        - https://www.imdb.com/list/ls595187966
+        - https://www.imdb.com/list/ls595762839
+        - https://www.imdb.com/list/ls528208231
+        - https://www.imdb.com/list/ls595533230
+

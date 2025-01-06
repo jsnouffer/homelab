@@ -2,6 +2,19 @@ kometa:
   enabled: true
   global:
     fullnameOverride: &name kometa
+  defaultPodOptions:
+    automountServiceAccountToken: false
+    dnsConfig:
+      options:
+        - name: ndots
+          value: "3"
+    securityContext:
+      runAsUser: 1234
+      fsGroup: 1234
+      fsGroupChangePolicy: Always
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
   controllers:
     main:
       type: cronjob
@@ -18,7 +31,7 @@ kometa:
         concurrencyPolicy: Forbid
         timeZone: America/New_York
         schedule: "*/15 * * * *"
-        ttlSecondsAfterFinished: 60
+        ttlSecondsAfterFinished: 900
   persistence:
     config:
       enabled: true

@@ -18,6 +18,7 @@ libraries:
             - Marvel Studios
           sort_by: year.asc
           run_definition: show
+          sort_title: <<title>>
   TV Shows:
     remove_overlays: false
     collection_files:
