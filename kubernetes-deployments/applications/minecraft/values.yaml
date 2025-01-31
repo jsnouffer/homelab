@@ -12,7 +12,7 @@ atm10:
     onlineMode: true
     motd: All The Mods 10
     autoCurseForge:
-      pageUrl: https://www.curseforge.com/minecraft/modpacks/all-the-mods-10/files/6122012
+      pageUrl: https://www.curseforge.com/minecraft/modpacks/all-the-mods-10/files/6132376
       apiKey:
           existingSecret: curseforge-api-key
           secretKey: key
