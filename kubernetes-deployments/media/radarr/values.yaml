@@ -16,7 +16,7 @@ radarr:
             TZ: "America/New_York"
           resources:
             requests:
-              cpu: 10m
+              cpu: 50m
               memory: 250Mi
             limits:
               cpu: 700m

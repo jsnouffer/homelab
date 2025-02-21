@@ -59,11 +59,11 @@ searxng:
                   name: searxng-secret-key
           resources:
             limits:
-              cpu: 2000m
+              cpu: 1000m
               memory: 2Gi
             requests:
-              cpu: 250m
-              memory: 512Mi
+              cpu: 100m
+              memory: 1Gi
           probes:
             liveness: &lr-probe
               enabled: true

@@ -16,10 +16,10 @@ sonarr:
           resources:
             requests:
               cpu: 50m
-              memory: 300Mi
+              memory: 700Mi
             limits:
               cpu: 700m
-              memory: 1200Mi
+              # memory: 2000Mi
           probes:
             liveness: &lr-probe
               enabled: true
