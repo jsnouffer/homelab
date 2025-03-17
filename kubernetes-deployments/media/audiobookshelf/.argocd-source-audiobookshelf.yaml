@@ -4,5 +4,5 @@ helm:
     value: advplyr/audiobookshelf
     forcestring: true
   - name: audiobookshelf.controllers.main.containers.main.image.tag
-    value: 2.19.5
+    value: 2.20.0
     forcestring: true
