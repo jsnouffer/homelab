@@ -4,5 +4,5 @@ helm:
       value: lscr.io/linuxserver/bazarr
       forcestring: true
     - name: bazarr.controllers.main.containers.main.image.tag
-      value: v1.5.1-ls296
+      value: v1.5.1-ls297
       forcestring: true
