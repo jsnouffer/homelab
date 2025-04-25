@@ -13,7 +13,7 @@ argo-cd:
     resources:
       limits:
         cpu: 250m
-        memory: 128Mi
+        memory: 512Mi
       requests:
         cpu: 25m
         memory: 48Mi
@@ -38,30 +38,30 @@ argo-cd:
   controller:
     resources:
       limits:
-        cpu: 1250m
-        memory: 1500Mi
+        cpu: 1000m
+        memory: 1000Mi
       requests:
-        cpu: 300m
-        memory: 350Mi
+        cpu: 350m
+        memory: 400Mi
   repoServer:
     env:
       - name: TZ
         value: America/New_York
     resources:
       limits:
-        cpu: 2000m
+        cpu: 1000m
         memory: 512Mi
       requests:
         cpu: 150m
-        memory: 128Mi
+        memory: 64Mi
   applicationSet:
     enabled: true
     resources:
       limits:
-        cpu: 750m
+        cpu: 350m
         memory: 128Mi
       requests:
-        cpu: 100m
+        cpu: 200m
         memory: 48Mi
   redis:
     enabled: true
@@ -70,8 +70,8 @@ argo-cd:
         value: America/New_York
     resources:
       limits:
-        cpu: 200m
-        memory: 128Mi
+        cpu: 100m
+        memory: 64Mi
       requests:
         cpu: 10m
         memory: 24Mi

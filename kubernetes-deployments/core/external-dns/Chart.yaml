@@ -1,13 +1,13 @@
 apiVersion: v2
 name: external-dns
-version: 0.14.2
+version: 0.16.1
 dependencies:
   - name: external-dns
-    version: 1.14.5
+    version: 1.16.1
     repository: https://kubernetes-sigs.github.io/external-dns/
     condition: external-dns.enabled
   - name: external-dns
-    version: 1.14.4
+    version: 1.16.1
     repository: https://kubernetes-sigs.github.io/external-dns/
     condition: external-dns.enabled
     alias: external-dns-secondary

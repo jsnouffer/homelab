@@ -47,7 +47,7 @@ searxng:
         main:
           image:
             repository: searxng/searxng
-            tag: latest
+            tag: 2024.11.14-abd9b271b
             pullPolicy: IfNotPresent
           env:
             SEARXNG_BASE_URL: https://search.jsnouff.net/

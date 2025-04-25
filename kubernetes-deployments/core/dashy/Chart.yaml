@@ -1,4 +1,4 @@
 apiVersion: v2
 name: dashy
 version: 1.0.0
-appVersion: 3.0.0
+appVersion: release-3.1.1

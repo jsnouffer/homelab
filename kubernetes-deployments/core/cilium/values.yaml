@@ -1,7 +1,7 @@
 cilium:
   enabled: true
   initialInstall: true
-  upgradeCompatibility: "1.13"
+  upgradeCompatibility: "1.17"
   operator:
     rollOutPods: true
   bpf:

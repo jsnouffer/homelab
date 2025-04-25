@@ -1,6 +1,7 @@
 atm10:
   enabled: true
   nameOverride: atm10
+  replicaCount: 0
   image:
     tag: java21@sha256:00a04e62407bc4a88f61b4b694d1051d1ed4be26109ac3b2530df6fc0aeb4093
     pullPolicy: IfNotPresent
