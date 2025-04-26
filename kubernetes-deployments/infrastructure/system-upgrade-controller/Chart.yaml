@@ -1,0 +1,7 @@
+apiVersion: v2
+name: system-upgrade-controller
+version: 1.0.0
+dependencies:
+  - name: system-upgrade-controller
+    version: 1.0.0
+    condition: system-upgrade-controller.enabled

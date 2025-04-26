@@ -1,0 +1,45 @@
+system-upgrade-controller:
+  enabled: true
+
+upgradePlans:
+  specs:
+    control-plane:
+      channel: &rke2-release-channel https://update.rke2.io/v1-release/channels/stable
+      nodeSelectors:
+        - key: node-role.kubernetes.io/control-plane
+          operator: In
+          values: ["true"]
+      tolerations:
+        - key: "CriticalAddonsOnly"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
+      upgrade:
+        image: &rke2-upgrade-image rancher/rke2-upgrade
+      # drain:
+      #   force: true
+    agent:
+      channel: *rke2-release-channel
+      nodeSelectors:
+        - key: beta.kubernetes.io/os
+          operator: In
+          values: ["linux"]
+        - key: rke2-upgrade
+          operator: NotIn
+          values: ["disabled", "false"]
+        - key: node-role.kubernetes.io/control-plane
+          operator: NotIn
+          values: ["true"]
+      upgrade:
+        image: *rke2-upgrade-image
+      prepare:
+        args:
+        - prepare
+        - control-plane # must match the name of the control-plane plan
+        image: *rke2-upgrade-image
+      # drain:
+      #   force: true
