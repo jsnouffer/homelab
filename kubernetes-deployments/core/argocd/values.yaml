@@ -368,7 +368,15 @@ argocd-apps:
           revisionHistoryLimit: 5
           syncPolicy:
             syncOptions: *appsets-sync-options
-          ignoreDifferences: []
+          ignoreDifferences:
+            - group: admissionregistration.k8s.io
+              kind: ValidatingWebhookConfiguration
+              jqPathExpressions:
+              - .webhooks[].clientConfig.caBundle
+            - kind: Secret
+              name: victoria-metrics-victoria-metrics-operator-validation
+              jsonPointers:
+              - /data
       syncPolicy:
         preserveResourcesOnDeletion: true
         applicationsSync: sync
