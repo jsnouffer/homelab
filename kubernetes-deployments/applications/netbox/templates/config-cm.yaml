@@ -1,0 +1,11 @@
+{{- with $.Values.netbox }}
+{{- if .enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $.Release.Namespace }}
+data:
+{{ tpl (($.Files.Glob "files/netbox/*").AsConfig) $ | indent 2 }}
+{{- end }}
+{{- end }}

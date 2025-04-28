@@ -1,111 +1,318 @@
 netbox:
   enabled: true
-
-  image:
-    tag: v4.0.5-2.9.1
-
-  existingSecret: netbox-credentials
-
-  resources:
-    requests:
-      cpu: 100m
-      memory: 350Mi
-    limits:
-      cpu: 1500m
-      memory: 1Gi
-
-  affinity:
-    podAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-      - weight: 100
-        podAffinityTerm:
-          labelSelector:
+  global:
+    fullnameOverride: netbox
+  defaultPodOptions:
+    automountServiceAccountToken: false
+    affinity:
+      podAffinity: &netbox-pod-affinity
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
             matchExpressions:
             - key: app.kubernetes.io/name
               operator: In
               values:
               - netbox
           topologyKey: kubernetes.io/hostname
+    securityContext:
+      fsGroup: 1000
+      runAsNonRoot: true
+  controllers:
+    netbox:
+      type: deployment
+      initContainers:
+        init-dirs:
+          image:
+            repository: busybox
+            tag: latest
+            pullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+            - mkdir -p /opt/unit/state /opt/unit/tmp
+          securityContext: &container-security-context
+            runAsUser: 1000
+            runAsGroup: 1000
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+      containers:
+        netbox:
+          image: &netbox-image
+            repository: netboxcommunity/netbox
+            tag: v4.2
+            pullPolicy: IfNotPresent
+          env:
+            SUPERUSER_NAME: admin
+            SUPERUSER_EMAIL: admin@example.com
+            SKIP_STARTUP_SCRIPTS: "true"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 350Mi
+            limits:
+              cpu: 1500m
+              memory: 1Gi
+          securityContext: *container-security-context
+          probes:
+            liveness: &lr-probe
+              enabled: true
+              type: HTTP
+              path: /login/
+              spec:
+                initialDelaySeconds: 10
+                periodSeconds: 10
+                timeoutSeconds: 1
+                successThreshold: 1
+                failureThreshold: 3
+            readiness: *lr-probe
+        netbox-worker:
+          image: *netbox-image
+          command:
+            - /opt/netbox/venv/bin/python
+            - /opt/netbox/netbox/manage.py
+            - rqworker
+          resources:
+            requests:
+              cpu: 10m
+              memory: 125Mi
+            limits:
+              cpu: 1000m
+              memory: 400Mi
+          securityContext: *container-security-context
+    housekeeping:
+      type: cronjob
+      pod:
+        restartPolicy: OnFailure
+      containers:
+        netbox-housekeeping:
+          image: *netbox-image
+          command:
+            - /opt/netbox/venv/bin/python
+            - /opt/netbox/netbox/manage.py
+            - housekeeping
+          securityContext: *container-security-context
+      cronjob:
+        suspend: false
+        concurrencyPolicy: Forbid
+        timeZone: America/New_York
+        schedule: "0 0 * * *"
+        failedJobsHistory: 1
+        successfulJobsHistory: 1
 
+  service:
+    netbox:
+      controller: netbox
+      ports:
+        http:
+          port: &port 8080
   ingress:
-    enabled: true
-    annotations:
-      cert-manager.io/cluster-issuer: lets-encrypt-production
-      ingress.kubernetes.io/force-ssl-redirect: "true"
-      ingress.kubernetes.io/protocol: http
-      kubernetes.io/ingress.class: traefik
-      kubernetes.io/tls-acme: "true"
-      traefik.ingress.kubernetes.io/router.entrypoints: websecure
-      traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
-      traefik.ingress.kubernetes.io/router.tls: "true"
-    hosts:
-      - host: netbox.jsnouff.net
-        paths:
-          - /
-    tls:
-      - hosts:
-          - netbox.jsnouff.net
-        secretName: tls-secret
+    netbox:
+      enabled: true
+      hosts:
+        - host: &domain netbox.jsnouff.net
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: netbox
+                port: *port
+      tls:
+        - hosts:
+            - *domain
+          secretName: tls-secret
+      annotations:
+        cert-manager.io/cluster-issuer: lets-encrypt-production
+        ingress.kubernetes.io/force-ssl-redirect: "true"
+        ingress.kubernetes.io/protocol: http
+        kubernetes.io/ingress.class: traefik
+        kubernetes.io/tls-acme: "true"
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls: "true"
+  persistence:
+    data:
+      enabled: true
+      accessMode: ReadWriteOnce
+      size: 1Gi
+      advancedMounts:
+        netbox:
+          netbox: &data-pvc-mount-paths
+            - path: /opt/netbox/netbox/media
+              subPath: media
+            - path: /opt/netbox/netbox/reports
+              subPath: reports
+            - path: /opt/netbox/netbox/scripts
+              subPath: scripts
+          netbox-worker: *data-pvc-mount-paths
+        housekeeping:
+          netbox-housekeeping: *data-pvc-mount-paths
+    config:
+      enabled: true
+      type: configMap
+      name: netbox
+      advancedMounts:
+        netbox:
+          netbox: &config-mount-paths
+            - path: /etc/netbox/config/configuration.py
+              subPath: configuration.py
+              readOnly: true
+            - path: /run/config/netbox
+              readOnly: true
+          netbox-worker: *config-mount-paths
+        housekeeping:
+          netbox-housekeeping: *config-mount-paths
+    secrets:
+      enabled: true
+      type: custom
+      volumeSpec:
+        projected:
+          defaultMode: 420
+          sources:
+          - secret:
+              name: netbox-credentials
+              items:
+              - key: superuser_password
+                path: superuser_password
+              - key: superuser_api_token
+                path: superuser_api_token
+              - key: email_password
+                path: email_password
+              - key: napalm_password
+                path: napalm_password
+              - key: secret_key
+                path: secret_key
+          - secret:
+              name: db-credentials
+              items:
+              - key: password
+                path: db_password
+              - key: password
+                path: redis_tasks_password
+              - key: password
+                path: redis_cache_password
+      advancedMounts:
+        netbox:
+          netbox:
+            - path: /run/secrets/netbox
+              readOnly: true
+            - path: /run/secrets/superuser_password
+              subPath: superuser_password
+              readOnly: true
+            - path: /run/secrets/superuser_api_token
+              subPath: superuser_api_token
+              readOnly: true
+          netbox-worker:
+            - path: /run/secrets/netbox
+              readOnly: true
+        housekeeping:
+          netbox-housekeeping:
+            - path: /run/secrets/netbox
+              readOnly: true
+    tmp:
+      enabled: true
+      type: emptyDir
+      medium: Memory
+      advancedMounts:
+        netbox:
+          netbox:
+            - path: /tmp
+          netbox-worker:
+            - path: /tmp
+        housekeeping:
+          netbox-housekeeping:
+            - path: /tmp
+    optunit:
+      enabled: true
+      type: emptyDir
+      medium: Memory
+      advancedMounts:
+        netbox:
+          init-dirs:
+            - path: /opt/unit
+          netbox:
+            - path: /opt/unit
 
-  postgresql:
-    enabled: false
-
-  externalDatabase:
-    host: postgresql
-    existingSecretName: db-credentials
-    existingSecretKey: password
-
-  redis:
-    enabled: false
-
-  tasksRedis:
-    host: redis-master
-    sentinelService: redis-master
-    existingSecretName: db-credentials
-    existingSecretKey: password
-
-  cachingRedis:
-    host: redis-master
-    sentinelService: redis-master
-    existingSecretName: db-credentials
-    existingSecretKey: password
-
-  worker:
-    resources:
-      requests:
-        cpu: 10m
-        memory: 125Mi
-      limits:
-        cpu: 1000m
-        memory: 400Mi
+pgbackrest:
+  global:
+    fullnameOverride: pgbackrest
+  defaultPodOptions:
+    automountServiceAccountToken: false
     affinity:
-      podAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 100
-          podAffinityTerm:
-            labelSelector:
-              matchExpressions:
-              - key: app.kubernetes.io/name
-                operator: In
-                values:
-                - netbox
-            topologyKey: kubernetes.io/hostname
-
-  housekeeping:
-    successfulJobsHistoryLimit: 1
-    failedJobsHistoryLimit: 1
-    affinity:
-      podAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 100
-          podAffinityTerm:
-            labelSelector:
-              matchExpressions:
-              - key: app.kubernetes.io/name
-                operator: In
-                values:
-                - netbox
-            topologyKey: kubernetes.io/hostname
+      podAffinity: &postgresql-pod-affinity
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+            - key: statefulset.kubernetes.io/pod-name
+              operator: In
+              values:
+              - postgresql-0
+          topologyKey: kubernetes.io/hostname
+  controllers:
+    pgbackrest:
+      type: cronjob
+      pod:
+        restartPolicy: OnFailure
+      containers:
+        pgbackrest:
+          image:
+            repository: ghcr.io/woblerr/pgbackrest
+            tag: 2.54.2-alpine
+            pullPolicy: IfNotPresent
+          command:
+            - /bin/bash
+            - -c
+            - sleep infinity
+          # env:
+          #   PGBACKREST_REPO1_PATH: /var/lib/pgbackrest
+          #   PGBACKREST_STANZA: main
+          #   PGBACKREST_PG1_PATH: /bitnami/postgresql/data
+          #   PGBACKREST_PG1_HOST: postgresql
+          #   PGBACKREST_PG1_PORT: "5432"
+          #   PGBACKREST_PG1_USER: netbox
+          #   PGBACKREST_PG1_PASSWORD:
+          #     valueFrom:
+          #       secretKeyRef:
+          #         key: password
+          #         name: db-credentials
+      cronjob:
+        suspend: false
+        concurrencyPolicy: Forbid
+        timeZone: America/New_York
+        schedule: "0 0 * * *"
+        failedJobsHistory: 1
+        successfulJobsHistory: 1
+  persistence:
+    data:
+      enabled: true
+      accessMode: ReadWriteOnce
+      size: 1Gi
+      advancedMounts:
+        pgbackrest:
+          pgbackrest:
+            - path: /var/lib/pgbackrest
+              subPath: pgbackrest
+    pgdata:
+      enabled: true
+      type: persistentVolumeClaim
+      existingClaim: data-postgresql-0
+      advancedMounts:
+        pgbackrest:
+          pgbackrest:
+            - path: /bitnami/postgresql
+    config:
+      enabled: true
+      type: configMap
+      name: pgbackrest-config
+      advancedMounts:
+        pgbackrest:
+          pgbackrest:
+            - path: /etc/pgbackrest/pgbackrest.conf
+              subPath: pgbackrest.conf
+              readOnly: true
 
 postgresql:
   fullnameOverride: postgresql
@@ -118,6 +325,8 @@ postgresql:
       userPasswordKey: password
       replicationPasswordKey: replication-password
   primary:
+    persistence:
+      size: 1Gi
     resources:
       requests:
         cpu: 20m
@@ -145,25 +354,14 @@ common:
   resticBackups:
     enabled: true
     targets:
-      netbox-media:
-        pvcName: netbox-media
-        bucket: netbox-media-backup
+      netbox-data:
+        pvcName: netbox-data
+        bucket: netbox-data-backup
         restoreVersion: latest
         tags:
-          - "netbox-image:{{ default $.Subcharts.netbox.Chart.AppVersion $.Values.netbox.image.tag }}"
-          - "netbox-chart:{{ $.Subcharts.netbox.Chart.Version }}"
+          - "netbox-image:{{ $.Values.netbox.controllers.netbox.containers.netbox.image.tag }}"
         affinity:
-          podAffinity:
-            preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              podAffinityTerm:
-                labelSelector:
-                  matchExpressions:
-                  - key: app.kubernetes.io/name
-                    operator: In
-                    values:
-                    - netbox
-                topologyKey: kubernetes.io/hostname
+          podAffinity: *netbox-pod-affinity
       netbox-db:
         pvcName: data-postgresql-0
         bucket: netbox-db-backup
@@ -173,13 +371,11 @@ common:
           - "postgresql-chart:{{ $.Subcharts.postgresql.Chart.Version }}"
         affinity:
           podAffinity:
-            preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              podAffinityTerm:
-                labelSelector:
-                  matchExpressions:
-                  - key: statefulset.kubernetes.io/pod-name
-                    operator: In
-                    values:
-                    - postgresql-0
-                topologyKey: kubernetes.io/hostname
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: statefulset.kubernetes.io/pod-name
+                  operator: In
+                  values:
+                  - postgresql-0
+              topologyKey: kubernetes.io/hostname

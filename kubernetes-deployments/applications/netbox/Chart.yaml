@@ -2,9 +2,10 @@ apiVersion: v2
 name: netbox
 version: v3.2.8
 dependencies:
-  - name: netbox
-    version: 4.1.1
-    repository: https://charts.boo.tc
+  - name: app-template
+    version: 3.7.3
+    repository: https://bjw-s.github.io/helm-charts
+    alias: netbox
     condition: netbox.enabled
   - name: postgresql
     version: 12.8.2
