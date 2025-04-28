@@ -2,16 +2,17 @@ apiVersion: v2
 name: netbox
 version: v3.2.8
 dependencies:
-  - name: netbox
-    version: 4.1.1
-    repository: https://charts.boo.tc
+  - name: app-template
+    version: 3.7.3
+    repository: https://bjw-s.github.io/helm-charts
+    alias: netbox
     condition: netbox.enabled
   - name: postgresql
-    version: 12.8.2
+    version: 16.6.6
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: netbox.enabled
-  - name: redis
-    version: 17.15.2
+  - name: valkey
+    version: 3.0.3
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: netbox.enabled
   - name: common
