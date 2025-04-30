@@ -8,10 +8,56 @@ victoria-metrics-k8s-stack:
 
   vmsingle:
     spec:
+      extraArgs:
+        maxLabelsPerTimeseries: "50"
       storage:
         resources:
           requests:
-            storage: 5Gi
+            storage: 10Gi
+    ingress:
+      enabled: true
+      annotations:
+        cert-manager.io/cluster-issuer: lets-encrypt-production
+        ingress.kubernetes.io/force-ssl-redirect: "true"
+        ingress.kubernetes.io/protocol: http
+        kubernetes.io/ingress.class: traefik
+        kubernetes.io/tls-acme: "true"
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls: "true"
+      hosts:
+        - &vmsingle-domain vmsingle.jsnouff.net
+      tls:
+        - hosts:
+            - *vmsingle-domain
+          secretName: vmsingle-tls-secret
+
+  vmagent:
+    ingress:
+      enabled: true
+      annotations:
+        cert-manager.io/cluster-issuer: lets-encrypt-production
+        ingress.kubernetes.io/force-ssl-redirect: "true"
+        ingress.kubernetes.io/protocol: http
+        kubernetes.io/ingress.class: traefik
+        kubernetes.io/tls-acme: "true"
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls: "true"
+      hosts:
+        - &vmagent-domain vmagent.jsnouff.net
+      tls:
+        - hosts:
+            - *vmagent-domain
+          secretName: vmagent-tls-secret
+
+  alertmanager:
+    enabled: false
+
+  vmalert:
+    enabled: false
 
   grafana:
     admin:
@@ -34,8 +80,20 @@ victoria-metrics-k8s-stack:
         traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
         traefik.ingress.kubernetes.io/router.tls: "true"
       hosts:
-        - &domain grafana.jsnouff.net
+        - &grafana-domain grafana.jsnouff.net
       tls:
         - hosts:
-            - *domain
-          secretName: tls-secret
+            - *grafana-domain
+          secretName: grafana-tls-secret
+  kubelet:
+    vmScrape:
+      spec:
+        relabelConfigs:
+          - action: labelmap
+            regex: __meta_kubernetes_node_label_(.+)
+          - sourceLabels: [__metrics_path__]
+            targetLabel: metrics_path
+          - targetLabel: job
+            replacement: kubelet
+          - action: labeldrop
+            regex: (feature_node_kubernetes_io(.+)|nvidia(.+)|beta_kubernetes_io(.+))
