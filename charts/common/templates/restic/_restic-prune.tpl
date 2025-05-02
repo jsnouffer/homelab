@@ -32,12 +32,15 @@ spec:
                     --keep-monthly={{ $ctx.prune.keepMonthly }} \
                     --prune
                   restic snapshots --json > /snapshots/snapshots.json
+              {{- $bucketName := "" }}
               {{- if hasPrefix "b2" $value.bucket }}
               env: {{ toYaml $ctx.env.b2 | nindent 16 }}
+                {{- $bucketName = $value.bucket }}
                 - name: RESTIC_REPOSITORY
                   value: {{ $value.bucket | quote }}
               {{- else }}
               env: {{ toYaml $ctx.env.s3 | nindent 16 }}
+                {{- $bucketName = printf "%s/%s" $ctx.minioUrl $value.bucket }}
                 - name: RESTIC_REPOSITORY
                   value: {{ printf "%s/%s" $ctx.minioUrl $value.bucket | quote }}
               {{- end }}
@@ -54,7 +57,11 @@ spec:
                 - |
                   cat /snapshots/snapshots.json | jq > /tmp/snapshots.json
                   kubectl create configmap restic-backups-snapshots-{{ $name }} --from-file=/tmp/snapshots.json --dry-run=client -o yaml | kubectl apply -f -
-                  kubectl label configmap restic-backups-snapshots-{{ $name }} restic.snapshots={{ $name }}
+                  kubectl label --overwrite=true configmap restic-backups-snapshots-{{ $name }} \
+                    restic.snapshots/name={{ $name }}
+                  kubectl annotate --overwrite=true configmap restic-backups-snapshots-{{ $name }} \
+                    restic.snapshots/bucket={{ $bucketName }} \
+                    restic.snapshots/pvc={{ $value.pvcName }}
               volumeMounts:
                 - name: snapshots
                   mountPath: /snapshots
