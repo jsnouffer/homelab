@@ -1,0 +1,11 @@
+{{- with $.Values.glance }}
+{{- if .enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: glance-config
+data:
+{{ tpl (($.Files.Glob "files/*").AsConfig) $ | indent 2 }}
+{{- end }}
+{{- end }}
