@@ -1,0 +1,22 @@
+{{- with $.Values.glance }}
+{{- if .enabled }}
+{{- $replacements := ((.extraValues | default dict).replacements | default list) }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: glance-config
+data:
+{{- range $path, $_ :=  $.Files.Glob "files/*" }}
+  {{ $path | base }}: |-
+  {{- range $_, $line := $.Files.Lines $path }}
+    {{- range $replacementConfig := $replacements }}
+    {{- if (contains $replacementConfig.pattern $line) }}
+    {{- $line = $line | replace $replacementConfig.pattern $replacementConfig.replacement }}
+    {{- end }}
+    {{- end }}
+    {{ $line }}
+  {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}

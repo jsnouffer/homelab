@@ -1,0 +1,111 @@
+- type: group
+  title: Homelab
+  widgets:
+    - type: bookmarks
+      title: Homelab Apps
+      groups:
+        - title: Applications
+          color: 10 70 50
+          links:
+            - title: ArchiveBox
+              icon: $di:archivebox.png
+              url: https://archivebox.jsnouff.net/
+            - title: Argo Workflows
+              icon: $di:argo-cd.png
+              url: https://workflows.jsnouff.net/
+            - title: Change Detection
+              icon: $di:changedetection.png
+              url: https://changedetection.jsnouff.net/
+            - title: Firefox
+              icon: $di:firefox.png
+              url: https://firefox.jsnouff.net/
+            - title: FreshRSS
+              icon: $di:freshrss.png
+              url: https://freshrss.jsnouff.net/
+            - title: Linkding
+              icon: $di:linkding.png
+              url: https://linkding.jsnouff.net/
+            - title: MongoDB
+              icon: $di:mongodb.png
+              url: https://mongo.jsnouff.net
+            - title: Nextcloud
+              icon: $di:nextcloud.png
+              url: https://nextcloud.jsnouff.net/
+            - title: Netbox
+              icon: $di:netbox.png
+              url: https://netbox.jsnouff.net/
+            - title: RCON
+              icon: $di:minecraft.png
+              url: https://rcon.jsnouff.net/
+            - title: SearXNG
+              icon: $di:searxng.png
+              url: https://search.jsnouff.net/
+            - title: Tandoor Recipes
+              icon: $di:tandoor-recipes.png
+              url: https://recipes.jsnouff.net/
+            - title: Wiki.js
+              icon: $di:wikijs.png
+              url: https://wikijs.jsnouff.net/
+        - title: Media
+          color: 10 70 50
+          links:
+            - title: Bazarr
+              icon: $di:bazarr.png
+              url: https://bazarr.jsnouff.net/
+            - title: Lidarr
+              icon: $di:lidarr.png
+              url: https://lidarr.jsnouff.net/
+            - title: MeTube
+              icon: $di:metube.png
+              url: https://metube.jsnouff.net/
+            - title: NZBHydra2
+              icon: $di:nzbhydra2.png
+              url: https://nzbhydra2.jsnouff.net/
+            - title: Ombi
+              icon: $di:ombi.png
+              url: https://ombi.jsnouff.net/
+            - title: Overseerr
+              icon: $di:overseerr.png
+              url: https://overseerr.jsnouff.net/
+            - title: Plex
+              icon: $di:plex.png
+              url: http://barenas.jsnouff.net:32400/
+            - title: Qbittorrent
+              icon: $di:qbittorrent.png
+              url: http://Qbittorrent.jsnouff.net:8080/
+            - title: Radarr
+              icon: $di:radarr.png
+              url: https://radarr.jsnouff.net/
+            - title: SABnzbd
+              icon: $di:sabnzbd.png
+              url: https://sabnzbd.jsnouff.net/
+            - title: Sonarr
+              icon: $di:sonarr.png
+              url: https://sonarr.jsnouff.net/
+            - title: Tautulli
+              icon: $di:tautulli.png
+              url: https://tautulli.jsnouff.net/
+        - title: Books
+          color: 10 70 50
+          links:
+            - title: Audiobookshelf
+              icon: $di:audiobookshelf.png
+              url: https://audiobookshelf.jsnouff.net/
+            - title: Calibre
+              icon: $di:calibre.png
+              url: https://calibre.jsnouff.net/
+            - title: Calibre Web
+              icon: $di:calibre-web.png
+              url: https://calibre-web.jsnouff.net/
+            - title: Readarr
+              icon: $di:readarr.png
+              url: https://readarr.jsnouff.net/
+        - title: AI/ML
+          color: 10 70 50
+          links:
+            - title: llama.cpp
+              icon: $di:anything-llm.png
+              url: https://llama-cpp.jsnouff.net/
+            - title: Stable Diffusion
+              icon: $di:hugging-face.png
+              url: https://stable-diffusion.jsnouff.net
