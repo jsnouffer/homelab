@@ -4,5 +4,5 @@ helm:
       value: lscr.io/linuxserver/radarr
       forcestring: true
     - name: radarr.controllers.main.containers.main.image.tag
-      value: 5.23.3.9987-ls275
+      value: 5.25.0.10024-ls275
       forcestring: true
