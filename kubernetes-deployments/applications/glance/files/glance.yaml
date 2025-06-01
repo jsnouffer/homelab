@@ -1,4 +1,9 @@
 pages:
+  - name: Home
+    columns:
+      - size: full
+        widgets:
+          $include: bookmarks.yaml
   - name: Sample
     # Optionally, if you only have a single page you can hide the desktop navigation for a cleaner look
     # hide-desktop-navigation: true
@@ -88,9 +93,3 @@ pages:
               - go-gitea/gitea
               - immich-app/immich
               - syncthing/syncthing
-
-  - name: Home
-    columns:
-      - size: full
-        widgets:
-          $include: bookmarks.yaml

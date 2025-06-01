@@ -1,10 +1,10 @@
 - type: group
-  title: Homelab
+  title: Homelab Bookmark Groups
   widgets:
     - type: bookmarks
-      title: Homelab Apps
+      title: Applications
       groups:
-        - title: Applications
+        - title: General
           color: 10 70 50
           links:
             - title: ArchiveBox
@@ -22,6 +22,9 @@
             - title: FreshRSS
               icon: $di:freshrss.png
               url: https://freshrss.jsnouff.net/
+            - title: Kibana
+              icon: $di:kibana.png
+              url: https://kibana.jsnouff.net
             - title: Linkding
               icon: $di:linkding.png
               url: https://linkding.jsnouff.net/
@@ -109,3 +112,111 @@
             - title: Stable Diffusion
               icon: $di:hugging-face.png
               url: https://stable-diffusion.jsnouff.net
+    - type: bookmarks
+      title: Infrastructure
+      groups:
+        - title: Kubernetes Infrastructure
+          color: 10 70 50
+          links:
+            - title: Argo CD
+              icon: $di:argo-cd.png
+              url: https://argocd.jsnouff.net/
+            - title: Ceph
+              icon: $di:ceph.png
+              url: https://ceph.jsnouff.net/
+            - title: Cilium Hubble
+              icon: $di:cilium.png
+              url: https://hubble.jsnouff.net/
+            - title: Grafana
+              icon: $di:grafana.png
+              url: https://grafana.jsnouff.net/
+            - title: Traefik
+              icon: $di:traefik.png
+              url: https://traefik.jsnouff.net/dashboard
+            - title: VictoriaMetrics
+              icon: $di:victoriametrics.png
+              url: https://vmsingle.jsnouff.net/
+            - title: VictoriaMetrics (Agent)
+              icon: $di:victoriametrics.png
+              url: https://vmagent.jsnouff.net/
+        - title: Misc Infrastructure
+          color: 10 70 50
+          links:
+            - title: Dockge (octavia)
+              icon: $di:dockge.png
+              url: https://dockge.octavia.jsnouff.net
+            - title: PiKVM
+              icon: $di:pikvm.png
+              url: https://pikvm.jsnouff.net
+            - title: Traefik (Octavia)
+              icon: $di:traefik.png
+              url: https://octavia.jsnouff.net/
+            - title: UPS NMC
+              icon: $di:apc.png
+              url: https://apc.jsnouff.net
+            - title: Uptime Kuma
+              icon: $di:uptime-kuma.png
+              url: https://uptime.jsnouff.net
+        - title: Networking
+          color: 10 70 50
+          links:
+            - title: Verizon Router
+              icon: $di:verizon.png
+              url: https://192.168.1.1/#/main
+            - title: Fios MoCA Adapter
+              icon: $di:verizon.png
+              url: http://192.168.1.2/home.html
+            - title: Pi-hole (Octavia)
+              icon: $di:pi-hole.png
+              url: https://pihole.jsnouff.net/
+            - title: Pi-hole (Skaro)
+              icon: $di:pi-hole.png
+              url: https://pihole2-admin.jsnouff.net/
+        - title: Storage
+          color: 10 70 50
+          links:
+            - title: Bitwarden
+              icon: $di:bitwarden.png
+              url: https://bitwarden.jsnouff.net/
+            - title: Infisical
+              icon: $di:infisical.png
+              url: https://infisical.jsnouff.net/
+            - title: Minio
+              icon: $di:minio.png
+              url: http://barenas.jsnouff.net:9002
+            - title: TrueNas
+              icon: $di:truenas.png
+              url: https://barenas.jsnouff.net/
+            - title: Vaultwarden Admin
+              icon: $di:vaultwarden.png
+              url: https://bitwarden.jsnouff.net/admin
+        - title: External
+          color: 10 70 50
+          links:
+            - title: APC SmartConnect
+              icon: $di:apc.png
+              url: https://smartconnect.apc.com/dashboard
+            - title: Backblaze
+              icon: $di:backblaze.png
+              url: https://secure.backblaze.com/b2_buckets.htm
+            - title: Cloudflare
+              icon: $di:cloudflare.png
+              url: https://dash.cloudflare.com/
+            - title: Doppler
+              icon: https://f005.backblazeb2.com/file/jsnouff-icons/doppler.png
+              url: https://dashboard.doppler.com/workplace/b161fb27ad70bce89a63/projects
+            - title: NordVPN
+              icon: $di:nordvpn.png
+              url: https://my.nordaccount.com/dashboard/
+            - title: NZBgeek
+              icon: $di:nzbgeek.png
+              url: https://nzbgeek.info/
+            - title: Slack
+              icon: $di:slack.png
+              url: https://app.slack.com/client/T05LKH8Q6MA
+            - title: Slack Apps
+              icon: $di:slack.png
+              url: https://api.slack.com/apps
+            - title: Tweaknews
+              icon: https://f005.backblazeb2.com/file/jsnouff-icons/tweaknews.png
+              url: https://www.tweaknews.eu/en/member
