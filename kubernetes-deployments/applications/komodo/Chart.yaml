@@ -1,0 +1,17 @@
+apiVersion: v2
+name: komodo
+version: 1.0.0
+dependencies:
+  - name: app-template
+    version: 4.0.1
+    repository: https://bjw-s-labs.github.io/helm-charts
+    alias: komodo
+    condition: komodo.enabled
+  - name: mongodb
+    version: 16.5.20
+    repository: oci://registry-1.docker.io/bitnamicharts
+    condition: komodo.enabled
+  - name: common
+    version: ">0.0.0"
+    repository: "file://../../../charts/common/"
+    condition: komodo.enabled

@@ -1,0 +1,168 @@
+komodo:
+  enabled: true
+  global:
+    fullnameOverride: komodo
+  defaultPodOptions:
+    automountServiceAccountToken: false
+    securityContext:
+      seccompProfile:
+        type: RuntimeDefault
+  controllers:
+    komodo:
+      type: deployment
+      strategy: RollingUpdate
+      containers:
+        komodo:
+          image: &komodo-image
+            repository: ghcr.io/moghtech/komodo-core
+            tag: 1.18.0
+            pullPolicy: IfNotPresent
+          env:
+            KOMODO_LOCAL_AUTH: "true"
+            KOMODO_PASSKEY:
+              valueFrom:
+                secretKeyRef:
+                  key: passkey
+                  name: komodo-credentials
+            KOMODO_DATABASE_ADDRESS: mongodb:27017
+            KOMODO_DATABASE_USERNAME:
+              valueFrom:
+                secretKeyRef:
+                  key: mongodb-root-user
+                  name: mongodb-credentials
+            KOMODO_DATABASE_PASSWORD:
+              valueFrom:
+                secretKeyRef:
+                  key: mongodb-root-password
+                  name: mongodb-credentials
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              cpu: 250m
+              memory: 128Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+            capabilities:
+              drop:
+                - ALL
+          probes:
+            liveness: &lr-probe
+              enabled: true
+              type: HTTP
+              path: /
+              spec:
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                timeoutSeconds: 1
+                successThreshold: 1
+                failureThreshold: 3
+            readiness: *lr-probe
+            startup:
+              enabled: true
+              type: HTTP
+              path: /
+              spec:
+                initialDelaySeconds: 0
+                periodSeconds: 5
+                timeoutSeconds: 5
+                successThreshold: 1
+                failureThreshold: 10
+  service:
+    komodo:
+      controller: komodo
+      ports:
+        http:
+          port: &port 9120
+  ingress:
+    komodo:
+      enabled: true
+      hosts:
+        - host: &domain komodo.jsnouff.net
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: komodo
+                port: *port
+      tls:
+        - hosts:
+            - *domain
+          secretName: tls-secret
+      annotations:
+        cert-manager.io/cluster-issuer: lets-encrypt-production
+        ingress.kubernetes.io/force-ssl-redirect: "true"
+        ingress.kubernetes.io/protocol: http
+        kubernetes.io/ingress.class: traefik
+        kubernetes.io/tls-acme: "true"
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls: "true"
+  persistence:
+    data:
+      enabled: true
+      accessMode: ReadWriteOnce
+      size: 1Gi
+      advancedMounts:
+        komodo:
+          komodo:
+            - path: /repo-cache
+              subPath: repo-cache
+            - path: /syncs
+              subPath: syncs
+
+mongodb:
+  enabled: true
+  fullnameOverride: mongodb
+
+  pdb:
+    create: false
+  serviceAccount:
+    create: false
+  networkPolicy:
+    enabled: true
+  useStatefulSet: true
+  podAffinityPreset: soft
+
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  persistence:
+    size: 1Gi
+
+  auth:
+    existingSecret: &mongo-secret mongodb-credentials
+
+common:
+  resticBackups:
+    enabled: true
+    targets:
+      komodo-db:
+        pvcName: datadir-mongodb-0
+        bucket: komodo-db-backup
+        restoreVersion: latest
+        tags:
+          - "mongodb-image:{{ default $.Subcharts.mongodb.Chart.AppVersion ($.Subcharts.mongodb.Values.image.tag) }}"
+          - "mongodb-chart:{{ $.Subcharts.mongodb.Chart.Version }}"
+          - "komodo-image:{{ $.Values.komodo.controllers.komodo.containers.komodo.image.tag }}"
+        affinity:
+          podAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: statefulset.kubernetes.io/pod-name
+                    operator: In
+                    values:
+                    - mongodb-0
+                topologyKey: kubernetes.io/hostname
+

@@ -1,0 +1,5 @@
+{{- with $.Values.komodo }}
+{{- if .enabled }}
+{{- include "common.all" $ -}}
+{{- end }}
+{{- end }}
