@@ -32,17 +32,13 @@ glance:
             - /app/glance
             - --config
             - /app/config/glance.yaml
-          # env:
-          #   SUPERUSER_NAME: admin
-          #   SUPERUSER_EMAIL: admin@example.com
-          #   SKIP_STARTUP_SCRIPTS: "true"
-          # resources:
-          #   requests:
-          #     cpu: 100m
-          #     memory: 350Mi
-          #   limits:
-          #     cpu: 1500m
-          #     memory: 1Gi
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
           securityContext:
             allowPrivilegeEscalation: false
             privileged: false
@@ -82,7 +78,7 @@ glance:
     glance:
       enabled: true
       hosts:
-        - host: &domain glance.jsnouff.net
+        - host: &domain dashboard.jsnouff.net
           paths:
             - path: /
               pathType: Prefix
