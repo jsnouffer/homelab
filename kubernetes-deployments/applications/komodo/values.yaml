@@ -18,6 +18,7 @@ komodo:
             tag: 1.18.0
             pullPolicy: IfNotPresent
           env:
+            KOMODO_HOST: https://komodo.jsnouff.net
             KOMODO_LOCAL_AUTH: "true"
             KOMODO_PASSKEY:
               valueFrom:
@@ -35,6 +36,7 @@ komodo:
                 secretKeyRef:
                   key: mongodb-root-password
                   name: mongodb-credentials
+            KOMODO_DISABLE_USER_REGISTRATION: "true"
           resources:
             requests:
               cpu: 10m

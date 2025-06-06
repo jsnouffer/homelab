@@ -130,6 +130,9 @@
             - title: Grafana
               icon: $di:grafana.png
               url: https://grafana.jsnouff.net/
+            - title: Komodo
+              icon: $di:komodo.png
+              url: https://komodo.jsnouff.net/
             - title: Traefik
               icon: $di:traefik.png
               url: https://traefik.jsnouff.net/dashboard
@@ -142,9 +145,6 @@
         - title: Misc Infrastructure
           color: 10 70 50
           links:
-            - title: Dockge (octavia)
-              icon: $di:dockge.png
-              url: https://dockge.octavia.jsnouff.net
             - title: PiKVM
               icon: $di:pikvm.png
               url: https://pikvm.jsnouff.net
