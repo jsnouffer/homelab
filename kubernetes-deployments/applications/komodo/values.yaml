@@ -43,7 +43,7 @@ komodo:
               memory: 16Mi
             limits:
               cpu: 250m
-              memory: 128Gi
+              memory: 128Mi
           securityContext:
             allowPrivilegeEscalation: false
             privileged: false

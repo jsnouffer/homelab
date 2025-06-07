@@ -106,9 +106,9 @@
         - title: AI/ML
           color: 10 70 50
           links:
-            - title: llama.cpp
-              icon: $di:anything-llm.png
-              url: https://llama-cpp.jsnouff.net/
+            - title: Open WebUI
+              icon: $di:open-webui.png
+              url: https://openwebui.jsnouff.net/
             - title: Stable Diffusion
               icon: $di:hugging-face.png
               url: https://stable-diffusion.jsnouff.net

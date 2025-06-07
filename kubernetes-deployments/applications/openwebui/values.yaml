@@ -1,0 +1,104 @@
+openwebui:
+  enabled: true
+  global:
+    fullnameOverride: openwebui
+  defaultPodOptions:
+    dnsConfig:
+      options:
+        - name: ndots
+          value: "3"
+    securityContext:
+      seccompProfile:
+        type: RuntimeDefault
+  controllers:
+    openwebui:
+      type: deployment
+      strategy: Recreate
+      containers:
+        openwebui:
+          image:
+            repository: backplane/open-webui
+            tag: 0.6.13-ollama
+            pullPolicy: IfNotPresent
+          env:
+            TZ: "America/New_York"
+            WEBUI_AUTH: "false"
+            WEBUI_URL: https://openwebui.jsnouff.net
+            ENABLE_LITELLM: "true"
+            OLLAMA_BASE_URL: http://barenas.jsnouff.net:30068
+          resources:
+            requests:
+              cpu: 150m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+            capabilities:
+              drop:
+                - ALL
+          probes:
+            liveness: &lr-probe
+              enabled: true
+              type: HTTP
+              path: /
+              spec:
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                timeoutSeconds: 1
+                successThreshold: 1
+                failureThreshold: 3
+            readiness: *lr-probe
+            startup:
+              enabled: true
+              type: HTTP
+              path: /
+              spec:
+                initialDelaySeconds: 10
+                periodSeconds: 5
+                timeoutSeconds: 5
+                successThreshold: 1
+                failureThreshold: 10
+  service:
+    openwebui:
+      controller: openwebui
+      ports:
+        http:
+          port: &port 8080
+  ingress:
+    openwebui:
+      enabled: true
+      hosts:
+        - host: &domain openwebui.jsnouff.net
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: openwebui
+                port: *port
+      tls:
+        - hosts:
+            - *domain
+          secretName: tls-secret
+      annotations:
+        cert-manager.io/cluster-issuer: lets-encrypt-production
+        ingress.kubernetes.io/force-ssl-redirect: "true"
+        ingress.kubernetes.io/protocol: http
+        kubernetes.io/ingress.class: traefik
+        kubernetes.io/tls-acme: "true"
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls: "true"
+  persistence:
+    data:
+      enabled: true
+      accessMode: ReadWriteOnce
+      size: 2Gi
+      advancedMounts:
+        openwebui:
+          openwebui:
+            - path: /app/backend/data
+
