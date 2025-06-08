@@ -2,7 +2,7 @@
 {{- if .enabled }}
 {{- if not .initialInstall }}
 ---
-apiVersion: external-secrets.io/v1beta1
+apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
   name: infisical-auth-token

@@ -7,7 +7,7 @@ labeller:
 dp:
   image:
     repository: rocm/k8s-device-plugin
-    tag: "1.25.2.8"
+    tag: "1.31.0.6"
   resources:
     requests:
       cpu: 10m

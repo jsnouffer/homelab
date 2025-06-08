@@ -1,6 +1,6 @@
 {{- define "common.restic.credentials" }}
 ---
-apiVersion: external-secrets.io/v1beta1
+apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
   name: restic-backup-credentials
