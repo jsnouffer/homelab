@@ -151,6 +151,9 @@
             - title: Traefik (Octavia)
               icon: $di:traefik.png
               url: https://octavia.jsnouff.net/
+            - title: Traefik (TrueNas)
+              icon: $di:traefik.png
+              url: https://traefik.barenas.jsnouff.net/
             - title: UPS NMC
               icon: $di:apc.png
               url: https://apc.jsnouff.net

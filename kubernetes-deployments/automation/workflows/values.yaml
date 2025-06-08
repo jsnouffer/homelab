@@ -46,6 +46,11 @@ ghReleaseImageUpdater:
       gitopsRepo:
         filePath: applications/calibre/.argocd-source-calibre.yaml
         yamlPath: ".helm.parameters[3].value"
+    firefox:
+      ghRepo: jlesage/docker-firefox
+      gitopsRepo:
+        filePath: applications/firefox/.argocd-source-firefox.yaml
+        yamlPath: ".helm.parameters[1].value"
     lidarr:
       ghRepo: linuxserver/docker-lidarr
       gitopsRepo:

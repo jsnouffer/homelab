@@ -1,0 +1,8 @@
+helm:
+  parameters:
+    - name: komodo.controllers.komodo.containers.komodo.image.repository
+      value: ghcr.io/moghtech/komodo-core
+      forcestring: true
+    - name: komodo.controllers.komodo.containers.komodo.image.tag
+      value: 1.18.0
+      forcestring: true

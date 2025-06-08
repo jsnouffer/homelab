@@ -15,7 +15,7 @@ komodo:
         komodo:
           image: &komodo-image
             repository: ghcr.io/moghtech/komodo-core
-            tag: 1.18.0
+            tag: latest # overriden by ArgoCD helm parameters file
             pullPolicy: IfNotPresent
           env:
             KOMODO_HOST: https://komodo.jsnouff.net

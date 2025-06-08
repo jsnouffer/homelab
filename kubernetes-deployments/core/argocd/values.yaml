@@ -161,6 +161,7 @@ argocd-apps:
             argocd-image-updater.argoproj.io/image-list: >-
               bitwarden=vaultwarden/server,
               freshrss=freshrss/freshrss,
+              komodo=ghcr.io/moghtech/komodo-core,
               linkding=sissbruecker/linkding
 
             argocd-image-updater.argoproj.io/bitwarden.helm.image-name: bitwarden.controllers.main.containers.main.image.repository
@@ -168,6 +169,9 @@ argocd-apps:
 
             argocd-image-updater.argoproj.io/freshrss.helm.image-name: freshrss.controllers.main.containers.main.image.repository
             argocd-image-updater.argoproj.io/freshrss.helm.image-tag: freshrss.controllers.main.containers.main.image.tag
+
+            argocd-image-updater.argoproj.io/komodo.helm.image-name: komodo.controllers.komodo.containers.komodo.image.repository
+            argocd-image-updater.argoproj.io/komodo.helm.image-tag: komodo.controllers.komodo.containers.komodo.image.tag
 
             argocd-image-updater.argoproj.io/linkding.helm.image-name: linkding.controllers.main.containers.main.image.repository
             argocd-image-updater.argoproj.io/linkding.helm.image-tag: linkding.controllers.main.containers.main.image.tag

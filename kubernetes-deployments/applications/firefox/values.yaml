@@ -8,7 +8,7 @@ firefox:
         main:
           image:
             repository: jlesage/firefox
-            tag: v24.01.1
+            tag: latest # overriden by ArgoCD helm parameters file
           resources:
             requests:
               cpu: 500m

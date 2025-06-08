@@ -1,0 +1,8 @@
+helm:
+  parameters:
+    - name: firefox.controllers.main.containers.main.image.repository
+      value: jlesage/firefox
+      forcestring: true
+    - name: firefox.controllers.main.containers.main.image.tag
+      value: v24.01.1
+      forcestring: true
