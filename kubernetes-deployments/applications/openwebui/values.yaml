@@ -25,7 +25,7 @@ openwebui:
             WEBUI_AUTH: "false"
             WEBUI_URL: https://openwebui.jsnouff.net
             ENABLE_LITELLM: "true"
-            OLLAMA_BASE_URL: http://barenas.jsnouff.net:30068
+            OLLAMA_BASE_URL: https://ollama.jsnouff.net
           resources:
             requests:
               cpu: 150m
