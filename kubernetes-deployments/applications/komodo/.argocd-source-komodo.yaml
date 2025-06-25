@@ -4,5 +4,5 @@ helm:
     value: ghcr.io/moghtech/komodo-core
     forcestring: true
   - name: komodo.controllers.komodo.containers.komodo.image.tag
-    value: 1.18.3
+    value: 1.18.4
     forcestring: true
