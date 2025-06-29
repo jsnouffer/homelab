@@ -4,5 +4,5 @@ helm:
       value: jlesage/firefox
       forcestring: true
     - name: firefox.controllers.main.containers.main.image.tag
-      value: v25.06.1
+      value: v25.06.2
       forcestring: true
