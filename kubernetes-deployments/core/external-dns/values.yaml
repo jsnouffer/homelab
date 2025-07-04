@@ -32,7 +32,7 @@ external-dns-secondary:
   registry: noop
   env: *env
   extraArgs:
-    - --pihole-server=http://pihole-web.pihole
+    - --pihole-server=http://172.16.0.2
     # - --pihole-api-version=6
   resources: *resources
   serviceAccount:
