@@ -163,18 +163,21 @@
         - title: Networking
           color: 10 70 50
           links:
-            - title: Verizon Router
-              icon: $di:verizon.png
-              url: https://192.168.1.1/#/main
-            - title: Fios MoCA Adapter
-              icon: $di:verizon.png
-              url: http://192.168.1.2/home.html
-            - title: Pi-hole (Octavia)
+            - title: Firewalla
+              icon: $di:firewalla.png
+              url: https://my.firewalla.com/
+            - title: TP-Link Switch
+              icon: $di:tp-link.png
+              url: http://switch1.lan/
+            - title: TP-Link (JDeco)
+              icon: $di:tp-link.png
+              url: http://deco-main.lan/
+            - title: Pi-hole (Firewalla)
+              icon: $di:pi-hole.png
+              url: http://pihole-firewalla.jsnouff.net/admin/
+            - title: Pi-hole (Backup)
               icon: $di:pi-hole.png
               url: https://pihole.jsnouff.net/
-            - title: Pi-hole (Skaro)
-              icon: $di:pi-hole.png
-              url: https://pihole2-admin.jsnouff.net/
         - title: Storage
           color: 10 70 50
           links:
