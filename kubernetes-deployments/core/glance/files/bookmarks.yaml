@@ -40,6 +40,9 @@
             - title: RCON
               icon: $di:minecraft.png
               url: https://rcon.jsnouff.net/
+            - title: RomM
+              icon: $di:romm.png
+              url: https://romm.jsnouff.net
             - title: SearXNG
               icon: $di:searxng.png
               url: https://search.jsnouff.net/
@@ -157,6 +160,9 @@
             - title: UPS NMC
               icon: $di:apc.png
               url: https://apc.jsnouff.net
+            - title: UpSnap
+              icon: $di:upsnap.png
+              url: https://upsnap.jsnouff.net
             - title: Uptime Kuma
               icon: $di:uptime-kuma.png
               url: https://uptime.jsnouff.net

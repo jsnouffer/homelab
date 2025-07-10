@@ -1,0 +1,160 @@
+romm:
+  enabled: true
+  global:
+    fullnameOverride: &name romm
+  controllers:
+    romm:
+      type: deployment
+      strategy: Recreate
+      annotations:
+        reloader.stakater.com/auto: "true"
+        argocd.argoproj.io/sync-wave: "2"
+      containers:
+        romm:
+          image:
+            repository: rommapp/romm
+            tag: 3.10.2
+            pullPolicy: IfNotPresent
+          env:
+            DB_HOST: mariadb
+            DB_NAME: *name
+            DB_USER: *name
+            DB_PASSWD:
+              valueFrom:
+                secretKeyRef:
+                  key: mariadb-password
+                  name: db-credentials
+            ROMM_AUTH_SECRET_KEY:
+              valueFrom:
+                secretKeyRef:
+                  key: auth-secret-key
+                  name: romm-credentials
+            IGDB_CLIENT_ID:
+              valueFrom:
+                secretKeyRef:
+                  key: client-id
+                  name: igdb-credentials
+            IGDB_CLIENT_SECRET:
+              valueFrom:
+                secretKeyRef:
+                  key: client-secret
+                  name: igdb-credentials
+          resources:
+            requests:
+              cpu: 250m
+              memory: 256Mi
+            limits:
+              cpu: 2000m
+              memory: 2Gi
+          probes:
+            liveness: &lr-probe
+              enabled: true
+              type: HTTP
+              path: "/"
+              spec:
+                periodSeconds: 10
+                timeoutSeconds: 1
+                successThreshold: 1
+                failureThreshold: 3
+            readiness: *lr-probe
+            startup:
+              enabled: true
+              type: HTTP
+              path: "/"
+              spec:
+                initialDelaySeconds: 5
+                periodSeconds: 5
+                timeoutSeconds: 5
+                successThreshold: 1
+                failureThreshold: 30
+  service:
+    romm:
+      controller: *name
+      ports:
+        http:
+          port: &port 8080
+  ingress:
+    romm:
+      enabled: true
+      hosts:
+        - host: &domain romm.jsnouff.net
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: *name
+                port: *port
+      tls:
+        - hosts:
+            - *domain
+          secretName: tls-secret
+      annotations:
+        cert-manager.io/cluster-issuer: lets-encrypt-production
+        ingress.kubernetes.io/force-ssl-redirect: "true"
+        ingress.kubernetes.io/protocol: http
+        kubernetes.io/ingress.class: traefik
+        kubernetes.io/tls-acme: "true"
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls: "true"
+  persistence:
+    data:
+      enabled: true
+      accessMode: ReadWriteOnce
+      size: 1Gi
+      advancedMounts:
+        romm:
+          romm:
+            - path: /romm/resources
+              subPath: resources
+            - path: /romm/assets
+              subPath: assets
+    redis-data:
+      enabled: true
+      accessMode: ReadWriteOnce
+      size: 1Gi
+      advancedMounts:
+        romm:
+          romm:
+            - path: /redis-data
+    config:
+      enabled: true
+      type: configMap
+      name: romm-config
+      advancedMounts:
+        romm:
+          romm:
+            - path: /romm/config/config.yml
+              subPath: config.yml
+    nfs:
+      enabled: true
+      type: custom
+      volumeSpec:
+        nfs:
+          server: barenas.jsnouff.net
+          path: /mnt/plex/media/emulation
+      advancedMounts:
+        romm:
+          romm:
+            - path: /romm/library
+mariadb:
+  fullnameOverride: mariadb
+  auth:
+    username: *name
+    database: *name
+    existingSecret: db-credentials
+  primary:
+    persistence:
+      size: 1Gi
+    resources:
+      requests:
+        cpu: 10m
+        memory: 128Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+    pdb:
+      create: false
+  serviceAccount:
+    create: false

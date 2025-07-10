@@ -1,0 +1,17 @@
+apiVersion: v2
+name: romm
+version: 1.0.0
+dependencies:
+  - name: app-template
+    version: 4.1.1
+    repository: https://bjw-s-labs.github.io/helm-charts
+    alias: romm
+    condition: romm.enabled
+  - name: mariadb
+    version: 21.0.2
+    repository: oci://registry-1.docker.io/bitnamicharts
+    condition: romm.enabled
+  - name: common
+    version: ">0.0.0"
+    repository: "file://../../../charts/common/"
+    condition: romm.enabled

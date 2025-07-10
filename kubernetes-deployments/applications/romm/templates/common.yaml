@@ -1,0 +1,5 @@
+{{- with $.Values.romm }}
+{{- if .enabled }}
+{{- include "common.all" $ -}}
+{{- end }}
+{{- end }}
