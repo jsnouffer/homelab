@@ -90,7 +90,7 @@ lidarr:
       advancedMounts:
         main:
           main:
-            - path: /completed
+            - path: /completed/music
 
 common:
   resticBackups:
