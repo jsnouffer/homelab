@@ -148,6 +148,12 @@ spec:
       inputs:
         parameters:
         - name: node-name
+      synchronization:
+        mutexes:
+          - name: node-backups-copy-files
+      retryStrategy:
+        limit: "5"
+        retryPolicy: "Always"
       script:
         image: linuxserver/rsnapshot:1.4.5
         command: [bash]
