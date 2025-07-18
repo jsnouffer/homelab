@@ -22,8 +22,8 @@ romm:
             DB_PASSWD:
               valueFrom:
                 secretKeyRef:
-                  key: mariadb-password
-                  name: db-credentials
+                  key: password
+                  name: &db-secret db-credentials
             ROMM_AUTH_SECRET_KEY:
               valueFrom:
                 secretKeyRef:
@@ -138,23 +138,44 @@ romm:
         romm:
           romm:
             - path: /romm/library
-mariadb:
-  fullnameOverride: mariadb
-  auth:
-    username: *name
-    database: *name
-    existingSecret: db-credentials
-  primary:
-    persistence:
-      size: 1Gi
-    resources:
-      requests:
-        cpu: 10m
-        memory: 128Mi
-      limits:
-        cpu: 200m
-        memory: 256Mi
-    pdb:
-      create: false
-  serviceAccount:
-    create: false
+# mariadb:
+#   fullnameOverride: mariadb
+#   auth:
+#     username: *name
+#     database: *name
+#     existingSecret: db-credentials
+#   primary:
+#     persistence:
+#       size: 1Gi
+#     resources:
+#       requests:
+#         cpu: 10m
+#         memory: 128Mi
+#       limits:
+#         cpu: 200m
+#         memory: 256Mi
+#     pdb:
+#       create: false
+#   serviceAccount:
+#     create: false
+
+databases:
+  mariadb:
+    enabled: true
+    controllers:
+      mariadb:
+        containers:
+          mariadb:
+            env:
+              MARIADB_DATABASE: *name
+              MARIADB_USER: *name
+              MARIADB_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    key: password
+                    name: *db-secret
+              MARIADB_ROOT_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    key: password
+                    name: *db-secret

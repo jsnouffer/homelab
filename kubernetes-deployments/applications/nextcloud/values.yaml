@@ -14,6 +14,29 @@ nextcloud:
         value: *host
       - name: OVERWRITECLIURL
         value: https://nextcloud.jsnouff.net
+      - name: REDIS_HOST
+        value: valkey
+      - name: REDIS_HOST_PORT
+        value: '6379'
+    extraInitContainers:
+      - name: postgresql-isready
+        image: postgres:17.5
+        imagePullPolicy: IfNotPresent
+        command:
+          - sh
+          - '-c'
+          - >-
+            until pg_isready -h ${POSTGRES_HOST} -U ${POSTGRES_USER} ; do
+            sleep 2 ; done
+        env:
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                key: username
+                name: &db-secret postgres-credentials
+          - name: POSTGRES_HOST
+            value: nextcloud-postgresql
+
   persistence:
     enabled: true
     size: 2Gi
@@ -48,7 +71,7 @@ nextcloud:
     host: nextcloud-postgresql:5432
     existingSecret:
       enabled: true
-      secretName: &db-secret postgres-credentials
+      secretName: *db-secret
       usernameKey: username
       passwordKey: password
 
@@ -59,49 +82,33 @@ nextcloud:
     - *host
 
   postgresql:
+    enabled: false
+  redis:
+    enabled: false
+
+databases:
+  postgresql:
     enabled: true
     global:
+      fullnameOverride: nextcloud-postgresql
+    controllers:
       postgresql:
-        auth:
-          username: nextcloud
-          existingSecret: *db-secret
-          secretKeys:
-            adminPasswordKey: postgres-password
-            userPasswordKey: password
-            replicationPasswordKey: replication-password
-    primary:
-      resources:
-        requests:
-          cpu: 20m
-          memory: 32Mi
-        limits:
-          cpu: 250m
-          memory: 300Mi
-      persistence:
-        enabled: true
-        size: 1Gi
-      pdb:
-        create: false
-    serviceAccount:
-      create: false
-  redis:
+        containers:
+          postgresql:
+            env:
+              POSTGRES_DB: nextcloud
+              POSTGRES_USER:
+                valueFrom:
+                  secretKeyRef:
+                    key: username
+                    name: *db-secret
+              POSTGRES_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    key: password
+                    name: *db-secret
+  valkey:
     enabled: true
-    auth:
-      existingSecret: redis-credentials
-      existingSecretPasswordKey: password
-    architecture: standalone
-    master:
-      resources:
-        requests:
-          cpu: 10m
-          memory: 16Mi
-        limits:
-          cpu: 100m
-          memory: 64Mi
-      persistence:
-        size: 2Gi
-      pdb:
-        create: false
 
 common:
   resticBackups:
@@ -133,7 +140,7 @@ common:
         bucket: nextcloud-db-backup
         restoreVersion: latest
         tags:
-          - "postgresql:{{ $.Subcharts.nextcloud.Subcharts.postgresql.Chart.AppVersion }}"
+          - "{{ $.Subcharts.databases.Values.postgresql.controllers.postgresql.containers.postgresql.image.repository }}:{{ $.Subcharts.databases.Values.postgresql.controllers.postgresql.containers.postgresql.image.tag }}"
         affinity:
           podAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:

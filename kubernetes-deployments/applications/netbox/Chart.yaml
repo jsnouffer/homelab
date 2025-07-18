@@ -7,15 +7,11 @@ dependencies:
     repository: https://bjw-s-labs.github.io/helm-charts
     alias: netbox
     condition: netbox.enabled
-  - name: postgresql
-    version: 16.6.6
-    repository: oci://registry-1.docker.io/bitnamicharts
-    condition: netbox.enabled
-  - name: valkey
-    version: 3.0.3
-    repository: oci://registry-1.docker.io/bitnamicharts
-    condition: netbox.enabled
   - name: common
     version: ">0.0.0"
     repository: "file://../../../charts/common/"
+    condition: netbox.enabled
+  - name: databases
+    version: ">0.0.0"
+    repository: "file://../../../charts/databases/"
     condition: netbox.enabled

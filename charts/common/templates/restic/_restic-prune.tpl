@@ -49,7 +49,7 @@ spec:
                   mountPath: /snapshots
           containers:
             - name: save-snapshot-history
-              image: bitnami/kubectl:latest
+              image: dtzar/helm-kubectl:latest
               imagePullPolicy: Always
               command:
                 - /bin/bash

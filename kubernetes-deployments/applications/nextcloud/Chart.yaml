@@ -1,12 +1,16 @@
 apiVersion: v2
 name: nextcloud
-version: 29.0.4
+version: 31.0.7
 dependencies:
   - name: nextcloud
-    version: 5.5.2
+    version: 7.0.0
     repository: https://nextcloud.github.io/helm/
     condition: nextcloud.enabled
   - name: common
     version: ">0.0.0"
     repository: "file://../../../charts/common/"
+    condition: nextcloud.enabled
+  - name: databases
+    version: ">0.0.0"
+    repository: "file://../../../charts/databases/"
     condition: nextcloud.enabled

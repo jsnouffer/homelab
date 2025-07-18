@@ -2,9 +2,9 @@ apiVersion: v2
 name: tandoor-recipes
 version: 1.0.0
 dependencies:
-  - name: postgresql
-    version: 12.11.1
-    repository: oci://registry-1.docker.io/bitnamicharts
+  - name: databases
+    version: ">0.0.0"
+    repository: "file://../../../charts/databases/"
     condition: tandoor-recipes.enabled
   - name: common
     version: ">0.0.0"

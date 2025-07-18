@@ -2,18 +2,38 @@ mongodb:
   enabled: true
   fullnameOverride: mongodb
 
-  pdb:
-    create: false
-  serviceAccount:
-    create: false
-  networkPolicy:
-    enabled: false
+#   pdb:
+#     create: false
+#   serviceAccount:
+#     create: false
+#   networkPolicy:
+#     enabled: false
 
-  persistence:
-    size: 1Gi
+#   persistence:
+#     size: 1Gi
 
-  auth:
-    existingSecret: &mongo-secret mongodb-credentials
+#   auth:
+#     existingSecret: &mongo-secret mongodb-credentials
+
+databases:
+  mongodb:
+    enabled: true
+    controllers:
+      mongodb:
+        containers:
+          mongodb:
+            env:
+              MONGO_INITDB_ROOT_USERNAME:
+                valueFrom:
+                  secretKeyRef:
+                    key: mongodb-root-user
+                    name: &mongo-secret mongodb-credentials
+              MONGO_INITDB_ROOT_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    key: mongodb-root-password
+                    name: *mongo-secret
+
 
 express:
   global:

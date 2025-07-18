@@ -7,9 +7,9 @@ dependencies:
     repository: https://bjw-s-labs.github.io/helm-charts
     alias: wikijs
     condition: wikijs.enabled
-  - name: postgresql
-    version: 13.4.2
-    repository: oci://registry-1.docker.io/bitnamicharts
+  - name: databases
+    version: ">0.0.0"
+    repository: "file://../../../charts/databases/"
     condition: wikijs.enabled
   - name: common
     version: ">0.0.0"

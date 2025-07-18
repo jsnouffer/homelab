@@ -1,0 +1,24 @@
+apiVersion: v2
+name: databases
+version: 0.0.1
+dependencies:
+  - name: app-template
+    version: 4.1.2
+    repository: https://bjw-s-labs.github.io/helm-charts
+    alias: postgresql
+    condition: postgresql.enabled
+  - name: app-template
+    version: 4.1.2
+    repository: https://bjw-s-labs.github.io/helm-charts
+    alias: mariadb
+    condition: mariadb.enabled
+  - name: app-template
+    version: 4.1.2
+    repository: https://bjw-s-labs.github.io/helm-charts
+    alias: valkey
+    condition: valkey.enabled
+  - name: app-template
+    version: 4.1.2
+    repository: https://bjw-s-labs.github.io/helm-charts
+    alias: mongodb
+    condition: mongodb.enabled

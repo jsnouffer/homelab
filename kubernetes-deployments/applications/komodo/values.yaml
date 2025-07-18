@@ -13,7 +13,7 @@ komodo:
       strategy: RollingUpdate
       containers:
         komodo:
-          image: &komodo-image
+          image:
             repository: ghcr.io/moghtech/komodo-core
             tag: latest # overriden by ArgoCD helm parameters file
             pullPolicy: IfNotPresent
@@ -51,7 +51,7 @@ komodo:
               drop:
                 - ALL
           probes:
-            liveness: &lr-probe
+            liveness: &komodo-lr-probe
               enabled: true
               type: HTTP
               path: /
@@ -61,7 +61,7 @@ komodo:
                 timeoutSeconds: 1
                 successThreshold: 1
                 failureThreshold: 3
-            readiness: *lr-probe
+            readiness: *komodo-lr-probe
             startup:
               enabled: true
               type: HTTP
@@ -116,44 +116,35 @@ komodo:
             - path: /syncs
               subPath: syncs
 
-mongodb:
-  enabled: true
-  fullnameOverride: mongodb
-
-  pdb:
-    create: false
-  serviceAccount:
-    create: false
-  networkPolicy:
+databases:
+  mongodb:
     enabled: true
-  useStatefulSet: true
-  podAffinityPreset: soft
-
-  resources:
-    requests:
-      cpu: 50m
-      memory: 128Mi
-    limits:
-      cpu: 500m
-      memory: 512Mi
-
-  persistence:
-    size: 1Gi
-
-  auth:
-    existingSecret: &mongo-secret mongodb-credentials
+    controllers:
+      mongodb:
+        containers:
+          mongodb:
+            env:
+              MONGO_INITDB_ROOT_USERNAME:
+                valueFrom:
+                  secretKeyRef:
+                    key: mongodb-root-user
+                    name: mongodb-credentials
+              MONGO_INITDB_ROOT_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    key: mongodb-root-password
+                    name: mongodb-credentials
 
 common:
   resticBackups:
     enabled: true
     targets:
       komodo-db:
-        pvcName: datadir-mongodb-0
+        pvcName: data-mongodb-0
         bucket: komodo-db-backup
         restoreVersion: latest
         tags:
-          - "mongodb-image:{{ default $.Subcharts.mongodb.Chart.AppVersion ($.Subcharts.mongodb.Values.image.tag) }}"
-          - "mongodb-chart:{{ $.Subcharts.mongodb.Chart.Version }}"
+          - "mongodb-image:{{ $.Subcharts.databases.Values.mongodb.controllers.mongodb.containers.mongodb.image.tag }}"
           - "komodo-image:{{ $.Values.komodo.controllers.komodo.containers.komodo.image.tag }}"
         affinity:
           podAffinity:
