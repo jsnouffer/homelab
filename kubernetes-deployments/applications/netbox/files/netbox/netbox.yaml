@@ -1,9 +1,9 @@
 ALLOWED_HOSTS: ["*"]
 
 DATABASE:
-  HOST: {{ $.Values.postgresql.fullnameOverride }}
-  USER: {{ $.Values.postgresql.auth.username }}
-  NAME: {{ $.Values.postgresql.auth.database }}
+  HOST: postgresql
+  USER: netbox
+  NAME: netbox
   PORT: 5432
   OPTIONS:
     sslmode: prefer
@@ -85,13 +85,13 @@ RELEASE_CHECK_URL: null
 
 REDIS:
   tasks:
-    HOST: {{ $.Values.valkey.fullnameOverride }}-primary
+    HOST: valkey
     PORT: 6379
     DATABASE: 0
     SSL: false
     INSECURE_SKIP_TLS_VERIFY: false
   caching:
-    HOST: {{ $.Values.valkey.fullnameOverride }}-primary
+    HOST: valkey
     PORT: 6379
     DATABASE: 1
     SSL: false

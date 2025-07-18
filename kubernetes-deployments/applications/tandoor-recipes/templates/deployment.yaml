@@ -43,8 +43,8 @@ spec:
           - name: POSTGRES_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ $.Values.postgresql.auth.existingSecret }}
-                key: {{ $.Values.postgresql.auth.secretKeys.userPasswordKey }}
+                name: db-credentials
+                key: password
         image: vabene1111/recipes
         imagePullPolicy: Always
         command:
@@ -148,8 +148,8 @@ spec:
           - name: POSTGRES_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ $.Values.postgresql.auth.existingSecret }}
-                key: {{ $.Values.postgresql.auth.secretKeys.userPasswordKey }}
+                name: db-credentials
+                key: password
           - name: CSRF_TRUSTED_ORIGINS
             value: https://recipes.jsnouff.net,https://recipes.jsnouff.io
         securityContext:

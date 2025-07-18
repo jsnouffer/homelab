@@ -119,7 +119,7 @@ spec:
 
     - name: clone-repository
       script:
-        image: bitnami/git:2.44.0
+        image: {{ .gitImage }}
         command: [bash]
         workingDir: /repo
         source: |
@@ -222,7 +222,7 @@ spec:
 
     - name: check-git-working-tree
       script:
-        image: bitnami/git:2.44.0
+        image: {{ .gitImage }}
         command: [bash]
         workingDir: /repo
         source: |
@@ -239,7 +239,7 @@ spec:
 
     - name: push-changes
       script:
-        image: bitnami/git:2.44.0
+        image: {{ .gitImage }}
         command: [bash]
         workingDir: /repo
         source: |

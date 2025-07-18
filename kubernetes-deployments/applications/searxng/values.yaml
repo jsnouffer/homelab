@@ -51,7 +51,7 @@ searxng:
             pullPolicy: IfNotPresent
           env:
             SEARXNG_BASE_URL: https://search.jsnouff.net/
-            SEARXNG_REDIS_URL: redis://redis-master:6379/0
+            SEARXNG_REDIS_URL: redis://valkey:6379/0
             SEARXNG_SECRET:
               valueFrom:
                 secretKeyRef:
@@ -147,18 +147,6 @@ searxng:
           copy-configs:
             - path: /config-files
 
-redis:
-  fullnameOverride: redis
-  architecture: standalone
-  auth:
-    enabled: false
-  pdb:
-    create: false
-  master:
-    resources:
-      requests:
-        cpu: 25m
-        memory: 16Mi
-      limits:
-        cpu: 100m
-        memory: 64Mi
+databases:
+  valkey:
+    enabled: true

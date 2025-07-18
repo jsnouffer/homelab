@@ -205,10 +205,6 @@ netbox:
               items:
               - key: password
                 path: db_password
-              - key: password
-                path: redis_tasks_password
-              - key: password
-                path: redis_cache_password
       advancedMounts:
         netbox:
           netbox:
@@ -253,70 +249,23 @@ netbox:
           netbox:
             - path: /opt/unit
 
-postgresql:
-  fullnameOverride: postgresql
-  auth:
-    username: netbox
-    database: netbox
-    existingSecret: db-credentials
-    secretKeys:
-      adminPasswordKey: postgres-password
-      userPasswordKey: password
-      replicationPasswordKey: replication-password
-  primary:
-    persistence:
-      size: 1Gi
-    resources:
-      requests:
-        cpu: 20m
-        memory: 32Mi
-      limits:
-        cpu: 250m
-        memory: 300Mi
-    pdb:
-      create: false
-  serviceAccount:
-    create: false
-  backup:
+databases:
+  postgresql:
     enabled: true
-    cronjob:
-      command:
-        - /bin/bash
-        - -c
-        - |
-          set -e
-          set -o pipefail
-          find ${PGDUMP_DIR} -mtime +10 -type f -delete
-          PGPASSWORD="${PGPASSWORD:-$(< "$PGPASSWORD_FILE")}" pg_dumpall --clean --if-exists --load-via-partition-root --quote-all-identifiers --no-password --file="${PGDUMP_DIR}/pg_dumpall-$(date '+%Y-%m-%d-%H-%M').pgdump"
-          ls -lrth ${PGDUMP_DIR}
-      schedule: "0 12 * * *"
-      timeZone: America/New_York
-      concurrencyPolicy: Forbid
-      successfulJobsHistoryLimit: 1
-      failedJobsHistoryLimit: 1
-      ttlSecondsAfterFinished: 3600
-      storage:
-        size: 1Gi
-        subPath: pgdump
-
-valkey:
-  fullnameOverride: valkey
-  architecture: standalone
-  auth:
-    existingSecret: db-credentials
-    existingSecretPasswordKey: password
-  primary:
-    persistence:
-      size: 1Gi
-    resources:
-      requests:
-        cpu: 25m
-        memory: 32Mi
-      limits:
-        cpu: 250m
-        memory: 250Mi
-  serviceAccount:
-    create: false
+    controllers:
+      postgresql:
+        containers:
+          postgresql:
+            env:
+              POSTGRES_USER: netbox
+              POSTGRES_DB: netbox
+              POSTGRES_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    key: password
+                    name: db-credentials
+  valkey:
+    enabled: true
 
 common:
   resticBackups:
@@ -335,8 +284,7 @@ common:
         bucket: netbox-db-backup
         restoreVersion: latest
         tags:
-          - "postgresql-image:{{ default $.Subcharts.postgresql.Chart.AppVersion ($.Subcharts.postgresql.Values.image.tag) }}"
-          - "postgresql-chart:{{ $.Subcharts.postgresql.Chart.Version }}"
+          - "{{ $.Subcharts.databases.Values.postgresql.controllers.postgresql.containers.postgresql.image.repository }}:{{ $.Subcharts.databases.Values.postgresql.controllers.postgresql.containers.postgresql.image.tag }}"
         affinity:
           podAffinity:
             requiredDuringSchedulingIgnoredDuringExecution:
@@ -347,10 +295,3 @@ common:
                   values:
                   - postgresql-0
               topologyKey: kubernetes.io/hostname
-      netbox-pgdumpall:
-        pvcName: postgresql-pgdumpall
-        bucket: netbox-pgdumpall-backup
-        restoreVersion: latest
-        tags:
-          - "postgresql-image:{{ default $.Subcharts.postgresql.Chart.AppVersion ($.Subcharts.postgresql.Values.image.tag) }}"
-          - "postgresql-chart:{{ $.Subcharts.postgresql.Chart.Version }}"

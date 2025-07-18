@@ -13,7 +13,7 @@ komodo:
       strategy: RollingUpdate
       containers:
         komodo:
-          image: &komodo-image
+          image:
             repository: ghcr.io/moghtech/komodo-core
             tag: latest # overriden by ArgoCD helm parameters file
             pullPolicy: IfNotPresent
@@ -51,7 +51,7 @@ komodo:
               drop:
                 - ALL
           probes:
-            liveness: &lr-probe
+            liveness: &komodo-lr-probe
               enabled: true
               type: HTTP
               path: /
@@ -61,7 +61,7 @@ komodo:
                 timeoutSeconds: 1
                 successThreshold: 1
                 failureThreshold: 3
-            readiness: *lr-probe
+            readiness: *komodo-lr-probe
             startup:
               enabled: true
               type: HTTP
@@ -118,42 +118,99 @@ komodo:
 
 mongodb:
   enabled: true
-  fullnameOverride: mongodb
-
-  pdb:
-    create: false
-  serviceAccount:
-    create: false
-  networkPolicy:
-    enabled: true
-  useStatefulSet: true
-  podAffinityPreset: soft
-
-  resources:
-    requests:
-      cpu: 50m
-      memory: 128Mi
-    limits:
-      cpu: 500m
-      memory: 512Mi
-
-  persistence:
-    size: 1Gi
-
-  auth:
-    existingSecret: &mongo-secret mongodb-credentials
+  global:
+    fullnameOverride: mongodb
+  defaultPodOptions:
+    automountServiceAccountToken: false
+    securityContext:
+      seccompProfile:
+        type: RuntimeDefault
+  controllers:
+    mongodb:
+      type: statefulset
+      strategy: RollingUpdate
+      containers:
+        mongodb:
+          image:
+            repository: mongo
+            tag: 8.0.11
+            pullPolicy: IfNotPresent
+          env:
+            MONGO_INITDB_ROOT_USERNAME:
+              valueFrom:
+                secretKeyRef:
+                  key: mongodb-root-user
+                  name: mongodb-credentials
+            MONGO_INITDB_ROOT_PASSWORD:
+              valueFrom:
+                secretKeyRef:
+                  key: mongodb-root-password
+                  name: mongodb-credentials
+          resources:
+            requests:
+              cpu: 25m
+              memory: 250Mi
+            limits:
+              cpu: 500m
+              memory: 750Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+          probes:
+            liveness:
+              enabled: true
+              custom: true
+              spec:
+                exec:
+                  command:
+                    - /bin/sh
+                    - -c
+                    - >-
+                      mongosh --port 27017 --eval "db.adminCommand('ping')"
+                failureThreshold: 6
+                initialDelaySeconds: 30
+                periodSeconds: 20
+                successThreshold: 1
+                timeoutSeconds: 10
+            readiness:
+              enabled: true
+              custom: true
+              spec:
+                exec:
+                  command:
+                    - /bin/sh
+                    - -c
+                    - >-
+                      mongosh --port 27017 --eval 'if (!(db.hello().isWritablePrimary || db.hello().secondary)) { throw new Error("Not ready") }'
+                failureThreshold: 6
+                initialDelaySeconds: 10
+                periodSeconds: 10
+                successThreshold: 1
+                timeoutSeconds: 5
+      statefulset:
+        volumeClaimTemplates:
+          - name: data
+            accessMode: ReadWriteOnce
+            size: 1Gi
+            globalMounts:
+              - path: /data/db
+  service:
+    mongodb:
+      controller: mongodb
+      ports:
+        http:
+          port: 27017
 
 common:
   resticBackups:
     enabled: true
     targets:
       komodo-db:
-        pvcName: datadir-mongodb-0
+        pvcName: data-mongodb-0
         bucket: komodo-db-backup
         restoreVersion: latest
         tags:
-          - "mongodb-image:{{ default $.Subcharts.mongodb.Chart.AppVersion ($.Subcharts.mongodb.Values.image.tag) }}"
-          - "mongodb-chart:{{ $.Subcharts.mongodb.Chart.Version }}"
+          - "mongodb-image:{{ $.Values.mongodb.controllers.mongodb.containers.mongodb.image.tag }}"
           - "komodo-image:{{ $.Values.komodo.controllers.komodo.containers.komodo.image.tag }}"
         affinity:
           podAffinity:

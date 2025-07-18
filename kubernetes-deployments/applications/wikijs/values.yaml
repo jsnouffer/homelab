@@ -11,7 +11,7 @@ wikijs:
             tag: 2.5.301
           env:
             DB_TYPE: postgres
-            DB_HOST: &postgres-name postgresql
+            DB_HOST: postgresql
             DB_PORT: "5432"
             DB_NAME: &db wiki
             DB_USER: &db-user wiki
@@ -68,28 +68,28 @@ wikijs:
         traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
         traefik.ingress.kubernetes.io/router.tls: "true"
 
-postgresql:
-  fullnameOverride: *postgres-name
-  primary:
-    resources:
-      requests:
-        cpu: 20m
-        memory: 32Mi
-      limits:
-        cpu: 250m
-        memory: 300Mi
-    persistence:
-      size: 1Gi
-  auth:
-    username: *db-user
-    database: *db
-    existingSecret: *db-secret
-    secretKeys:
-      adminPasswordKey: postgres-password
-      userPasswordKey: *db-secret-key
-      replicationPasswordKey: replication-password
-  serviceAccount:
-    create: false
+databases:
+  postgresql:
+    enabled: true
+    controllers:
+      postgresql:
+        containers:
+          postgresql:
+            resources:
+              requests:
+                cpu: 25m
+                memory: 32Mi
+              limits:
+                cpu: 250m
+                memory: 300Mi
+            env:
+              POSTGRES_USER: *db-user
+              POSTGRES_DB: *db
+              POSTGRES_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    key: *db-secret-key
+                    name: *db-secret
 
 common:
   resticBackups:
@@ -99,6 +99,8 @@ common:
         pvcName: data-postgresql-0
         bucket: wikijs-postgresql-backup
         restoreVersion: latest
+        tags:
+          - "{{ $.Subcharts.databases.Values.postgresql.controllers.postgresql.containers.postgresql.image.repository }}:{{ $.Subcharts.databases.Values.postgresql.controllers.postgresql.containers.postgresql.image.tag }}"
         affinity:
           podAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:
