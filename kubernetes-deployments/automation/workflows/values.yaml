@@ -14,7 +14,7 @@ podGC:
 
 nodeBackups:
   resticImage: restic/restic:latest
-  kubectlImage: bitnami/kubectl:1.31.3
+  kubectlImage: dtzar/helm-kubectl:3.18
   s3Url: s3:http://barenas.jsnouff.net:9000
   s3Bucket: skaro-rke2-node-backups
   backupPruning:
@@ -26,6 +26,7 @@ nodeBackups:
     namespace: kube-system
 
 ghReleaseImageUpdater:
+  gitImage: gitea/gitea:1.24
   gitopsRepo:
     cloneUrl: git@github.com:jsnouffer/homelab.git
     basePath: kubernetes-deployments/
