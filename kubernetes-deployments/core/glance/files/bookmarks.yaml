@@ -22,9 +22,6 @@
             - title: FreshRSS
               icon: $di:freshrss.png
               url: https://freshrss.jsnouff.net/
-            - title: Kibana
-              icon: $di:kibana.png
-              url: https://kibana.jsnouff.net
             - title: Linkding
               icon: $di:linkding.png
               url: https://linkding.jsnouff.net/
