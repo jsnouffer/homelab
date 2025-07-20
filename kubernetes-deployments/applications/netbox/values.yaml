@@ -249,21 +249,18 @@ netbox:
           netbox:
             - path: /opt/unit
 
-databases:
+library:
   postgresql:
     enabled: true
-    controllers:
-      postgresql:
-        containers:
-          postgresql:
-            env:
-              POSTGRES_USER: netbox
-              POSTGRES_DB: netbox
-              POSTGRES_PASSWORD:
-                valueFrom:
-                  secretKeyRef:
-                    key: password
-                    name: db-credentials
+    database: netbox
+    username: netbox
+    password:
+      valueFrom:
+        secretKeyRef:
+          key: password
+          name: db-credentials
+
+databases:
   valkey:
     enabled: true
 
@@ -284,7 +281,7 @@ common:
         bucket: netbox-db-backup
         restoreVersion: latest
         tags:
-          - "{{ $.Subcharts.databases.Values.postgresql.controllers.postgresql.containers.postgresql.image.repository }}:{{ $.Subcharts.databases.Values.postgresql.controllers.postgresql.containers.postgresql.image.tag }}"
+          - "{{ $.Subcharts.library.Values.postgresql.image.repository }}:{{ $.Subcharts.library.Values.postgresql.image.tag }}"
         affinity:
           podAffinity:
             requiredDuringSchedulingIgnoredDuringExecution:

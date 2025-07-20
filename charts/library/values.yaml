@@ -1,0 +1,49 @@
+postgresql:
+  enabled: false
+  image:
+    repository: postgres
+    tag: 17.5
+  database:
+  username:
+  password:
+  port: 5432
+  resources:
+    limits:
+      cpu: 250m
+      memory: 300Mi
+    requests:
+      cpu: 25m
+      memory: 32Mi
+  storage: 1Gi
+  livenessProbe:
+    exec:
+      command:
+        - /bin/sh
+        - -c
+        - -e
+        - pg_isready -U "${POSTGRES_USER}" -d "dbname=${POSTGRES_DB}" -h 127.0.0.1 -p {{ .port }}
+    failureThreshold: 6
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 5
+  readinessProbe:
+    exec:
+      command:
+        - /bin/sh
+        - -c
+        - -e
+        - pg_isready -U "${POSTGRES_USER}" -d "dbname=${POSTGRES_DB}" -h 127.0.0.1 -p {{ .port }}
+    failureThreshold: 6
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 5
+  securityContext:
+    allowPrivilegeEscalation: false
+    privileged: false
+  podSecurityContext:
+    seccompProfile:
+      type: RuntimeDefault
+  snapshots:
+    enabled: true

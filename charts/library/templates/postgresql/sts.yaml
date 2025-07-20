@@ -1,0 +1,126 @@
+{{- with $.Values.postgresql }}
+{{- if .enabled }}
+{{ $name := default "postgresql" .nameOverride}}
+{{ $ctx := .}}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ $name }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: {{ $name }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/name: {{ $.Release.Name }}
+spec:
+  revisionHistoryLimit: {{ default 3 .revisionHistoryLimit }}
+  replicas: {{ default 1 .revisionHistoryLimit }}
+  podManagementPolicy: OrderedReady
+  serviceName: {{ $name }}
+  updateStrategy:
+    type: {{ default "RollingUpdate" .updateStrategy }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: {{ $name }}
+      app.kubernetes.io/name: {{ $.Release.Name }}
+      app.kubernetes.io/instance: {{ $.Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: {{ $name }}
+        app.kubernetes.io/instance: {{ $.Release.Name }}
+        app.kubernetes.io/name: {{ $.Release.Name }}
+    spec:
+      enableServiceLinks: false
+      serviceAccountName: default
+      automountServiceAccountToken: false
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      dnsPolicy: ClusterFirst
+      containers:
+        - name: {{ $name }}
+          image: {{ .image.repository }}:{{ .image.tag }}
+          imagePullPolicy: IfNotPresent
+          env:
+            {{- with .database }}
+            - name: POSTGRES_DB
+              {{- if kindIs "map" . -}}
+              {{ toYaml . | nindent 14 }}
+              {{- else }}
+              value: {{ . }}
+              {{- end }}
+            {{- end }}
+            {{- with .username }}
+            - name: POSTGRES_USER
+              {{- if kindIs "map" . -}}
+              {{ toYaml . | nindent 14 }}
+              {{- else }}
+              value: {{ . }}
+              {{- end }}
+            {{- end }}
+            {{- with .password }}
+            - name: POSTGRES_PASSWORD
+              {{- if kindIs "map" . -}}
+              {{ toYaml . | nindent 14 }}
+              {{- else }}
+              value: {{ . }}
+              {{- end }}
+            {{- end }}
+          livenessProbe: {{ tpl (toYaml .livenessProbe) . | nindent 12 }}
+          readinessProbe: {{ tpl (toYaml .readinessProbe) . | nindent 12 }}
+          resources: {{ toYaml .resources | nindent 12 }}
+          securityContext: {{ toYaml .podSecurityContext | nindent 12 }}
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: data
+              subPath: data
+            {{- with .snapshots }}
+            {{- if .enabled }}
+            - mountPath: /pgdump
+              name: data
+              subPath: pgdump
+            {{- end }}
+            {{- end }}
+        {{- with .snapshots }}
+        {{- if .enabled }}
+        - name: {{ $name }}-pgdump
+          image: {{ $ctx.image.repository }}:{{ $ctx.image.tag }}
+          imagePullPolicy: IfNotPresent
+          command: ["sleep", "infinity"]
+          env:
+            {{- with $ctx.username }}
+            - name: POSTGRES_USER
+              {{- if kindIs "map" . -}}
+              {{ toYaml . | nindent 14 }}
+              {{- else }}
+              value: {{ . }}
+              {{- end }}
+            {{- end }}
+            {{- with $ctx.password }}
+            - name: POSTGRES_PASSWORD
+              {{- if kindIs "map" . -}}
+              {{ toYaml . | nindent 14 }}
+              {{- else }}
+              value: {{ . }}
+              {{- end }}
+            {{- end }}
+          securityContext: {{ toYaml $ctx.podSecurityContext | nindent 12 }}
+          volumeMounts:
+            - mountPath: /pgdump
+              name: data
+              subPath: pgdump
+        {{- end }}
+        {{- end }}
+      securityContext: {{ toYaml .podSecurityContext | nindent 8 }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .storage }}
+{{- end }}
+{{- end }}

@@ -15,3 +15,7 @@ dependencies:
     version: ">0.0.0"
     repository: "file://../../../charts/databases/"
     condition: netbox.enabled
+  - name: library
+    version: ">0.0.0"
+    repository: "file://../../../charts/library/"
+    condition: netbox.enabled
