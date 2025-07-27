@@ -4,5 +4,5 @@ helm:
       value: lscr.io/linuxserver/sonarr
       forcestring: true
     - name: sonarr.controllers.main.containers.main.image.tag
-      value: 4.0.15.2941-ls288
+      value: 4.0.15.2941-ls289
       forcestring: true
