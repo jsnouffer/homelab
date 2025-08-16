@@ -8,7 +8,7 @@ rook-ceph:
       - effect: NoSchedule
         operator: Exists
     nfs:
-      enabled: true
+      enabled: false
 rook-ceph-cluster:
   enabled: true
   toolbox:
@@ -190,5 +190,5 @@ rook-ceph-cluster:
   cephObjectStores: {}
 
 cephNFS:
-  enabled: true
+  enabled: false
   name: ceph-nfs

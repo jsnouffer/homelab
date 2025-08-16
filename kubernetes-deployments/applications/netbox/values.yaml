@@ -4,22 +4,23 @@ netbox:
     fullnameOverride: netbox
   defaultPodOptions:
     automountServiceAccountToken: false
-    affinity:
-      podAffinity: &netbox-pod-affinity
-        requiredDuringSchedulingIgnoredDuringExecution:
-        - labelSelector:
-            matchExpressions:
-            - key: app.kubernetes.io/name
-              operator: In
-              values:
-              - netbox
-          topologyKey: kubernetes.io/hostname
     securityContext:
       fsGroup: 1000
       runAsNonRoot: true
   controllers:
     netbox:
       type: deployment
+      pod:
+        affinity:
+          podAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                  - worker
+              topologyKey: kubernetes.io/hostname
       initContainers:
         init-dirs:
           image:
@@ -80,6 +81,17 @@ netbox:
                 failureThreshold: 30
     worker:
       type: deployment
+      pod:
+        affinity:
+          podAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                  - netbox
+              topologyKey: kubernetes.io/hostname
       containers:
         netbox-worker:
           image: *netbox-image
@@ -99,6 +111,16 @@ netbox:
       type: cronjob
       pod:
         restartPolicy: OnFailure
+        affinity:
+          podAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                  - netbox
+              topologyKey: kubernetes.io/hostname
       containers:
         netbox-housekeeping:
           image: *netbox-image
@@ -275,7 +297,15 @@ common:
         tags:
           - "netbox-image:{{ $.Values.netbox.controllers.netbox.containers.netbox.image.tag }}"
         affinity:
-          podAffinity: *netbox-pod-affinity
+          podAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                  - netbox
+              topologyKey: kubernetes.io/hostname
       netbox-db:
         pvcName: data-postgresql-0
         bucket: netbox-db-backup
