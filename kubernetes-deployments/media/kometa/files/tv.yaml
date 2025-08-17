@@ -1,17 +1,9 @@
 collections:
-  # Classic TV Shows:
-  #   sync_mode: sync
-  #   builder_level: show
-  #   # url_poster: https://raw.githubusercontent.com/Kometa-Team/Default-Images/refs/heads/master/seasonal/christmas.jpg
-  #   smart_filter:
-  #     any:
-  #       decade:
-  #         - 1900
-  #         - 1910
-  #         - 1920
-  #         - 1930
-  #         - 1940
-  #         - 1950
-  #         - 1960
-  #         - 1970
-  #         - 1980
+  British Comedy:
+    sort_title: "!080_United Kingdom Comedy"
+    sync_mode: sync
+    url_poster: https://raw.githubusercontent.com/Kometa-Team/Default-Images/refs/heads/master/country/white/UK.jpg
+    smart_filter:
+      all:
+        country: United Kingdom
+        genre: Comedy

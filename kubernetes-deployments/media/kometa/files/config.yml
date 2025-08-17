@@ -22,22 +22,25 @@ libraries:
   TV Shows:
     remove_overlays: false
     collection_files:
-      # - file: config/tv.yaml
+      - file: config/tv.yaml
       - default: country
         template_variables:
           use_other: false
           use_separator: false
           style: color
           include:
+            - au
             - gb
           sort_by: title.asc
           run_definition: show
-      - default: network
+      - default: streaming
         template_variables:
           use_other: false
           use_separator: false
           include:
-            - Apple TV+
+            - appletv
+            - disney
+            - hulu
           sort_by: title.asc
           run_definition: show
       - default: decade
@@ -110,9 +113,9 @@ plex:
 tmdb:
   apikey: {{ `{{ .tmdb_api_key }}` }}
   language: en
-# tautulli:                            # Can be individually specified per library as well
-#   url: http://192.168.1.12:8181
-#   apikey: ################################
+tautulli:
+  url: https://tautulli.jsnouff.net
+  apikey: {{ `{{ .tautulli_api_key }}` }}
 # github:
 #   token: ################################
 # omdb:
