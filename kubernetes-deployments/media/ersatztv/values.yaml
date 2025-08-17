@@ -1,0 +1,91 @@
+ersatztv:
+  enabled: true
+  global:
+    fullnameOverride: ersatztv
+  defaultPodOptions:
+    automountServiceAccountToken: false
+    securityContext:
+      seccompProfile:
+        type: RuntimeDefault
+  controllers:
+    ersatztv:
+      type: deployment
+      strategy: Recreate
+      containers:
+        ersatztv:
+          image:
+            repository: ghcr.io/ersatztv/ersatztv
+            tag: latest # overriden by ArgoCD helm parameters file
+            pullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 2000m
+              memory: 1Gi
+            limits:
+              amd.com/gpu: 1
+              cpu: 8000m
+              memory: 8Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+            capabilities:
+              drop:
+                - ALL
+          probes:
+            liveness: &ersatztv-lr-probe
+              enabled: true
+              type: HTTP
+              path: /
+              spec:
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                timeoutSeconds: 1
+                successThreshold: 1
+                failureThreshold: 3
+            readiness: *ersatztv-lr-probe
+            startup:
+              enabled: true
+              type: HTTP
+              path: /
+              spec:
+                initialDelaySeconds: 0
+                periodSeconds: 5
+                timeoutSeconds: 5
+                successThreshold: 1
+                failureThreshold: 10
+  service:
+    ersatztv:
+      controller: ersatztv
+      ports:
+        http:
+          port: &port 8409
+  ingress:
+    ersatztv:
+      enabled: true
+      hosts:
+        - host: &domain ersatztv.jsnouff.net
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: ersatztv
+                port: *port
+      tls:
+        - hosts:
+            - *domain
+          secretName: tls-secret
+      annotations:
+        cert-manager.io/cluster-issuer: lets-encrypt-production
+        ingress.kubernetes.io/force-ssl-redirect: "true"
+        ingress.kubernetes.io/protocol: http
+        kubernetes.io/ingress.class: traefik
+        kubernetes.io/tls-acme: "true"
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls: "true"
+  persistence:
+    config:
+      enabled: true
+      accessMode: ReadWriteOnce
+      size: 1Gi

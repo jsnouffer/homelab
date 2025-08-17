@@ -1,0 +1,8 @@
+helm:
+  parameters:
+  - name: ersatztv.controllers.ersatztv.containers.ersatztv.image.repository
+    value: ghcr.io/ersatztv/ersatztv
+    forcestring: true
+  - name: ersatztv.controllers.ersatztv.containers.ersatztv.image.tag
+    value: v25.4.0
+    forcestring: true

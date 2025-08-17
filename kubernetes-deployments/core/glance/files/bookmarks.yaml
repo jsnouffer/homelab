@@ -55,6 +55,9 @@
             - title: Bazarr
               icon: $di:bazarr.png
               url: https://bazarr.jsnouff.net/
+            - title: ErsatzTV
+              icon: $di:ersatztv.png
+              url: https://ersatztv.jsnouff.net/
             - title: Lidarr
               icon: $di:lidarr.png
               url: https://lidarr.jsnouff.net/
