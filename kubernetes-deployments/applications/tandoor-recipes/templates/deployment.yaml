@@ -45,7 +45,7 @@ spec:
               secretKeyRef:
                 name: db-credentials
                 key: password
-        image: vabene1111/recipes
+        image: vabene1111/recipes:1.5
         imagePullPolicy: Always
         command:
         - sh
@@ -101,7 +101,7 @@ spec:
             subPath: nginx-config
             readOnly: true
       - name: recipes
-        image: vabene1111/recipes
+        image: vabene1111/recipes:1.5
         imagePullPolicy: IfNotPresent
         command:
           - /script/start-gunicorn.sh
@@ -156,11 +156,11 @@ spec:
           runAsUser: 0
         resources:
           requests:
-            cpu: 10m
+            cpu: 25m
             memory: 64Mi
           limits:
-            cpu: 250m
-            memory: 200Mi
+            cpu: 500m
+            memory: 300Mi
         volumeMounts:
           - name: recipes-pvc
             mountPath: /opt/recipes/mediafiles
