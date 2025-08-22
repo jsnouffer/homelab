@@ -20,13 +20,13 @@ gpu-operator:
           version: v1
           flags:
             migStrategy: none
-          sharing:
-            timeSlicing:
-              renameByDefault: false
-              failRequestsGreaterThanOne: true
-              resources:
-                - name: nvidia.com/gpu
-                  replicas: 4
+          # sharing:
+          #   timeSlicing:
+          #     renameByDefault: false
+          #     failRequestsGreaterThanOne: true
+          #     resources:
+          #       - name: nvidia.com/gpu
+          #         replicas: 4
 
   node-feature-discovery:
     fullnameOverride: node-feature-discovery
@@ -39,6 +39,19 @@ gpu-operator:
           cpu: 25m
           memory: 48Mi
     worker:
+      config:
+        core:
+          sources:
+            - pci
+            - cpu
+            - kernel
+            - system
+        sources:
+          cpu:
+            cpuid:
+              attributeWhitelist: [none]
+          kernel:
+            configOpts: []
       resources:
         requests:
           cpu: 5m
