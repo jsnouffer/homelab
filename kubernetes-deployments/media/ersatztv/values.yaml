@@ -11,6 +11,9 @@ ersatztv:
     ersatztv:
       type: deployment
       strategy: Recreate
+      pod:
+        priorityClassName: nvidia-gpu-priority
+        runtimeClassName: nvidia
       containers:
         ersatztv:
           image:
@@ -22,7 +25,7 @@ ersatztv:
               cpu: 2000m
               memory: 1Gi
             limits:
-              amd.com/gpu: 1
+              nvidia.com/gpu: 1
               cpu: 8000m
               memory: 8Gi
           securityContext:
@@ -56,9 +59,14 @@ ersatztv:
   service:
     ersatztv:
       controller: ersatztv
+      annotations:
+        metallb.universe.tf/ip-allocated-from-pool: ip-address-pool-100
+        metallb.universe.tf/loadBalancerIPs: 192.168.30.103
+        external-dns.alpha.kubernetes.io/hostname: ersatztv-tuner.jsnouff.net
       ports:
         http:
           port: &port 8409
+      type: LoadBalancer
   ingress:
     ersatztv:
       enabled: true
@@ -89,3 +97,26 @@ ersatztv:
       enabled: true
       accessMode: ReadWriteOnce
       size: 1Gi
+
+common:
+  resticBackups:
+    enabled: true
+    targets:
+      ersatztv-data:
+        pvcName: ersatztv
+        bucket: ersatztv-backup
+        restoreVersion: latest
+        tags:
+          - "ersatztv-image:{{ $.Values.ersatztv.controllers.ersatztv.containers.ersatztv.image.tag }}"
+        affinity:
+          podAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app.kubernetes.io/name
+                      operator: In
+                      values:
+                      - ersatztv
+                topologyKey: kubernetes.io/hostname
