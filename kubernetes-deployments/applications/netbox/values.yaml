@@ -13,14 +13,16 @@ netbox:
       pod:
         affinity:
           podAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                - key: app.kubernetes.io/component
-                  operator: In
-                  values:
-                  - worker
-              topologyKey: kubernetes.io/hostname
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app.kubernetes.io/component
+                      operator: In
+                      values:
+                      - worker
+                topologyKey: kubernetes.io/hostname
       initContainers:
         init-dirs:
           image:
@@ -84,14 +86,16 @@ netbox:
       pod:
         affinity:
           podAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                - key: app.kubernetes.io/component
-                  operator: In
-                  values:
-                  - netbox
-              topologyKey: kubernetes.io/hostname
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app.kubernetes.io/component
+                      operator: In
+                      values:
+                      - netbox
+                topologyKey: kubernetes.io/hostname
       containers:
         netbox-worker:
           image: *netbox-image
@@ -113,14 +117,16 @@ netbox:
         restartPolicy: OnFailure
         affinity:
           podAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                - key: app.kubernetes.io/component
-                  operator: In
-                  values:
-                  - netbox
-              topologyKey: kubernetes.io/hostname
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app.kubernetes.io/component
+                      operator: In
+                      values:
+                      - netbox
+                topologyKey: kubernetes.io/hostname
       containers:
         netbox-housekeeping:
           image: *netbox-image
@@ -298,14 +304,16 @@ common:
           - "netbox-image:{{ $.Values.netbox.controllers.netbox.containers.netbox.image.tag }}"
         affinity:
           podAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                - key: app.kubernetes.io/component
-                  operator: In
-                  values:
-                  - netbox
-              topologyKey: kubernetes.io/hostname
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app.kubernetes.io/component
+                      operator: In
+                      values:
+                      - netbox
+                topologyKey: kubernetes.io/hostname
       netbox-db:
         pvcName: data-postgresql-0
         bucket: netbox-db-backup
