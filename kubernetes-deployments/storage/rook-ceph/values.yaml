@@ -40,6 +40,7 @@ rook-ceph-cluster:
         - name: /dev/disk/by-id/scsi-SATA_PNY_CS900_500GB_PNY2350231211010034B
         - name: /dev/disk/by-id/scsi-SATA_PNY_CS900_500GB_PNY24152404080100184
         - name: /dev/disk/by-id/scsi-SATA_PNY_500GB_SATA_S_PNA4024237839AT01735
+        - name: /dev/disk/by-id/nvme-CT500P3SSD8_241147C3C09F
     mon:
       count: 3
     mgr:
