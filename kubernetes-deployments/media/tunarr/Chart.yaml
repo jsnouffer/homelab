@@ -1,0 +1,13 @@
+apiVersion: v2
+name: tunarr
+version: 1.0.0
+dependencies:
+  - name: app-template
+    version: 4.1.2
+    repository: https://bjw-s-labs.github.io/helm-charts
+    alias: tunarr
+    condition: tunarr.enabled
+  - name: common
+    version: ">0.0.0"
+    repository: "file://../../../charts/common/"
+    condition: tunarr.enabled

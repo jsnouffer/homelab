@@ -20,13 +20,13 @@ gpu-operator:
           version: v1
           flags:
             migStrategy: none
-          # sharing:
-          #   timeSlicing:
-          #     renameByDefault: false
-          #     failRequestsGreaterThanOne: true
-          #     resources:
-          #       - name: nvidia.com/gpu
-          #         replicas: 4
+          sharing:
+            timeSlicing:
+              renameByDefault: false
+              failRequestsGreaterThanOne: true
+              resources:
+                - name: nvidia.com/gpu
+                  replicas: 2
 
   node-feature-discovery:
     fullnameOverride: node-feature-discovery
