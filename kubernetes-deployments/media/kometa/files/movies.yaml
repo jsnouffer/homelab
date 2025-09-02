@@ -30,4 +30,16 @@ collections:
         - https://www.imdb.com/list/ls595762839
         - https://www.imdb.com/list/ls528208231
         - https://www.imdb.com/list/ls595533230
-
+  Classic Horror:
+    sync_mode: sync
+    builder_level: movie
+    filters:
+      release.after: 1/1/1800
+      release.before: 12/31/1989
+    imdb_list:
+        - https://www.imdb.com/list/ls073640797/
+        - https://www.imdb.com/list/ls028247286/
+        - https://www.imdb.com/list/ls076473017/
+        - https://www.imdb.com/list/ls045780400/
+        - https://www.imdb.com/list/ls545900646/
+        - https://www.imdb.com/list/ls507869415/
