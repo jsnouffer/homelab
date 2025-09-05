@@ -4,9 +4,9 @@ tunarr:
     fullnameOverride: tunarr
   defaultPodOptions:
     automountServiceAccountToken: false
-    # securityContext:
-    #   seccompProfile:
-    #     type: RuntimeDefault
+    securityContext:
+      seccompProfile:
+        type: RuntimeDefault
   controllers:
     tunarr:
       type: deployment
@@ -39,28 +39,28 @@ tunarr:
           #   capabilities:
           #     drop:
           #       - ALL
-          # probes:
-          #   liveness: &tunarr-lr-probe
-          #     enabled: true
-          #     type: HTTP
-          #     path: /
-          #     spec:
-          #       initialDelaySeconds: 0
-          #       periodSeconds: 10
-          #       timeoutSeconds: 1
-          #       successThreshold: 1
-          #       failureThreshold: 3
-          #   readiness: *tunarr-lr-probe
-          #   startup:
-          #     enabled: true
-          #     type: HTTP
-          #     path: /
-          #     spec:
-          #       initialDelaySeconds: 0
-          #       periodSeconds: 5
-          #       timeoutSeconds: 5
-          #       successThreshold: 1
-          #       failureThreshold: 10
+          probes:
+            liveness: &tunarr-lr-probe
+              enabled: true
+              type: HTTP
+              path: /
+              spec:
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                timeoutSeconds: 1
+                successThreshold: 1
+                failureThreshold: 3
+            readiness: *tunarr-lr-probe
+            startup:
+              enabled: true
+              type: HTTP
+              path: /
+              spec:
+                initialDelaySeconds: 0
+                periodSeconds: 5
+                timeoutSeconds: 5
+                successThreshold: 1
+                failureThreshold: 10
   service:
     tunarr:
       controller: tunarr
@@ -100,7 +100,8 @@ tunarr:
       advancedMounts:
         tunarr:
           tunarr:
-            - path: /config/tunarr
+            - path: /root/.local/share/tunarr
+              subPath: tunarr
 
 # common:
 #   resticBackups:
