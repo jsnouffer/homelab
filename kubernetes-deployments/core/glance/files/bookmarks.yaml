@@ -109,6 +109,9 @@
         - title: AI/ML
           color: 10 70 50
           links:
+            - title: Langflow
+              icon: https://avatars.githubusercontent.com/u/85702467
+              url: https://langflow.jsnouff.net/
             - title: Open WebUI
               icon: $di:open-webui.png
               url: https://openwebui.jsnouff.net/

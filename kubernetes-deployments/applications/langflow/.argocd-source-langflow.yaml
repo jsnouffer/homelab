@@ -1,0 +1,14 @@
+helm:
+  parameters:
+  - name: langflow.controllers.frontend.containers.langflow.image.repository
+    value: langflowai/langflow-frontend
+    forcestring: true
+  - name: langflow.controllers.frontend.containers.langflow.image.tag
+    value: 1.5.1
+    forcestring: true
+  - name: langflow.controllers.backend.containers.langflow.image.repository
+    value: langflowai/langflow
+    forcestring: true
+  - name: langflow.controllers.backend.containers.langflow.image.tag
+    value: 1.5.1
+    forcestring: true

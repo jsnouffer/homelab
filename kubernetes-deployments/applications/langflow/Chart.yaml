@@ -1,0 +1,17 @@
+apiVersion: v2
+name: langflow
+version: 1.0.0
+dependencies:
+  - name: app-template
+    version: 4.2.0
+    repository: https://bjw-s-labs.github.io/helm-charts
+    alias: langflow
+    condition: langflow.enabled
+  - name: databases
+    version: ">0.0.0"
+    repository: "file://../../../charts/databases/"
+    condition: langflow.enabled
+  - name: common
+    version: ">0.0.0"
+    repository: "file://../../../charts/common/"
+    condition: langflow.enabled

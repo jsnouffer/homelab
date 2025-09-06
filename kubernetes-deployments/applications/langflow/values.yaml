@@ -1,0 +1,222 @@
+langflow:
+  enabled: true
+  global:
+    fullnameOverride: langflow
+  defaultPodOptions:
+    securityContext:
+      fsGroup: 1000
+      runAsGroup: 1000
+      runAsNonRoot: true
+      runAsUser: 1000
+      seccompProfile:
+        type: RuntimeDefault
+  controllers:
+    frontend:
+      type: deployment
+      strategy: RollingUpdate
+      containers:
+        langflow:
+          image:
+            repository: langflowai/langflow-frontend
+            tag: latest # managed by ArgoCD Image Updater
+            pullPolicy: IfNotPresent
+          env:
+            BACKEND_URL: http://langflow-backend:7860
+            FRONTEND_PORT: "8080"
+          # resources:
+          #   requests:
+          #     cpu: 500m
+          #     memory: 1Gi
+          #   limits:
+          #     cpu: 1000m
+          #     memory: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsGroup: 1000
+            runAsNonRoot: true
+            runAsUser: 1000
+          probes:
+            liveness: &lr-probe
+              enabled: true
+              type: HTTP
+              path: /index.html
+              spec:
+                initialDelaySeconds: 5
+                periodSeconds: 10
+                timeoutSeconds: 5
+                successThreshold: 1
+                failureThreshold: 3
+            readiness: *lr-probe
+    backend:
+      annotations:
+        argocd.argoproj.io/sync-wave: "10"
+      type: statefulset
+      containers:
+        langflow:
+          image:
+            repository: langflowai/langflow
+            tag: latest # managed by ArgoCD Image Updater
+            pullPolicy: IfNotPresent
+          env:
+            LANGFLOW_BACKEND_ONLY: "true"
+            LANGFLOW_NUM_WORKERS: "1"
+            DO_NOT_TRACK: "true"
+            LANGFLOW_ALEMBIC_LOG_FILE: /tmp/alembic.log
+            LANGFLOW_AUTO_LOGIN: "false"
+            LANGFLOW_SUPERUSER:
+              valueFrom:
+                secretKeyRef:
+                  key: admin-user
+                  name: langflow-credentials
+            LANGFLOW_SUPERUSER_PASSWORD:
+              valueFrom:
+                secretKeyRef:
+                  key: admin-password
+                  name: langflow-credentials
+            LANGFLOW_SECRET_KEY:
+              valueFrom:
+                secretKeyRef:
+                  key: secret-key
+                  name: langflow-credentials
+            LANGFLOW_DATABASE_URL:
+              valueFrom:
+                secretKeyRef:
+                  key: uri
+                  name: &db-secret db-credentials
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+          #   limits:
+          #     cpu: 1000m
+          #     memory: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: false
+            runAsGroup: 1000
+            runAsNonRoot: true
+            runAsUser: 1000
+          probes:
+            liveness: &lr-probe
+              enabled: true
+              type: HTTP
+              path: /health
+              spec:
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                timeoutSeconds: 5
+                successThreshold: 1
+                failureThreshold: 3
+            readiness: *lr-probe
+            startup:
+              enabled: true
+              type: HTTP
+              path: /health
+              spec:
+                initialDelaySeconds: 15
+                periodSeconds: 5
+                timeoutSeconds: 5
+                successThreshold: 1
+                failureThreshold: 15
+  service:
+    frontend:
+      controller: frontend
+      ports:
+        http:
+          port: &frontend-port 8080
+    backend:
+      controller: backend
+      ports:
+        http:
+          port: 7860
+  ingress:
+    backend:
+      enabled: true
+      hosts:
+        - host: &domain langflow.jsnouff.net
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: langflow-frontend
+                port: *frontend-port
+      tls:
+        - hosts:
+            - *domain
+          secretName: tls-secret
+      annotations:
+        cert-manager.io/cluster-issuer: lets-encrypt-production
+        ingress.kubernetes.io/force-ssl-redirect: "true"
+        ingress.kubernetes.io/protocol: http
+        kubernetes.io/ingress.class: traefik
+        kubernetes.io/tls-acme: "true"
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls: "true"
+  persistence:
+    data:
+      type: emptyDir
+      advancedMounts:
+        frontend:
+          langflow:
+            - path: /var/cache/nginx
+              subPath: nginx
+            - path: /tmp
+              subPath: tmp
+        backend:
+          langflow:
+            - path: /tmp
+              subPath: tmp
+
+databases:
+  postgresql:
+    enabled: true
+    controllers:
+      postgresql:
+        containers:
+          postgresql:
+            resources:
+              requests:
+                cpu: 25m
+                memory: 32Mi
+              limits:
+                cpu: 250m
+                memory: 300Mi
+            env:
+              POSTGRES_USER: langflow
+              POSTGRES_DB: langflow
+              POSTGRES_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    key: password
+                    name: *db-secret
+
+common:
+  resticBackups:
+    enabled: true
+    targets:
+      langflow-db:
+        pvcName: data-postgresql-0
+        bucket: langflow-db-backup
+        restoreVersion: latest
+        tags:
+          - "{{ $.Values.langflow.controllers.backend.containers.langflow.image.repository }}:{{ $.Values.langflow.controllers.backend.containers.langflow.image.tag }}"
+          - "{{ $.Subcharts.databases.Values.postgresql.controllers.postgresql.containers.postgresql.image.repository }}:{{ $.Subcharts.databases.Values.postgresql.controllers.postgresql.containers.postgresql.image.tag }}"
+        affinity:
+          podAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: statefulset.kubernetes.io/pod-name
+                  operator: In
+                  values:
+                  - postgresql-0
+              topologyKey: kubernetes.io/hostname
