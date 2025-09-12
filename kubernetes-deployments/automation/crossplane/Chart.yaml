@@ -1,0 +1,14 @@
+apiVersion: v2
+name: crossplane
+home: https://crossplane.io
+icon: https://docs.crossplane.io/android-chrome-192x192.png
+sources:
+  - https://github.com/crossplane/crossplane/tree/main/cluster/charts/crossplane
+  - https://github.com/crossplane/crossplane
+  - https://github.com/crossplane/crossplane-runtime
+version: 2.0.2
+dependencies:
+  - name: crossplane
+    version: 2.0.2
+    repository: https://charts.crossplane.io/stable
+    condition: crossplane.enabled
