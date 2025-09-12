@@ -1,0 +1,40 @@
+---
+apiVersion: apiextensions.crossplane.io/v2
+kind: CompositeResourceDefinition
+metadata:
+  name: sharedvolumes.jsnouff.net
+spec:
+  scope: Cluster
+  group: jsnouff.net
+  names:
+    kind: SharedVolume
+    plural: sharedvolumes
+  versions:
+    - name: v1alpha1
+      served: true
+      referenceable: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                baseNamespace:
+                  type: string
+                  x-kubernetes-validations:
+                    - rule: "self == oldSelf"
+                      message: "baseNamespace field is immutable."
+                size:
+                  type: string
+                  pattern: '^[0-9]+(k|M|G|T)i?$'
+                storageClassName:
+                  type: string
+                  x-kubernetes-validations:
+                    - rule: "self == oldSelf"
+                      message: "storageClassName field is immutable."
+                sharedNamespaces:
+                  type: array
+                  items:
+                    type: string
+                  default: []

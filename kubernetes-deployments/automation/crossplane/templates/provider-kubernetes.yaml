@@ -1,0 +1,47 @@
+---
+apiVersion: pkg.crossplane.io/v1
+kind: Provider
+metadata:
+  name: upbound-provider-kubernetes
+spec:
+  package: xpkg.upbound.io/upbound/provider-kubernetes:v1
+  runtimeConfigRef:
+    name: kubernetes-config
+---
+apiVersion: pkg.crossplane.io/v1beta1
+kind: DeploymentRuntimeConfig
+metadata:
+  name: kubernetes-config
+spec:
+  serviceAccountTemplate:
+    metadata:
+      name: provider-kubernetes
+---
+apiVersion: kubernetes.m.crossplane.io/v1alpha1
+kind: ClusterProviderConfig
+metadata:
+  name: kubernetes-provider
+spec:
+  credentials:
+    source: InjectedIdentity
+---
+apiVersion: kubernetes.crossplane.io/v1alpha1
+kind: ProviderConfig
+metadata:
+  name: kubernetes-provider
+spec:
+  credentials:
+    source: InjectedIdentity
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: crossplane-provider-kubernetes-admin
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: provider-kubernetes
+  namespace: {{ $.Release.Namespace }}
