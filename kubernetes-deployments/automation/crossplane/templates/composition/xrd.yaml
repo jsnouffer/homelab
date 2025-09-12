@@ -1,0 +1,91 @@
+---
+apiVersion: apiextensions.crossplane.io/v2
+kind: CompositeResourceDefinition
+metadata:
+  name: sharedvolumes.jsnouff.net
+spec:
+  scope: Cluster
+  group: jsnouff.net
+  names:
+    kind: SharedVolume
+    plural: sharedvolumes
+  versions:
+    - name: v1alpha1
+      served: true
+      referenceable: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          required:
+            - spec
+          properties:
+            spec:
+              description: Specification of the desired behavior of the shared volume.
+              type: object
+              required:
+                - storageTemplate
+                - shareTemplate
+              properties:
+                storageTemplate:
+                  description: >
+                    Specified the parameters for provisioning the PersistentVolumeClaim used for
+                    the shared volume.
+                  type: object
+                  required:
+                    - namespace
+                    - size
+                    - storageClassName
+                  properties:
+                    namespace:
+                      description: >
+                        Target namespace for the PersistentVolumeClaim used to provision the shared
+                        storage.
+                      type: string
+                      x-kubernetes-validations:
+                        - rule: "self == oldSelf"
+                          message: "storageTemplate.namespace field is immutable."
+                    size:
+                      description: >
+                        Storage size of the PersistentVolumeClaim used to provision the shared
+                        storage.
+                      type: string
+                      pattern: '^[0-9]+(k|M|G|T)i?$'
+                    storageClassName:
+                      description: >
+                        Name of the StorageClass to use for the PersistentVolumeClaim used to
+                        provision the shared storage.
+                      type: string
+                      x-kubernetes-validations:
+                        - rule: "self == oldSelf"
+                          message: "storageTemplate.storageClassName field is immutable."
+                    deletionProtection:
+                      description: >
+                        Set to true to apply a finalizer to the top-level managed crossplane object
+                        to prevent deletion of the base PersistentVolumeClaim used to the shared
+                        storage. Optional: Default to false.
+                      type: boolean
+                      default: false
+                shareTemplate:
+                  description: Specified the parameters for how to share the volume.
+                  type: object
+                  properties:
+                    namespaces:
+                      description: >
+                        List of namespaces to provision PersistentVolumeClaim objects used to make
+                        the shared storage volume available.
+                      type: array
+                      items:
+                        type: string
+                      default: []
+                    labels:
+                      description: >
+                        Map of labels to apply to the shared PersistentVolumeClaim objects.
+                      type: object
+                      additionalProperties:
+                        type: string
+                    annotations:
+                      description: >
+                        Map of annotations to apply to the shared PersistentVolumeClaim objects.
+                      type: object
+                      additionalProperties:
+                        type: string
