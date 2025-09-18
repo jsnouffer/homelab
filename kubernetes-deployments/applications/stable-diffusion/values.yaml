@@ -12,6 +12,7 @@ stable-diffusion:
   controllers:
     automatic1111:
       type: deployment
+      replicas: 0
       pod:
         runtimeClassName: nvidia
         tolerations:

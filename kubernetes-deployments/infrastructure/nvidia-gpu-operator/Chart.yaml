@@ -1,8 +1,8 @@
 apiVersion: v2
 name: gpu-operator
-version: v25.3.2
+version: v25.3.3
 dependencies:
   - name: gpu-operator
-    version: v25.3.2
+    version: v25.3.3
     repository: https://helm.ngc.nvidia.com/nvidia
     condition: gpu-operator.enabled

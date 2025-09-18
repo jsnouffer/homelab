@@ -1,6 +1,7 @@
 gpu-operator:
   enabled: true
   toolkit:
+    enabled: false #FIXME: disavling due to https://github.com/NVIDIA/gpu-operator/issues/1694
     env:
       - name: CONTAINERD_CONFIG
         value: /var/lib/rancher/rke2/agent/etc/containerd/config.toml

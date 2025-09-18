@@ -1,8 +1,8 @@
 apiVersion: v2
 name: traefik
-version: v3.4.3
+version: v3.5.2
 dependencies:
   - name: traefik
-    version: 36.3.0
+    version: 37.1.1
     repository: https://traefik.github.io/charts
     condition: traefik.enabled

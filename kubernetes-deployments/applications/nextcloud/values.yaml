@@ -130,10 +130,10 @@ common:
               podAffinityTerm:
                 labelSelector:
                   matchExpressions:
-                  - key: app.kubernetes.io/name
+                  - key: app.kubernetes.io/component
                     operator: In
                     values:
-                    - nextcloud
+                    - app
                 topologyKey: kubernetes.io/hostname
       nextcloud-db:
         pvcName: data-nextcloud-postgresql-0
