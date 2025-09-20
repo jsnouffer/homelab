@@ -1,0 +1,131 @@
+trilium:
+  enabled: true
+  global:
+    fullnameOverride: trilium
+  defaultPodOptions:
+    automountServiceAccountToken: false
+    securityContext:
+      fsGroup: 1000
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+  controllers:
+    trilium:
+      type: deployment
+      strategy: Recreate
+      containers:
+        trilium:
+          image:
+            repository: triliumnext/trilium
+            tag: v0.98.1
+            pullPolicy: IfNotPresent
+          command:
+            - node
+          args:
+            - ./main.cjs
+          env:
+            TRILIUM_DATA_DIR: /home/node/trilium-data
+          resources:
+            requests:
+              cpu: 100m
+              memory: 75Mi
+            limits:
+              cpu: 500m
+              memory: 300Mi
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            privileged: false
+            capabilities:
+              drop:
+                - ALL
+          probes:
+            liveness: &lr-probe
+              enabled: true
+              custom: true
+              spec:
+                exec: &probe-exec-command
+                  command:
+                    - node
+                    - /usr/src/app/docker_healthcheck.cjs
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                timeoutSeconds: 2
+                successThreshold: 1
+                failureThreshold: 3
+            readiness: *lr-probe
+            startup:
+              enabled: true
+              custom: true
+              spec:
+                exec: *probe-exec-command
+                initialDelaySeconds: 10
+                periodSeconds: 5
+                timeoutSeconds: 2
+                successThreshold: 1
+                failureThreshold: 10
+  service:
+    trilium:
+      controller: trilium
+      ports:
+        http:
+          port: &port 8080
+  ingress:
+    trilium:
+      enabled: true
+      hosts:
+        - host: &domain trilium.jsnouff.net
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: trilium
+                port: *port
+      tls:
+        - hosts:
+            - *domain
+          secretName: tls-secret
+      annotations:
+        cert-manager.io/cluster-issuer: lets-encrypt-production
+        ingress.kubernetes.io/force-ssl-redirect: "true"
+        ingress.kubernetes.io/protocol: http
+        kubernetes.io/ingress.class: traefik
+        kubernetes.io/tls-acme: "true"
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls: "true"
+  persistence:
+    data:
+      enabled: true
+      accessMode: ReadWriteOnce
+      size: 2Gi
+      advancedMounts:
+        trilium:
+          trilium:
+            - path: /home/node/trilium-data
+
+common:
+  resticBackups:
+    enabled: true
+    targets:
+      trilium-data:
+        pvcName: trilium
+        bucket: trilium-backup
+        restoreVersion: latest
+        tags:
+          - "trilium-image:{{ $.Values.trilium.controllers.trilium.containers.trilium.image.tag }}"
+        affinity:
+          podAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app.kubernetes.io/name
+                      operator: In
+                      values:
+                      - trilium
+                topologyKey: kubernetes.io/hostname

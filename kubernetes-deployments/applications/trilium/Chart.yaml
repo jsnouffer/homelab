@@ -1,0 +1,13 @@
+apiVersion: v2
+name: trilium
+version: 1.0.0
+dependencies:
+  - name: common
+    version: ">0.0.0"
+    repository: "file://../../../charts/common/"
+    condition: trilium.enabled
+  - name: app-template
+    version: 4.2.0
+    repository: https://bjw-s-labs.github.io/helm-charts
+    alias: trilium
+    condition: trilium.enabled

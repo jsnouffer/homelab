@@ -46,6 +46,9 @@
             - title: Tandoor Recipes
               icon: $di:tandoor-recipes.png
               url: https://recipes.jsnouff.net/
+            - title: Trilium Notes
+              icon: $di:triliumnext.png
+              url: https://trilium.jsnouff.net/
             - title: Wiki.js
               icon: $di:wikijs.png
               url: https://wikijs.jsnouff.net/
