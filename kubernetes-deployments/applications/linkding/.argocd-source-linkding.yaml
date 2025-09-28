@@ -4,5 +4,5 @@ helm:
     value: sissbruecker/linkding
     forcestring: true
   - name: linkding.controllers.main.containers.main.image.tag
-    value: 1.42.0
+    value: 1.43.0
     forcestring: true
