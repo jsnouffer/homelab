@@ -1,41 +1,39 @@
-ersatztv:
+dispatcharr:
   enabled: true
   global:
-    fullnameOverride: ersatztv
+    fullnameOverride: dispatcharr
   defaultPodOptions:
     automountServiceAccountToken: false
     securityContext:
       seccompProfile:
         type: RuntimeDefault
   controllers:
-    ersatztv:
+    dispatcharr:
       type: deployment
       strategy: Recreate
-      pod:
-        priorityClassName: nvidia-gpu-priority
-        runtimeClassName: nvidia
       containers:
-        ersatztv:
+        dispatcharr:
           image:
-            repository: ghcr.io/ersatztv/ersatztv
+            repository: ghcr.io/dispatcharr/dispatcharr
             tag: latest # overriden by ArgoCD helm parameters file
             pullPolicy: IfNotPresent
+          env:
+            DISPATCHARR_ENV: prod
+            REDIS_HOST: valkey
+            CELERY_BROKER_URL: redis://valkey:6379/0
+            DISPATCHARR_LOG_LEVEL: info
           resources:
             requests:
-              cpu: 2000m
-              memory: 1Gi
+              cpu: 100m
+              memory: 750Mi
             limits:
-              nvidia.com/gpu: 1
-              cpu: 8000m
-              memory: 8Gi
+              cpu: 1000m
+              memory: 2Gi
           securityContext:
             allowPrivilegeEscalation: false
             privileged: false
-            capabilities:
-              drop:
-                - ALL
           probes:
-            liveness: &ersatztv-lr-probe
+            liveness: &dispatcharr-lr-probe
               enabled: true
               type: HTTP
               path: /
@@ -45,7 +43,7 @@ ersatztv:
                 timeoutSeconds: 1
                 successThreshold: 1
                 failureThreshold: 3
-            readiness: *ersatztv-lr-probe
+            readiness: *dispatcharr-lr-probe
             startup:
               enabled: true
               type: HTTP
@@ -57,21 +55,21 @@ ersatztv:
                 successThreshold: 1
                 failureThreshold: 10
   service:
-    ersatztv:
-      controller: ersatztv
+    dispatcharr:
+      controller: dispatcharr
       ports:
         http:
-          port: &port 8409
+          port: &port 9191
   ingress:
-    ersatztv:
+    dispatcharr:
       enabled: true
       hosts:
-        - host: &domain ersatztv.jsnouff.net
+        - host: &domain dispatcharr.jsnouff.net
           paths:
             - path: /
               pathType: Prefix
               service:
-                name: ersatztv
+                name: dispatcharr
                 port: *port
       tls:
         - hosts:
@@ -92,17 +90,26 @@ ersatztv:
       enabled: true
       accessMode: ReadWriteOnce
       size: 1Gi
+      advancedMounts:
+        dispatcharr:
+          dispatcharr:
+            - path: /data
+              subPath: data
+
+databases:
+  valkey:
+    enabled: true
 
 common:
   resticBackups:
     enabled: true
     targets:
-      ersatztv-data:
-        pvcName: ersatztv
-        bucket: ersatztv-backup
+      dispatcharr-data:
+        pvcName: dispatcharr
+        bucket: dispatcharr-backup
         restoreVersion: latest
         tags:
-          - "ersatztv-image:{{ $.Values.ersatztv.controllers.ersatztv.containers.ersatztv.image.tag }}"
+          - "dispatcharr-image:{{ $.Values.dispatcharr.controllers.dispatcharr.containers.dispatcharr.image.tag }}"
         affinity:
           podAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:
@@ -113,5 +120,5 @@ common:
                     - key: app.kubernetes.io/name
                       operator: In
                       values:
-                      - ersatztv
+                      - dispatcharr
                 topologyKey: kubernetes.io/hostname

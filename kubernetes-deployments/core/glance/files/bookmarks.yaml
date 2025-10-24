@@ -58,6 +58,9 @@
             - title: Bazarr
               icon: $di:bazarr.png
               url: https://bazarr.jsnouff.net/
+            - title: Dispatcharr
+              icon: $di:dispatcharr.png
+              url: https://dispatcharr.jsnouff.net/
             - title: ErsatzTV
               icon: $di:ersatztv.png
               url: https://ersatztv.jsnouff.net/
@@ -94,6 +97,9 @@
             - title: Tautulli
               icon: $di:tautulli.png
               url: https://tautulli.jsnouff.net/
+            - title: Tunarr
+              icon: $di:tunarr.png
+              url: https://tunarr.jsnouff.net/
         - title: Books
           color: 10 70 50
           links:

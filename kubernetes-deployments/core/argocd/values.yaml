@@ -328,10 +328,15 @@ argocd-apps:
             argocd-image-updater.argoproj.io/write-back-method: git
             argocd-image-updater.argoproj.io/git-branch: main:image-updater-{{`{{.SHA256}}`}}
             argocd-image-updater.argoproj.io/image-list: >-
-              audiobookshelf=advplyr/audiobookshelf
+              audiobookshelf=advplyr/audiobookshelf,
+              tunarr=ghcr.io/chrisbenincasa/tunarr
 
             argocd-image-updater.argoproj.io/audiobookshelf.helm.image-name: audiobookshelf.controllers.main.containers.main.image.repository
             argocd-image-updater.argoproj.io/audiobookshelf.helm.image-tag: audiobookshelf.controllers.main.containers.main.image.tag
+
+            argocd-image-updater.argoproj.io/tunarr.helm.image-name: tunarr.controllers.tunarr.containers.tunarr.image.repository
+            argocd-image-updater.argoproj.io/tunarr.helm.image-tag: tunarr.controllers.tunarr.containers.tunarr.image.tag
+            argocd-image-updater.argoproj.io/tunarr.ignore-tags: "*alpha*"
         spec:
           project: media
           source:

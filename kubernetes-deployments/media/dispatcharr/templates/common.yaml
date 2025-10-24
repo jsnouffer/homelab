@@ -1,0 +1,5 @@
+{{- with $.Values.dispatcharr }}
+{{- if .enabled }}
+{{- include "common.all" $ -}}
+{{- end }}
+{{- end }}
