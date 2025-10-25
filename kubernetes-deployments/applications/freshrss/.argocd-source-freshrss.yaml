@@ -4,5 +4,5 @@ helm:
     value: freshrss/freshrss
     forcestring: true
   - name: freshrss.controllers.main.containers.main.image.tag
-    value: "1.27.1"
+    value: 1.27.1
     forcestring: true
