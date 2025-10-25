@@ -160,7 +160,7 @@ argocd-apps:
             argocd-image-updater.argoproj.io/git-branch: main:image-updater-{{`{{.SHA256}}`}}
             argocd-image-updater.argoproj.io/image-list: >-
               bitwarden=vaultwarden/server,
-              freshrss=freshrss/freshrss,
+              freshrss=freshrss/freshrss:~1,
               komodo=ghcr.io/moghtech/komodo-core,
               linkding=sissbruecker/linkding
 
@@ -172,6 +172,7 @@ argocd-apps:
 
             argocd-image-updater.argoproj.io/komodo.helm.image-name: komodo.controllers.komodo.containers.komodo.image.repository
             argocd-image-updater.argoproj.io/komodo.helm.image-tag: komodo.controllers.komodo.containers.komodo.image.tag
+            argocd-image-updater.argoproj.io/komodo.ignore-tags: "*dev*"
 
             argocd-image-updater.argoproj.io/linkding.helm.image-name: linkding.controllers.main.containers.main.image.repository
             argocd-image-updater.argoproj.io/linkding.helm.image-tag: linkding.controllers.main.containers.main.image.tag
@@ -329,10 +330,14 @@ argocd-apps:
             argocd-image-updater.argoproj.io/git-branch: main:image-updater-{{`{{.SHA256}}`}}
             argocd-image-updater.argoproj.io/image-list: >-
               audiobookshelf=advplyr/audiobookshelf,
+              ersatztv=ghcr.io/ersatztv/ersatztv,
               tunarr=ghcr.io/chrisbenincasa/tunarr
 
             argocd-image-updater.argoproj.io/audiobookshelf.helm.image-name: audiobookshelf.controllers.main.containers.main.image.repository
             argocd-image-updater.argoproj.io/audiobookshelf.helm.image-tag: audiobookshelf.controllers.main.containers.main.image.tag
+
+            argocd-image-updater.argoproj.io/ersatztv.helm.image-name: ersatztv.controllers.ersatztv.containers.ersatztv.image.repository
+            argocd-image-updater.argoproj.io/ersatztv.helm.image-tag: ersatztv.controllers.ersatztv.containers.ersatztv.image.tag
 
             argocd-image-updater.argoproj.io/tunarr.helm.image-name: tunarr.controllers.tunarr.containers.tunarr.image.repository
             argocd-image-updater.argoproj.io/tunarr.helm.image-tag: tunarr.controllers.tunarr.containers.tunarr.image.tag
