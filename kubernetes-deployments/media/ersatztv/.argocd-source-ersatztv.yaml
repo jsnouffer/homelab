@@ -4,5 +4,5 @@ helm:
     value: ghcr.io/ersatztv/ersatztv
     forcestring: true
   - name: ersatztv.controllers.ersatztv.containers.ersatztv.image.tag
-    value: v25.4.0
+    value: v25.7.1
     forcestring: true
