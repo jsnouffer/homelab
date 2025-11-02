@@ -4,5 +4,5 @@ helm:
       value: lscr.io/linuxserver/lidarr
       forcestring: true
     - name: lidarr.controllers.main.containers.main.image.tag
-      value: 2.14.5.4836-ls8
+      value: 3.0.1.4866-ls10
       forcestring: true
