@@ -4,5 +4,5 @@ helm:
       value: lscr.io/linuxserver/nzbhydra2
       forcestring: true
     - name: nzbhydra2.controllers.main.containers.main.image.tag
-      value: v7.19.2-ls68
+      value: v8.0.0-ls70
       forcestring: true
