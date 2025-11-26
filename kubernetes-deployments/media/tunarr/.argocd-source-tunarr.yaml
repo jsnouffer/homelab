@@ -4,5 +4,5 @@ helm:
     value: ghcr.io/chrisbenincasa/tunarr
     forcestring: true
   - name: tunarr.controllers.tunarr.containers.tunarr.image.tag
-    value: 0.22.16
+    value: 0.22.17
     forcestring: true
