@@ -100,7 +100,8 @@ common:
     targets:
       radarr:
         pvcName: radarr-config
-        bucket: "b2:jsnouff-radarr"
+        bucket: jsnouff-radarr
+        type: b2
         restoreVersion: latest
         tags:
           - "{{ $.Values.radarr.controllers.main.containers.main.image.repository }}:{{ $.Values.radarr.controllers.main.containers.main.image.tag }}"

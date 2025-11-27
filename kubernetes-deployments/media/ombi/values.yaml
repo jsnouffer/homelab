@@ -83,7 +83,8 @@ common:
     targets:
       ombi:
         pvcName: ombi-config
-        bucket: "b2:jsnouff-ombi"
+        bucket: jsnouff-ombi
+        type: b2
         restoreVersion: latest
         tags:
           - "{{ $.Values.ombi.controllers.main.containers.main.image.repository }}:{{ $.Values.ombi.controllers.main.containers.main.image.tag }}"

@@ -98,7 +98,8 @@ common:
     targets:
       lidarr:
         pvcName: lidarr-config
-        bucket: "b2:jsnouff-lidarr"
+        bucket: jsnouff-lidarr
+        type: b2
         restoreVersion: latest
         tags:
           - "{{ $.Values.lidarr.controllers.main.containers.main.image.repository }}:{{ $.Values.lidarr.controllers.main.containers.main.image.tag }}"

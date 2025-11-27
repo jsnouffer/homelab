@@ -103,7 +103,8 @@ common:
     targets:
       nzbhydra2:
         pvcName: nzbhydra2-config
-        bucket: "b2:jsnouff-nzbhydra2"
+        bucket: jsnouff-nzbhydra2
+        type: b2
         restoreVersion: latest
         tags:
           - "{{ $.Values.nzbhydra2.controllers.main.containers.main.image.repository }}:{{ $.Values.nzbhydra2.controllers.main.containers.main.image.tag }}"

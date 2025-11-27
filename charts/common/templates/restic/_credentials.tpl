@@ -19,6 +19,14 @@ spec:
       remoteRef:
         key: /restic/backblaze
         property: applicationKey
+    - secretKey: b2-s3-access-key-id
+      remoteRef:
+        key: /restic/backblaze
+        property: s3-access-key-id
+    - secretKey: b2-s3-secret-access-key
+      remoteRef:
+        key: /restic/backblaze
+        property: s3-secret-access-key
     - secretKey: s3AccessKey
       remoteRef:
         key: /restic/minio

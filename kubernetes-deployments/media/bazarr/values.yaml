@@ -92,7 +92,8 @@ common:
     targets:
       bazarr-data:
         pvcName: bazarr-config
-        bucket: "b2:jsnouff-bazarr"
+        bucket: jsnouff-bazarr
+        type: b2
         restoreVersion: latest
         tags:
           - "{{ $.Values.bazarr.controllers.main.containers.main.image.repository }}:{{ $.Values.bazarr.controllers.main.containers.main.image.tag }}"

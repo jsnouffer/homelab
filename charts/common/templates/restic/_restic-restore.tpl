@@ -39,9 +39,15 @@ spec:
               - name: RESTIC_REPOSITORY
                 value: {{ $value.bucket | quote }}
             {{- else }}
+            {{- if eq $value.type "b2" }}
+            env: {{ toYaml $ctx.env.backblazeS3 | nindent 14 }}
+              - name: RESTIC_REPOSITORY
+                value: {{ printf "%s/%s" $ctx.backblazeUrl $value.bucket | quote }}
+            {{- else }}
             env: {{ toYaml $ctx.env.s3 | nindent 14 }}
               - name: RESTIC_REPOSITORY
                 value: {{ printf "%s/%s" $ctx.minioUrl $value.bucket | quote }}
+            {{- end }}
             {{- end }}
             volumeMounts:
             - mountPath: /data

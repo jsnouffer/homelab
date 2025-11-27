@@ -85,7 +85,8 @@ common:
     targets:
       overseerr-data:
         pvcName: overseerr-config
-        bucket: "b2:jsnouff-overseerr"
+        bucket: jsnouff-overseerr
+        type: b2
         restoreVersion: latest
         tags:
           - "{{ $.Values.overseerr.controllers.main.containers.main.image.repository }}:{{ $.Values.overseerr.controllers.main.containers.main.image.tag }}"

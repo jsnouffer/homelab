@@ -98,7 +98,8 @@ common:
     targets:
       sonarr:
         pvcName: sonarr-config
-        bucket: "b2:jsnouff-sonarr"
+        bucket: jsnouff-sonarr
+        type: b2
         restoreVersion: latest
         tags:
           - "{{ $.Values.sonarr.controllers.main.containers.main.image.repository }}:{{ $.Values.sonarr.controllers.main.containers.main.image.tag }}"

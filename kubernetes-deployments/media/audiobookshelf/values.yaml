@@ -94,7 +94,8 @@ common:
     targets:
       audiobookshelf:
         pvcName: audiobookshelf-config
-        bucket: "b2:jsnouff-audiobookshelf"
+        bucket: jsnouff-audiobookshelf
+        type: b2
         restoreVersion: latest
         tags:
           - "{{ $.Values.audiobookshelf.controllers.main.containers.main.image.repository }}:{{ $.Values.audiobookshelf.controllers.main.containers.main.image.tag }}"

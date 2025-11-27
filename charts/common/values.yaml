@@ -25,6 +25,25 @@ resticBackups:
             name: restic-backup-credentials
             key: b2ApplicationKey
             optional: false
+    backblazeS3:
+      - name: RESTIC_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: restic-backup-credentials
+            key: resticKey
+            optional: false
+      - name: AWS_ACCESS_KEY_ID
+        valueFrom:
+          secretKeyRef:
+            name: restic-backup-credentials
+            key: b2-s3-access-key-id
+            optional: false
+      - name: AWS_SECRET_ACCESS_KEY
+        valueFrom:
+          secretKeyRef:
+            name: restic-backup-credentials
+            key: b2-s3-secret-access-key
+            optional: false
     s3:
       - name: RESTIC_PASSWORD
         valueFrom:
@@ -54,3 +73,4 @@ resticBackups:
     enabled: true
     schedule: "0 0 * * *" # Every 12 hours
   minioUrl: s3:http://barenas.jsnouff.net:9000
+  backblazeUrl: s3:https://s3.us-east-005.backblazeb2.com

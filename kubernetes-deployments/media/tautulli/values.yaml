@@ -82,7 +82,8 @@ common:
     targets:
       tautulli-data:
         pvcName: tautulli-config
-        bucket: "b2:jsnouff-tautulli"
+        bucket: jsnouff-tautulli
+        type: b2
         restoreVersion: latest
         tags:
           - "{{ $.Values.tautulli.controllers.main.containers.main.image.repository }}:{{ $.Values.tautulli.controllers.main.containers.main.image.tag }}"

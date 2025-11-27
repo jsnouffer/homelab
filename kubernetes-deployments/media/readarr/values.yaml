@@ -91,26 +91,3 @@ readarr:
         main:
           main:
             - path: /completed
-
-common:
-  resticBackups:
-    enabled: true
-    targets:
-      readarr:
-        pvcName: readarr-config
-        bucket: "b2:jsnouff-readarr"
-        restoreVersion: latest
-        tags:
-          - "{{ $.Values.readarr.controllers.main.containers.main.image.repository }}:{{ $.Values.readarr.controllers.main.containers.main.image.tag }}"
-        affinity:
-          podAffinity:
-            preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              podAffinityTerm:
-                labelSelector:
-                  matchExpressions:
-                  - key: app.kubernetes.io/name
-                    operator: In
-                    values:
-                    - *name
-                topologyKey: kubernetes.io/hostname
