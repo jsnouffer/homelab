@@ -29,6 +29,8 @@ searxng:
   controllers:
     searxng:
       type: deployment
+      annotations:
+        reloader.stakater.com/auto: "true"
       replicas: 2
       strategy: RollingUpdate
       initContainers:
@@ -47,11 +49,11 @@ searxng:
         main:
           image:
             repository: searxng/searxng
-            tag: 2025.10.23-e363db970
+            tag: 2025.12.4-8c631b92c
             pullPolicy: IfNotPresent
           env:
             SEARXNG_BASE_URL: https://search.jsnouff.net/
-            SEARXNG_REDIS_URL: redis://valkey:6379/0
+            SEARXNG_REDIS_URL: redis://dragonfly:6379/0
             SEARXNG_SECRET:
               valueFrom:
                 secretKeyRef:
@@ -148,5 +150,12 @@ searxng:
             - path: /config-files
 
 databases:
-  valkey:
+  dragonfly:
     enabled: true
+    controllers:
+      dragonfly:
+        statefulset:
+          volumeClaimTemplates: []
+    persistence:
+      data:
+        enabled: true

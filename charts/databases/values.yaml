@@ -245,6 +245,95 @@ valkey:
         http:
           port: 6379
 
+dragonfly:
+  enabled: false
+  global:
+    fullnameOverride: dragonfly
+  defaultPodOptions:
+    automountServiceAccountToken: false
+    securityContext:
+      fsGroup: 1000
+      seccompProfile:
+        type: RuntimeDefault
+  controllers:
+    dragonfly:
+      type: statefulset
+      strategy: RollingUpdate
+      serviceAccount:
+        name: default
+      containers:
+        dragonfly:
+          image:
+            repository: ghcr.io/dragonflydb/dragonfly
+            tag: v1.35.1
+            pullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              cpu: 250m
+              memory: 500Mi
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          probes:
+            liveness:
+              enabled: true
+              custom: true
+              spec:
+                exec:
+                  command:
+                    - /bin/sh
+                    - /usr/local/bin/healthcheck.sh
+                initialDelaySeconds: 10
+                periodSeconds: 10
+                timeoutSeconds: 5
+                failureThreshold: 3
+                successThreshold: 1
+            readiness:
+              enabled: true
+              custom: true
+              spec:
+                exec:
+                  command:
+                    - /bin/sh
+                    - /usr/local/bin/healthcheck.sh
+                initialDelaySeconds: 10
+                periodSeconds: 10
+                timeoutSeconds: 5
+                failureThreshold: 3
+                successThreshold: 1
+      statefulset:
+        volumeClaimTemplates:
+          - name: data
+            accessMode: ReadWriteOnce
+            size: 1Gi
+            globalMounts:
+              - path: /data
+                subPath: data
+  persistence:
+    data:
+      enabled: false
+      type: emptyDir
+      medium: Memory
+      sizeLimit: 500Mi
+      advancedMounts:
+        dragonfly:
+          dragonfly:
+            - path: /data
+  service:
+    dragonfly:
+      controller: dragonfly
+      ports:
+        http:
+          port: 6379
+
 mongodb:
   enabled: false
   global:

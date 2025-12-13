@@ -20,5 +20,10 @@ dependencies:
   - name: app-template
     version: 4.1.2
     repository: https://bjw-s-labs.github.io/helm-charts
+    alias: dragonfly
+    condition: dragonfly.enabled
+  - name: app-template
+    version: 4.1.2
+    repository: https://bjw-s-labs.github.io/helm-charts
     alias: mongodb
     condition: mongodb.enabled

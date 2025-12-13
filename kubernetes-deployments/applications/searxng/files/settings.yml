@@ -1,16 +1,19 @@
 # see https://docs.searxng.org/admin/settings/settings.html#settings-use-default-settings
 use_default_settings: true
+
 server:
   limiter: false
   image_proxy: true
+
 search:
   safe_search: 0
   autocomplete: google
+
 ui:
   static_use_hash: true
   infinite_scroll: true
-redis:
-  url: redis://redis-master:6379/0
+  query_in_title: true
+  center_alignment: false
 
 enabled_plugins:
   - 'Hash plugin'
