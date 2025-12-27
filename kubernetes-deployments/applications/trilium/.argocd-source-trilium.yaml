@@ -1,0 +1,8 @@
+helm:
+  parameters:
+  - name: trilium.controllers.trilium.containers.trilium.image.repository
+    value: triliumnext/trilium
+    forcestring: true
+  - name: trilium.controllers.trilium.containers.trilium.image.tag
+    value: v0.98.1
+    forcestring: true

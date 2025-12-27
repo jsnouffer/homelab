@@ -162,7 +162,8 @@ argocd-apps:
               bitwarden=vaultwarden/server,
               freshrss=freshrss/freshrss:~1,
               komodo=ghcr.io/moghtech/komodo-core,
-              linkding=sissbruecker/linkding
+              linkding=sissbruecker/linkding,
+              trilium=triliumnext/trilium
 
             argocd-image-updater.argoproj.io/bitwarden.helm.image-name: bitwarden.controllers.main.containers.main.image.repository
             argocd-image-updater.argoproj.io/bitwarden.helm.image-tag: bitwarden.controllers.main.containers.main.image.tag
@@ -176,6 +177,9 @@ argocd-apps:
 
             argocd-image-updater.argoproj.io/linkding.helm.image-name: linkding.controllers.main.containers.main.image.repository
             argocd-image-updater.argoproj.io/linkding.helm.image-tag: linkding.controllers.main.containers.main.image.tag
+
+            argocd-image-updater.argoproj.io/trilium.helm.image-name: trilium.controllers.trilium.containers.trilium.image.repository
+            argocd-image-updater.argoproj.io/trilium.helm.image-tag: trilium.controllers.trilium.containers.trilium.image.tag
         spec:
           project: applications
           source:
