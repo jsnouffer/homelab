@@ -112,6 +112,9 @@
             - title: Calibre Web
               icon: $di:calibre-web.png
               url: https://calibre-web.jsnouff.net/
+            - title: Listenarr
+              icon: https://raw.githubusercontent.com/therobbiedavis/Listenarr/refs/heads/canary/.github/logo-icon.png
+              url: https://listenarr.jsnouff.net/
             - title: Readarr
               icon: $di:readarr.png
               url: https://readarr.jsnouff.net/

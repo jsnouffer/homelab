@@ -1,0 +1,8 @@
+helm:
+  parameters:
+  - name: listenarr.controllers.listenarr.containers.listenarr.image.repository
+    value: ghcr.io/therobbiedavis/listenarr
+    forcestring: true
+  - name: listenarr.controllers.listenarr.containers.listenarr.image.tag
+    value: canary-0.2.45
+    forcestring: true

@@ -1,0 +1,147 @@
+listenarr:
+  enabled: true
+  global:
+    fullnameOverride: listenarr
+  defaultPodOptions:
+    automountServiceAccountToken: false
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
+      fsGroupChangePolicy: Always
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+  controllers:
+    listenarr:
+      type: deployment
+      strategy: Recreate
+      containers:
+        listenarr:
+          image:
+            repository: ghcr.io/therobbiedavis/listenarr
+            tag: canary # overriden by ArgoCD helm parameters file
+            pullPolicy: IfNotPresent
+          env:
+            LISTENARR_PUBLIC_URL: https://listenarr.jsnouff.net
+          resources:
+            requests:
+              cpu: 25m
+              memory: 512Mi
+            limits:
+              cpu: 250m
+              memory: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+            capabilities:
+              drop:
+                - ALL
+          probes:
+            liveness: &listenarr-lr-probe
+              enabled: true
+              type: HTTP
+              path: /
+              spec:
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                timeoutSeconds: 1
+                successThreshold: 1
+                failureThreshold: 3
+            readiness: *listenarr-lr-probe
+            startup:
+              enabled: true
+              type: HTTP
+              path: /
+              spec:
+                initialDelaySeconds: 0
+                periodSeconds: 5
+                timeoutSeconds: 5
+                successThreshold: 1
+                failureThreshold: 10
+  service:
+    listenarr:
+      controller: listenarr
+      ports:
+        http:
+          port: &port 5000
+  ingress:
+    listenarr:
+      enabled: true
+      hosts:
+        - host: &domain listenarr.jsnouff.net
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: listenarr
+                port: *port
+      tls:
+        - hosts:
+            - *domain
+          secretName: tls-secret
+      annotations:
+        cert-manager.io/cluster-issuer: lets-encrypt-production
+        ingress.kubernetes.io/force-ssl-redirect: "true"
+        ingress.kubernetes.io/protocol: http
+        kubernetes.io/ingress.class: traefik
+        kubernetes.io/tls-acme: "true"
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls: "true"
+  persistence:
+    config:
+      enabled: true
+      accessMode: ReadWriteOnce
+      size: 1Gi
+      advancedMounts:
+        listenarr:
+          listenarr:
+            - path: /app/config
+              subPath: config
+    downloads:
+      enabled: true
+      type: custom
+      volumeSpec:
+        nfs:
+          server: barenas.jsnouff.net
+          path: /mnt/ssd-noraid/downloads
+      advancedMounts:
+        listenarr:
+          listenarr:
+            - path: /downloads
+    completed:
+      enabled: true
+      type: custom
+      volumeSpec:
+        nfs:
+          server: barenas.jsnouff.net
+          path: /mnt/plex/media
+      advancedMounts:
+        listenarr:
+          listenarr:
+            - path: /completed
+
+common:
+  resticBackups:
+    enabled: true
+    targets:
+      listenarr-data:
+        pvcName: listenarr
+        bucket: listenarr-backup
+        restoreVersion: latest
+        tags:
+          - "listenarr-image:{{ $.Values.listenarr.controllers.listenarr.containers.listenarr.image.tag }}"
+        affinity:
+          podAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app.kubernetes.io/name
+                      operator: In
+                      values:
+                      - listenarr
+                topologyKey: kubernetes.io/hostname
