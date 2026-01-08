@@ -4,5 +4,5 @@ helm:
     value: triliumnext/trilium
     forcestring: true
   - name: trilium.controllers.trilium.containers.trilium.image.tag
-    value: v0.101.2
+    value: v0.101.3
     forcestring: true
