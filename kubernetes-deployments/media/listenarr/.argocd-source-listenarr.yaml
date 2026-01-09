@@ -4,5 +4,5 @@ helm:
     value: ghcr.io/therobbiedavis/listenarr
     forcestring: true
   - name: listenarr.controllers.listenarr.containers.listenarr.image.tag
-    value: canary-0.2.45
+    value: canary-0.2.46
     forcestring: true
