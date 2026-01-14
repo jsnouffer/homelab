@@ -17,7 +17,7 @@ kvmd:
                 mac: 04:7c:16:3d:d2:c9
             wol_yarvell:
                 type: wol
-                mac: 40:b0:34:f7:17:08
+                mac: fc:3f:db:0c:4b:1a
             wol_calcula:
                 type: wol
                 mac: c0:18:03:82:d9:7f
