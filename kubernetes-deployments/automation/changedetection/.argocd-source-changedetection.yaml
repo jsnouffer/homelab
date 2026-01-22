@@ -4,7 +4,7 @@ helm:
     value: dgtlmoon/changedetection.io
     forcestring: true
   - name: changedetection.controllers.main.containers.main.image.tag
-    value: 0.52.8
+    value: 0.52.9
     forcestring: true
   - name: changedetection.controllers.main.containers.sockpuppetbrowser.image.repository
     value: dgtlmoon/sockpuppetbrowser
