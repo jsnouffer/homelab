@@ -345,7 +345,7 @@ argocd-apps:
 
             argocd-image-updater.argoproj.io/tunarr.helm.image-name: tunarr.controllers.tunarr.containers.tunarr.image.repository
             argocd-image-updater.argoproj.io/tunarr.helm.image-tag: tunarr.controllers.tunarr.containers.tunarr.image.tag
-            argocd-image-updater.argoproj.io/tunarr.ignore-tags: "*alpha*"
+            argocd-image-updater.argoproj.io/tunarr.ignore-tags: "*alpha*,*dev*,*arm*"
         spec:
           project: media
           source:
