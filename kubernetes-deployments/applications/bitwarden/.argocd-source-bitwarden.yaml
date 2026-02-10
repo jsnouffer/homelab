@@ -4,5 +4,5 @@ helm:
     value: vaultwarden/server
     forcestring: true
   - name: bitwarden.controllers.main.containers.main.image.tag
-    value: 1.35.2
+    value: 1.35.3
     forcestring: true
