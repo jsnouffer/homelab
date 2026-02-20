@@ -335,6 +335,7 @@ argocd-apps:
             argocd-image-updater.argoproj.io/image-list: >-
               audiobookshelf=advplyr/audiobookshelf,
               ersatztv=ghcr.io/ersatztv/ersatztv,
+              seerr=seerr/seerr,
               tunarr=ghcr.io/chrisbenincasa/tunarr
 
             argocd-image-updater.argoproj.io/audiobookshelf.helm.image-name: audiobookshelf.controllers.main.containers.main.image.repository
@@ -342,6 +343,9 @@ argocd-apps:
 
             argocd-image-updater.argoproj.io/ersatztv.helm.image-name: ersatztv.controllers.ersatztv.containers.ersatztv.image.repository
             argocd-image-updater.argoproj.io/ersatztv.helm.image-tag: ersatztv.controllers.ersatztv.containers.ersatztv.image.tag
+
+            argocd-image-updater.argoproj.io/seerr.helm.image-name: seerr.controllers.main.containers.main.image.repository
+            argocd-image-updater.argoproj.io/seerr.helm.image-tag: seerr.controllers.main.containers.main.image.tag
 
             argocd-image-updater.argoproj.io/tunarr.helm.image-name: tunarr.controllers.tunarr.containers.tunarr.image.repository
             argocd-image-updater.argoproj.io/tunarr.helm.image-tag: tunarr.controllers.tunarr.containers.tunarr.image.tag

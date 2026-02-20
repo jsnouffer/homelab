@@ -67,11 +67,6 @@ ghReleaseImageUpdater:
       gitopsRepo:
         filePath: media/ombi/.argocd-source-ombi.yaml
         yamlPath: ".helm.parameters[1].value"
-    overseerr:
-      ghRepo: linuxserver/docker-overseerr
-      gitopsRepo:
-        filePath: media/overseerr/.argocd-source-overseerr.yaml
-        yamlPath: ".helm.parameters[1].value"
     radarr:
       ghRepo: linuxserver/docker-radarr
       gitopsRepo:

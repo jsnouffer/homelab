@@ -1,8 +1,0 @@
-helm:
-  parameters:
-    - name: overseerr.controllers.main.containers.main.image.repository
-      value: lscr.io/linuxserver/overseerr
-      forcestring: true
-    - name: overseerr.controllers.main.containers.main.image.tag
-      value: v1.34.0-ls157
-      forcestring: true

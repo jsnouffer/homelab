@@ -1,4 +1,4 @@
-{{- with $.Values.overseerr }}
+{{- with $.Values.seerr }}
 {{- if .enabled }}
 {{- include "common.all" $ -}}
 {{- end }}

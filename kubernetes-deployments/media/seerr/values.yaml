@@ -1,0 +1,178 @@
+seerr:
+  enabled: true
+  global:
+    fullnameOverride: &name seerr
+  defaultPodOptions:
+    automountServiceAccountToken: false
+    securityContext:
+      fsGroup: 1000
+      fsGroupChangePolicy: OnRootMismatch
+      runAsNonRoot: true
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: seerr/seerr
+            tag: latest # managed by ArgoCD Image Updater
+          env:
+            DB_TYPE: postgres
+            DB_HOST: postgresql
+            DB_PORT: "5432"
+            DB_NAME: &db seerr
+            DB_USER: &db-user seerr
+            DB_PASS:
+              valueFrom:
+                secretKeyRef:
+                  key: &db-secret-key password
+                  name: &db-secret db-credentials
+            DB_LOG_QUERIES: "false"
+            DB_USE_SSL: "false"
+          resources:
+            requests:
+              cpu: 25m
+              memory: 250Mi
+            limits:
+              cpu: 500m
+              memory: 500Mi
+          probes:
+            liveness: &lr-probe
+              enabled: true
+              type: &probe-type HTTP
+              path: &probe-path /
+              spec:
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                timeoutSeconds: 1
+                failureThreshold: 3
+            readiness: *lr-probe
+            startup:
+              enabled: true
+              type: *probe-type
+              path: *probe-path
+              spec:
+                initialDelaySeconds: 10
+                periodSeconds: 5
+                timeoutSeconds: 5
+                successThreshold: 1
+                failureThreshold: 30
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: false
+            runAsNonRoot: true
+            privileged: false
+            runAsUser: 1000
+            runAsGroup: 1000
+            seccompProfile:
+              type: RuntimeDefault
+  service:
+    main:
+      controller: main
+      ports:
+        http:
+          port: &main-port 5055
+  ingress:
+    main:
+      enabled: true
+      hosts:
+        - host: &domain seerr.jsnouff.net
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: *name
+                port: *main-port
+      tls:
+        - hosts:
+            - *domain
+          secretName: tls-secret
+      annotations:
+        cert-manager.io/cluster-issuer: lets-encrypt-production
+        ingress.kubernetes.io/force-ssl-redirect: "true"
+        ingress.kubernetes.io/protocol: http
+        kubernetes.io/ingress.class: traefik
+        kubernetes.io/tls-acme: "true"
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        traefik.ingress.kubernetes.io/router.middlewares: traefik-default-security@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls.options: traefik-default-tls@kubernetescrd
+        traefik.ingress.kubernetes.io/router.tls: "true"
+
+  persistence:
+    config:
+      enabled: true
+      accessMode: ReadWriteOnce
+      size: 1Gi
+      advancedMounts:
+        main:
+          main:
+            - path: /app/config
+
+databases:
+  postgresql:
+    enabled: true
+    controllers:
+      postgresql:
+        containers:
+          postgresql:
+            resources:
+              requests:
+                cpu: 25m
+                memory: 32Mi
+              limits:
+                cpu: 250m
+                memory: 300Mi
+            env:
+              POSTGRES_USER: *db-user
+              POSTGRES_DB: *db
+              POSTGRES_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    key: *db-secret-key
+                    name: *db-secret
+
+common:
+  resticBackups:
+    enabled: true
+    targets:
+      seerr-data:
+        pvcName: seerr
+        bucket: seerr-data-backup
+        restoreVersion: latest
+        tags:
+          - "{{ $.Values.seerr.controllers.main.containers.main.image.repository }}:{{ $.Values.seerr.controllers.main.containers.main.image.tag }}"
+        affinity:
+          podAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - *name
+                  - key: app.kubernetes.io/controller
+                    operator: In
+                    values:
+                    - main
+                topologyKey: kubernetes.io/hostname
+      seerr-db:
+        pvcName: data-postgresql-0
+        bucket: seerr-db-backup
+        restoreVersion: latest
+        tags:
+          - "{{ $.Values.seerr.controllers.main.containers.main.image.repository }}:{{ $.Values.seerr.controllers.main.containers.main.image.tag }}"
+          - "{{ $.Subcharts.databases.Values.postgresql.controllers.postgresql.containers.postgresql.image.repository }}:{{ $.Subcharts.databases.Values.postgresql.controllers.postgresql.containers.postgresql.image.tag }}"
+        affinity:
+          podAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: statefulset.kubernetes.io/pod-name
+                  operator: In
+                  values:
+                  - postgresql-0
+              topologyKey: kubernetes.io/hostname

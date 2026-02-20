@@ -76,9 +76,6 @@
             - title: Ombi
               icon: $di:ombi.png
               url: https://ombi.jsnouff.net/
-            - title: Overseerr
-              icon: $di:overseerr.png
-              url: https://overseerr.jsnouff.net/
             - title: Plex
               icon: $di:plex.png
               url: http://barenas.jsnouff.net:32400/
@@ -91,6 +88,9 @@
             - title: SABnzbd
               icon: $di:sabnzbd.png
               url: https://sabnzbd.jsnouff.net/
+            - title: Seerr
+              icon: $di:seerr.png
+              url: https://seerr.jsnouff.net/
             - title: Sonarr
               icon: $di:sonarr.png
               url: https://sonarr.jsnouff.net/
