@@ -1,8 +1,8 @@
 helm:
   parameters:
-    - name: seerr.controllers.main.containers.main.image.repository
-      value: seerr/seerr
-      forcestring: true
-    - name: seerr.controllers.main.containers.main.image.tag
-      value: v3.0.1
-      forcestring: true
+  - name: seerr.controllers.main.containers.main.image.repository
+    value: seerr/seerr
+    forcestring: true
+  - name: seerr.controllers.main.containers.main.image.tag
+    value: v3.1.0
+    forcestring: true
