@@ -1,0 +1,8 @@
+helm:
+  parameters:
+  - name: muxarr.controllers.main.containers.main.image.repository
+    value: ghcr.io/kirovair/muxarr
+    forcestring: true
+  - name: muxarr.controllers.main.containers.main.image.tag
+    value: 0.7.5
+    forcestring: true

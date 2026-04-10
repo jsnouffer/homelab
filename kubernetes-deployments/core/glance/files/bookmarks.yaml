@@ -70,6 +70,9 @@
             - title: MeTube
               icon: $di:metube.png
               url: https://metube.jsnouff.net/
+            - title: Muxarr
+              icon: https://avatars.githubusercontent.com/u/1339200
+              url: https://muxarr.jsnouff.net/
             - title: NZBHydra2
               icon: $di:nzbhydra2.png
               url: https://nzbhydra2.jsnouff.net/
