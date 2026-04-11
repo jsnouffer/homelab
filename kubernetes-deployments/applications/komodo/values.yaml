@@ -107,7 +107,7 @@ komodo:
     data:
       enabled: true
       accessMode: ReadWriteOnce
-      size: 1Gi
+      size: 2Gi
       advancedMounts:
         komodo:
           komodo:
@@ -134,7 +134,13 @@ databases:
                   secretKeyRef:
                     key: mongodb-root-password
                     name: mongodb-credentials
-
+        statefulset:
+          volumeClaimTemplates:
+            - name: data
+              accessMode: ReadWriteOnce
+              size: 2Gi
+              globalMounts:
+                - path: /data/db
 common:
   resticBackups:
     enabled: true

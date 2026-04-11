@@ -21,7 +21,7 @@ muxarr:
               memory: 200Mi
             limits:
               cpu: 1200m
-              memory: 1Gi
+              memory: 1200Mi
           probes:
             liveness: &lr-probe
               enabled: true
