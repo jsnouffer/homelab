@@ -71,7 +71,7 @@
               icon: $di:metube.png
               url: https://metube.jsnouff.net/
             - title: Muxarr
-              icon: https://avatars.githubusercontent.com/u/1339200
+              icon: https://github.com/KirovAir/muxarr/blob/master/docs/logo.png?raw=true
               url: https://muxarr.jsnouff.net/
             - title: NZBHydra2
               icon: $di:nzbhydra2.png
