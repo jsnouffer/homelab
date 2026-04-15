@@ -4,5 +4,5 @@ helm:
     value: seerr/seerr
     forcestring: true
   - name: seerr.controllers.main.containers.main.image.tag
-    value: v3.1.1
+    value: v3.2.0
     forcestring: true
