@@ -20,11 +20,6 @@ komodo:
           env:
             KOMODO_HOST: https://komodo.jsnouff.net
             KOMODO_LOCAL_AUTH: "true"
-            KOMODO_PASSKEY:
-              valueFrom:
-                secretKeyRef:
-                  key: passkey
-                  name: komodo-credentials
             KOMODO_DATABASE_ADDRESS: mongodb:27017
             KOMODO_DATABASE_USERNAME:
               valueFrom:
@@ -115,6 +110,14 @@ komodo:
               subPath: repo-cache
             - path: /syncs
               subPath: syncs
+    keys:
+      enabled: true
+      type: secret
+      name: komodo-credentials
+      advancedMounts:
+        komodo:
+          komodo:
+            - path: /config/keys
 
 databases:
   mongodb:
