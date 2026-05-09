@@ -1,0 +1,24 @@
+# Source: gpu-operator/charts/gpu-operator/templates/plugin_config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nvidia-time-slicing-config
+  namespace: default
+  labels:
+    app.kubernetes.io/name: gpu-operator
+    helm.sh/chart: gpu-operator-v25.3.2
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v25.3.2"
+    app.kubernetes.io/managed-by: Helm
+data: 
+  config: |-
+    version: v1
+    flags:
+      migStrategy: none
+    sharing:
+      timeSlicing:
+        renameByDefault: false
+        failRequestsGreaterThanOne: true
+        resources:
+          - name: nvidia.com/gpu
+            replicas: 2

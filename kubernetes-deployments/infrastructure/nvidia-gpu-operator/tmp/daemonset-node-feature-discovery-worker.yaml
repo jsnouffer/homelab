@@ -1,0 +1,144 @@
+# Source: gpu-operator/charts/gpu-operator/charts/node-feature-discovery/templates/worker.yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name:  node-feature-discovery-worker
+  namespace: default
+  labels:
+    helm.sh/chart: node-feature-discovery-0.17.3
+    app.kubernetes.io/name: node-feature-discovery
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v0.17.3"
+    app.kubernetes.io/managed-by: Helm
+    role: worker
+spec:
+  revisionHistoryLimit: 
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: node-feature-discovery
+      app.kubernetes.io/instance: release-name
+      role: worker
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: node-feature-discovery
+        app.kubernetes.io/instance: release-name
+        role: worker
+      annotations:
+        checksum/config: 22d18517d4db802848066212cf17dff7234ef2112e13d9f977ec8c19b9456ffa
+    spec:
+      dnsPolicy: ClusterFirstWithHostNet
+      priorityClassName: system-node-critical
+      serviceAccountName: node-feature-discovery
+      securityContext:
+        {}
+      hostNetwork: false
+      containers:
+      - name: worker
+        securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+        image: "registry.k8s.io/nfd/node-feature-discovery:v0.17.3"
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          grpc:
+            port: 8082
+          initialDelaySeconds: 10
+        readinessProbe:
+          grpc:
+            port: 8082
+          initialDelaySeconds: 5
+          failureThreshold: 10
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
+        resources:
+            limits:
+              cpu: 25m
+              memory: 64Mi
+            requests:
+              cpu: 5m
+              memory: 16Mi
+        command:
+        - "nfd-worker"
+        args:
+        # Go over featureGate and add the feature-gate flag
+        - "-feature-gates=NodeFeatureGroupAPI=false"
+        - "-metrics=8081"
+        - "-grpc-health=8082"
+        ports:
+          - containerPort: 8081
+            name: metrics
+          - containerPort: 8082
+            name: health
+        volumeMounts:
+        - name: host-boot
+          mountPath: "/host-boot"
+          readOnly: true
+        - name: host-os-release
+          mountPath: "/host-etc/os-release"
+          readOnly: true
+        - name: host-sys
+          mountPath: "/host-sys"
+          readOnly: true
+        - name: host-usr-lib
+          mountPath: "/host-usr/lib"
+          readOnly: true
+        - name: host-lib
+          mountPath: "/host-lib"
+          readOnly: true
+        - name: host-proc-swaps
+          mountPath: "/host-proc/swaps"
+          readOnly: true
+        - name: features-d
+          mountPath: "/etc/kubernetes/node-feature-discovery/features.d/"
+          readOnly: true
+        - name: nfd-worker-conf
+          mountPath: "/etc/kubernetes/node-feature-discovery"
+          readOnly: true
+      volumes:
+        - name: host-boot
+          hostPath:
+            path: "/boot"
+        - name: host-os-release
+          hostPath:
+            path: "/etc/os-release"
+        - name: host-sys
+          hostPath:
+            path: "/sys"
+        - name: host-usr-lib
+          hostPath:
+            path: "/usr/lib"
+        - name: host-lib
+          hostPath:
+            path: "/lib"
+        - name: host-proc-swaps
+          hostPath:
+            path: "/proc/swaps"
+        - name: features-d
+          hostPath:
+            path: "/etc/kubernetes/node-feature-discovery/features.d/"
+        - name: nfd-worker-conf
+          configMap:
+            name: node-feature-discovery-worker-conf
+            items:
+              - key: nfd-worker.conf
+                path: nfd-worker.conf
+      tolerations:
+        - effect: NoSchedule
+          key: nvidia.com/gpu
+          operator: Exists

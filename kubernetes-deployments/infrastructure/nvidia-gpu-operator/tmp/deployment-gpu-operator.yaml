@@ -1,0 +1,109 @@
+# Source: gpu-operator/charts/gpu-operator/templates/operator.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gpu-operator
+  labels:
+    app.kubernetes.io/name: gpu-operator
+    helm.sh/chart: gpu-operator-v25.3.2
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v25.3.2"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: "gpu-operator"
+    nvidia.com/gpu-driver-upgrade-drain.skip: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: "gpu-operator"
+      app: "gpu-operator"
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: gpu-operator
+        helm.sh/chart: gpu-operator-v25.3.2
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/version: "v25.3.2"
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/component: "gpu-operator"
+        app: "gpu-operator"
+        nvidia.com/gpu-driver-upgrade-drain.skip: "true"
+      annotations:
+        openshift.io/scc: restricted-readonly
+    spec:
+      serviceAccountName: gpu-operator
+      priorityClassName: system-node-critical
+      containers:
+      - name: gpu-operator
+        image: nvcr.io/nvidia/gpu-operator:v25.3.2
+        imagePullPolicy: IfNotPresent
+        command: ["gpu-operator"]
+        args:
+        - --leader-elect
+        - --zap-time-encoding=epoch
+        - --zap-log-level=info
+        env:
+        - name: WATCH_NAMESPACE
+          value: ""
+        - name: OPERATOR_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: "DRIVER_MANAGER_IMAGE"
+          value: "nvcr.io/nvidia/cloud-native/k8s-driver-manager:v0.8.0"
+        volumeMounts:
+          - name: host-os-release
+            mountPath: "/host-etc/os-release"
+            readOnly: true
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8081
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8081
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          limits:
+            cpu: 500m
+            memory: 350Mi
+          requests:
+            cpu: 200m
+            memory: 100Mi
+        ports:
+          - name: metrics
+            containerPort: 8080
+      volumes:
+        - name: host-os-release
+          hostPath:
+            path: "/etc/os-release"
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - preference:
+              matchExpressions:
+              - key: node-role.kubernetes.io/master
+                operator: In
+                values:
+                - ""
+            weight: 1
+          - preference:
+              matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: In
+                values:
+                - ""
+            weight: 1
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+          operator: Equal
+          value: ""
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/control-plane
+          operator: Equal
+          value: ""

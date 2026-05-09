@@ -1,0 +1,292 @@
+# Source: gpu-operator/charts/gpu-operator/templates/clusterpolicy.yaml
+apiVersion: nvidia.com/v1
+kind: ClusterPolicy
+metadata:
+  name: cluster-policy
+  labels:
+    app.kubernetes.io/name: gpu-operator
+    helm.sh/chart: gpu-operator-v25.3.2
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v25.3.2"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: "gpu-operator"
+spec:
+  hostPaths:
+    rootFS: /
+    driverInstallDir: /run/nvidia/driver
+  operator:
+    runtimeClass: nvidia
+    initContainer:
+      repository: nvcr.io/nvidia
+      image: cuda
+      version: "12.8.1-base-ubi9"
+      imagePullPolicy: IfNotPresent
+  daemonsets:
+    labels:
+      helm.sh/chart: gpu-operator-v25.3.2
+      app.kubernetes.io/managed-by: gpu-operator
+    tolerations: 
+      - effect: NoSchedule
+        key: nvidia.com/gpu
+        operator: Exists
+    priorityClassName: system-node-critical
+    updateStrategy: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: "1"
+  validator:
+    repository: nvcr.io/nvidia/cloud-native
+    image: gpu-operator-validator
+    version: "v25.3.2"
+    imagePullPolicy: IfNotPresent
+    plugin:
+      env: 
+        - name: WITH_WORKLOAD
+          value: "false"
+
+  mig:
+    strategy: single
+  psa:
+    enabled: false
+  cdi:
+    enabled: false
+    default: false
+  driver:
+    enabled: true
+    useNvidiaDriverCRD: false
+    kernelModuleType: auto
+    usePrecompiled: false
+    repository: nvcr.io/nvidia
+    image: driver
+    version: "570.148.08"
+    imagePullPolicy: IfNotPresent
+    startupProbe: 
+      failureThreshold: 120
+      initialDelaySeconds: 60
+      periodSeconds: 10
+      timeoutSeconds: 60
+    rdma:
+      enabled: false
+      useHostMofed: false
+    manager:
+      repository: nvcr.io/nvidia/cloud-native
+      image: k8s-driver-manager
+      version: "v0.8.0"
+      imagePullPolicy: IfNotPresent
+      env: 
+        - name: ENABLE_GPU_POD_EVICTION
+          value: "true"
+        - name: ENABLE_AUTO_DRAIN
+          value: "false"
+        - name: DRAIN_USE_FORCE
+          value: "false"
+        - name: DRAIN_POD_SELECTOR_LABEL
+          value: ""
+        - name: DRAIN_TIMEOUT_SECONDS
+          value: 0s
+        - name: DRAIN_DELETE_EMPTYDIR_DATA
+          value: "false"
+    repoConfig: 
+      configMapName: ""
+    certConfig: 
+      name: ""
+    licensingConfig: 
+      configMapName: ""
+      nlsEnabled: true
+    virtualTopology: 
+      config: ""
+    kernelModuleConfig: 
+      name: ""
+    upgradePolicy:
+      autoUpgrade: true
+      maxParallelUpgrades: 1
+      maxUnavailable : 25%
+      waitForCompletion:
+        timeoutSeconds: 0
+      podDeletion:
+        force: false
+        timeoutSeconds: 300
+        deleteEmptyDir: false
+      drain:
+        enable: false
+        force: false
+        timeoutSeconds: 300
+        deleteEmptyDir: false
+  vgpuManager:
+    enabled: false
+    image: vgpu-manager
+    imagePullPolicy: IfNotPresent
+    driverManager:
+      repository: nvcr.io/nvidia/cloud-native
+      image: k8s-driver-manager
+      version: "v0.8.0"
+      imagePullPolicy: IfNotPresent
+      env: 
+        - name: ENABLE_GPU_POD_EVICTION
+          value: "false"
+        - name: ENABLE_AUTO_DRAIN
+          value: "false"
+  kataManager:
+    enabled: false
+    config: 
+      artifactsDir: /opt/nvidia-gpu-operator/artifacts/runtimeclasses
+      runtimeClasses:
+      - artifacts:
+          pullSecret: ""
+          url: nvcr.io/nvidia/cloud-native/kata-gpu-artifacts:ubuntu22.04-535.54.03
+        name: kata-nvidia-gpu
+        nodeSelector: {}
+      - artifacts:
+          pullSecret: ""
+          url: nvcr.io/nvidia/cloud-native/kata-gpu-artifacts:ubuntu22.04-535.86.10-snp
+        name: kata-nvidia-gpu-snp
+        nodeSelector:
+          nvidia.com/cc.capable: "true"
+    repository: nvcr.io/nvidia/cloud-native
+    image: k8s-kata-manager
+    version: "v0.2.3"
+    imagePullPolicy: IfNotPresent
+  vfioManager:
+    enabled: true
+    repository: nvcr.io/nvidia
+    image: cuda
+    version: "12.8.1-base-ubi9"
+    imagePullPolicy: IfNotPresent
+    driverManager:
+      repository: nvcr.io/nvidia/cloud-native
+      image: k8s-driver-manager
+      version: "v0.8.0"
+      imagePullPolicy: IfNotPresent
+      env: 
+        - name: ENABLE_GPU_POD_EVICTION
+          value: "false"
+        - name: ENABLE_AUTO_DRAIN
+          value: "false"
+  vgpuDeviceManager:
+    enabled: true
+    repository: nvcr.io/nvidia/cloud-native
+    image: vgpu-device-manager
+    version: "v0.3.0"
+    imagePullPolicy: IfNotPresent
+    config: 
+      default: default
+      name: ""
+  ccManager:
+    enabled: false
+    defaultMode: "off"
+    repository: nvcr.io/nvidia/cloud-native
+    image: k8s-cc-manager
+    version: "v0.1.1"
+    imagePullPolicy: IfNotPresent
+    env: 
+      []
+  toolkit:
+    enabled: false
+    repository: nvcr.io/nvidia/k8s
+    image: container-toolkit
+    version: "v1.17.8-ubuntu20.04"
+    imagePullPolicy: IfNotPresent
+    env: 
+      - name: CONTAINERD_CONFIG
+        value: /var/lib/rancher/rke2/agent/etc/containerd/config.toml
+      - name: CONTAINERD_SOCKET
+        value: /run/k3s/containerd/containerd.sock
+      - name: CONTAINERD_RUNTIME_CLASS
+        value: nvidia
+      - name: CONTAINERD_SET_AS_DEFAULT
+        value: "true"
+    installDir: /usr/local/nvidia
+  devicePlugin:
+    enabled: true
+    repository: nvcr.io/nvidia
+    image: k8s-device-plugin
+    version: "v0.17.3"
+    imagePullPolicy: IfNotPresent
+    env: 
+      - name: PASS_DEVICE_SPECS
+        value: "true"
+      - name: FAIL_ON_INIT_ERROR
+        value: "true"
+      - name: DEVICE_LIST_STRATEGY
+        value: envvar
+      - name: DEVICE_ID_STRATEGY
+        value: uuid
+      - name: NVIDIA_VISIBLE_DEVICES
+        value: all
+      - name: NVIDIA_DRIVER_CAPABILITIES
+        value: all
+    config:
+      name: nvidia-time-slicing-config
+      default: config
+  dcgm:
+    enabled: false
+    repository: nvcr.io/nvidia/cloud-native
+    image: dcgm
+    version: "4.2.3-1-ubuntu22.04"
+    imagePullPolicy: IfNotPresent
+  dcgmExporter:
+    enabled: true
+    repository: nvcr.io/nvidia/k8s
+    image: dcgm-exporter
+    version: "4.2.3-4.1.3-ubuntu22.04"
+    imagePullPolicy: IfNotPresent
+    env: 
+      - name: DCGM_EXPORTER_LISTEN
+        value: :9400
+      - name: DCGM_EXPORTER_KUBERNETES
+        value: "true"
+      - name: DCGM_EXPORTER_COLLECTORS
+        value: /etc/dcgm-exporter/dcp-metrics-included.csv
+    serviceMonitor: 
+      additionalLabels: {}
+      enabled: false
+      honorLabels: false
+      interval: 15s
+      relabelings: []
+    service: 
+      internalTrafficPolicy: Cluster
+  gfd:
+    enabled: true
+    repository: nvcr.io/nvidia
+    image: k8s-device-plugin
+    version: "v0.17.3"
+    imagePullPolicy: IfNotPresent
+    env: 
+      - name: GFD_SLEEP_INTERVAL
+        value: 60s
+      - name: GFD_FAIL_ON_INIT_ERROR
+        value: "true"
+  migManager:
+    enabled: true
+    repository: nvcr.io/nvidia/cloud-native
+    image: k8s-mig-manager
+    version: "v0.12.2-ubuntu20.04"
+    imagePullPolicy: IfNotPresent
+    env: 
+      - name: WITH_REBOOT
+        value: "false"
+    config:
+      name: 
+      default: all-disabled
+    gpuClientsConfig: 
+      name: ""
+  nodeStatusExporter:
+    enabled: false
+    repository: nvcr.io/nvidia/cloud-native
+    image: gpu-operator-validator
+    version: "v25.3.2"
+    imagePullPolicy: IfNotPresent
+  gdrcopy:
+    enabled: false
+    repository: nvcr.io/nvidia/cloud-native
+    image: gdrdrv
+    version: "v2.5"
+    imagePullPolicy: IfNotPresent
+  sandboxWorkloads:
+    enabled: false
+    defaultWorkload: container
+  sandboxDevicePlugin:
+    enabled: true
+    repository: nvcr.io/nvidia
+    image: kubevirt-gpu-device-plugin
+    version: "v1.3.1"
+    imagePullPolicy: IfNotPresent
