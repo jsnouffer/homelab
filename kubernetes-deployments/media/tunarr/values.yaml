@@ -96,7 +96,7 @@ tunarr:
     config:
       enabled: true
       accessMode: ReadWriteOnce
-      size: 1Gi
+      size: 5Gi
       advancedMounts:
         tunarr:
           tunarr:
