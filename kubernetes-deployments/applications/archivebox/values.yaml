@@ -203,7 +203,7 @@ archivebox:
     data:
       enabled: true
       accessMode: ReadWriteOnce
-      size: 5Gi
+      size: 10Gi
       advancedMounts:
         archivebox:
           init-db:
