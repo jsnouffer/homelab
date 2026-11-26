@@ -7,3 +7,10 @@ collections:
       all:
         country: United Kingdom
         genre: Comedy
+
+  # Dark Shadows - The Beginning:
+  #   text_file:
+  #     - /config/lists/dark_shadows_beginning.txt
+  #   collection_order: custom
+  #   sync_mode: sync
+  #   builder_level: episode

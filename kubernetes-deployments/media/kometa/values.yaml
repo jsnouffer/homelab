@@ -50,3 +50,11 @@ kometa:
               subPath: movies.yaml
             - path: /config/tv.yaml
               subPath: tv.yaml
+    lists:
+      enabled: true
+      type: configMap
+      name: kometa-lists
+      advancedMounts:
+        main:
+          main:
+            - path: /config/lists

@@ -1,0 +1,8 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kometa-lists
+  namespace: {{ $.Release.Namespace }}
+data:
+{{ ($.Files.Glob "files/lists/*").AsConfig | indent 2 }}
